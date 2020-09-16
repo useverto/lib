@@ -9,7 +9,6 @@ const relativeKeyPath = process.env.KEY_PATH
   ? relative(__dirname, process.env.KEY_PATH)
   : "./arweave.json";
 
-
 export async function init(keyfile?: string) {
   const client = new Arweave({
     host: "arweave.dev",

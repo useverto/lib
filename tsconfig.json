@@ -12,7 +12,7 @@
     "lib": ["es2015"],
     "paths": {
       "@queries/*": ["queries/*"],
-      "@utils/*": ["utils/*"],
+      "@utils/*": ["utils/*"]
     }
   }
 }
