@@ -6,7 +6,6 @@ import resolve from "@rollup/plugin-node-resolve";
 import alias from "@rollup/plugin-alias";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
-import yml from "@rollup/plugin-yaml";
 import { terser } from "rollup-plugin-terser";
 
 const filter = createFilter("**/*.gql", []);
@@ -21,7 +20,6 @@ const config = {
   ],
   external: [
     "*.gql",
-    "*.yml",
     "fs/promises",
     "util",
     "fs",
@@ -32,7 +30,6 @@ const config = {
   plugins: [
     typescript(),
     json(),
-    yml(),
     commonjs({
       include: ["node_modules/**"],
       ignoreGlobal: false,
