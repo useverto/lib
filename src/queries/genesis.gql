@@ -1,0 +1,17 @@
+query($recipients: [String!]) {
+  transactions(
+    recipients: $recipients
+    tags: [
+      { name: "Exchange", values: "Verto" }
+      { name: "Type", values: "Genesis" }
+    ]
+  ) {
+    edges {
+      node {
+        owner {
+          address
+        }
+      }
+    }
+  }
+}
