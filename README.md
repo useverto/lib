@@ -9,6 +9,11 @@
     Utilities for the Verto Exchange Network
   </p>
 
+  <p align="center">
+    <img src="https://github.com/useverto/lib/workflows/Test/badge.svg" alt="Test CI" />
+    <img src="https://github.com/useverto/lib/workflows/Lint/badge.svg" alt="Lint CI" />
+  </p>
+
 </p>
 
 ## About
