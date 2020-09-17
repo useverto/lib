@@ -8,7 +8,7 @@
     "fmt:check": "prettier --check .",
     "build": "rollup -c",
     "dev": "rollup -cw",
-    "lint": "eslint"
+    "lint": "eslint ."
   },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
