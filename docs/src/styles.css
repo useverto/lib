@@ -12,3 +12,33 @@ body {
   font-family: "JetBrainsMono", monospace;
   padding: 1em 15vw 3em;
 }
+
+::selection {
+  background-color: #b075cd;
+}
+::-moz-selection {
+  background-color: #b075cd;
+}
+
+h1.title {
+  font-family: "Inter", sans-serif;
+  font-size: 2.3em;
+  font-weight: 600;
+}
+@media screen and (max-width: 720px) {
+  h1.title {
+    width: 100%;
+    font-size: 2.01em;
+  }
+}
+
+a {
+  color: #b075cd;
+  text-decoration: underline;
+}
+a::selection {
+  color: #000;
+}
+a::-moz-selection {
+  color: #000;
+}
