@@ -46,6 +46,7 @@ const config = {
     }),
     alias({
       "@utils": __dirname + "/src/utils",
+      "@lib": __dirname + "/src/lib",
       "@queries": __dirname + "/src/queries",
     }),
     {
