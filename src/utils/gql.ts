@@ -58,7 +58,9 @@ export async function query<T>({
  * Execute a simple graphql query without variables.
  * @param query The graphql query to be executed.
  */
-export async function simpleQuery<T>(query: string): Promise<GraphQLResponse<T>> {
+export async function simpleQuery<T>(
+  query: string
+): Promise<GraphQLResponse<T>> {
   const graphql = JSON.stringify({
     query,
     variables: {},
