@@ -6,7 +6,8 @@
   "scripts": {
     "fmt": "prettier --write .",
     "fmt:check": "prettier --check .",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "dev": "rollup -cw"
   },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
