@@ -11,4 +11,8 @@ export default class Verto {
   getTokens(src: string) {
     return getTokens(src);
   }
+
+  getTradingPosts() {
+    return getTradingPosts();
+  }
 }
