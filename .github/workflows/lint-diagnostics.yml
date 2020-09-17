@@ -1,4 +1,4 @@
-name: reviewdog
+name: review
 
 on: [pull_request]
 
