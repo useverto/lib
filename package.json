@@ -10,7 +10,9 @@
   },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "types": "dist/index.d.ts",
   "dependencies": {
     "arweave": "^1.9.1",
