@@ -27,8 +27,8 @@ export const getTokens = async (
   const tokens: VertoToken[] = [];
   for (const id of txIDs) {
     const contractId = await getTxData(client, id);
-    const rawcontractData = await getTxData(client, contractId);
-    const contractData = JSON.parse(rawcontractData);
+    const rawContractData = await getTxData(client, contractId);
+    const contractData = JSON.parse(rawContractData);
 
     tokens.push({
       id: contractId,
