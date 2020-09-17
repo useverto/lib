@@ -1,5 +1,5 @@
 import { query } from "@utils/gql";
-import genesisQuery from "./queries/genesis.gql";
+import genesisQuery from "../queries/genesis.gql";
 import { exchangeWallet } from "@utils/constants";
 
 export const getTradingPosts = async () => {

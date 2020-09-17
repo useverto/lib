@@ -1,6 +1,6 @@
 import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
 import { query } from "@utils/gql";
-import tokensQuery from "./queries/tokens.gql";
+import tokensQuery from "../queries/tokens.gql";
 import { createGenericClient } from "@utils/arweave";
 import Arweave from "arweave";
 import { VertoToken } from "types";
