@@ -8,7 +8,7 @@ import Transaction from "arweave/node/lib/transaction";
 
 const client: Arweave = createGenericClient();
 
-export const getTokens = async (contractSrc?: string) => {
+export const getTokens = async (contractSrc?: string): Promise<VertoToken[]> => {
   if (!contractSrc) contractSrc = exchangeContractSrc;
   const tokenTxs = (
     await query({
@@ -20,10 +20,10 @@ export const getTokens = async (contractSrc?: string) => {
     })
   ).data.transactions.edges;
 
-  let txIDs: string[] = [];
+  const txIDs: string[] = [];
   tokenTxs.map((tx: Transaction) => txIDs.push(tx.node.id));
 
-  let tokens: VertoToken[] = [];
+  const tokens: VertoToken[] = [];
   for (const id of txIDs) {
     const contractId = await getTxData(client, id);
     const rawcontractData = await getTxData(client, contractId);
