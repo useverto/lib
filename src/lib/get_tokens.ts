@@ -1,9 +1,10 @@
 import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
 import { query } from "@utils/gql";
 import tokensQuery from "../queries/tokens.gql";
-import { createGenericClient } from "@utils/arweave";
+import { createGenericClient, getTxData } from "@utils/arweave";
 import Arweave from "arweave";
 import { VertoToken } from "types";
+import Transaction from "arweave/node/lib/transaction";
 
 const client: Arweave = createGenericClient();
 
@@ -20,23 +21,13 @@ export const getTokens = async (contractSrc?: string) => {
   ).data.transactions.edges;
 
   let txIDs: string[] = [];
-  tokenTxs.map((tx: any) => {
-    txIDs.push(tx.node.id);
-  });
+  tokenTxs.map((tx: Transaction) => txIDs.push(tx.node.id));
 
   let tokens: VertoToken[] = [];
   for (const id of txIDs) {
-    const contractId = (
-      await client.transactions.getData(id, { decode: true, string: true })
-    ).toString();
-    const contractData = JSON.parse(
-      (
-        await client.transactions.getData(contractId, {
-          decode: true,
-          string: true,
-        })
-      ).toString()
-    );
+    const contractId = await getTxData(client, id);
+    const rawcontractData = await getTxData(client, contractId);
+    const contractData = JSON.parse(rawcontractData);
 
     tokens.push({
       id: contractId,
