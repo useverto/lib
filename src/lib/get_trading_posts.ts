@@ -1,6 +1,7 @@
 import { query } from "@utils/gql";
 import genesisQuery from "../queries/genesis.gql";
 import { exchangeWallet } from "@utils/constants";
+import Transaction from "arweave/node/lib/transaction";
 
 export const getTradingPosts = async () => {
   const gensisTxs = (
@@ -13,7 +14,7 @@ export const getTradingPosts = async () => {
   ).data.transactions.edges;
 
   let posts: string[] = [];
-  gensisTxs.map((tx: any) => {
+  gensisTxs.map((tx: Transaction) => {
     if (!posts.find((addr) => addr === tx.node.owner.address)) {
       posts.push(tx.node.owner.address);
     }
