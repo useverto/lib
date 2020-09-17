@@ -17,6 +17,10 @@ const config = {
       file: pkg.main,
       format: "cjs",
     },
+    {
+      file: pkg.module,
+      format: "es",
+    },
   ],
   external: [
     "*.gql",
@@ -26,6 +30,8 @@ const config = {
     "path",
     "child_process",
     "assert",
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.peerDependencies || {}),
   ],
   plugins: [
     typescript(),
@@ -60,8 +66,5 @@ const config = {
     }),
   ],
 };
-
-if (!process.env.PROD)
-  config.external.push(...Object.keys(pkg.dependencies || {}));
 
 export default config;
