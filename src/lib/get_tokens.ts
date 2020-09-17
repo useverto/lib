@@ -3,6 +3,7 @@ import { query } from "@utils/gql";
 import tokensQuery from "./queries/tokens.gql";
 import { createGenericClient } from "@utils/arweave";
 import Arweave from "arweave";
+import { VertoToken } from "types";
 
 const client: Arweave = createGenericClient();
 
@@ -23,7 +24,7 @@ export const getTokens = async (contractSrc?: string) => {
     txIDs.push(tx.node.id);
   });
 
-  let tokens: { id: string; ticker: string }[] = [];
+  let tokens: VertoToken[] = [];
   for (const id of txIDs) {
     const contractId = (
       await client.transactions.getData(id, { decode: true, string: true })
