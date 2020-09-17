@@ -1,5 +1,5 @@
-import { getTokens } from "./get_tokens";
-import { getTradingPosts } from "./get_trading_posts";
+import { getTokens } from "./lib/get_tokens";
+import { getTradingPosts } from "./lib/get_trading_posts";
 import Arweave from "arweave";
 
 export default class Verto {
