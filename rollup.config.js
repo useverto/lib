@@ -16,10 +16,12 @@ const config = {
     {
       file: pkg.main,
       format: "cjs",
+      exports: "default",
     },
     {
       file: pkg.module,
       format: "es",
+      exports: "default",
     },
   ],
   external: [
