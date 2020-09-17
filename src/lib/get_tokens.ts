@@ -1,17 +1,13 @@
 import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
-import Arweave from "arweave";
 import { query } from "@utils/gql";
 import tokensQuery from "./queries/tokens.gql";
+import { createGenericClient } from "@utils/arweave";
+import Arweave from "arweave";
+
+const client: Arweave = createGenericClient();
 
 export const getTokens = async (contractSrc?: string) => {
   if (!contractSrc) contractSrc = exchangeContractSrc;
-
-  const client = new Arweave({
-    host: "arweave.dev",
-    port: 443,
-    protocol: "https",
-  });
-
   const tokenTxs = (
     await query({
       query: tokensQuery,
