@@ -1,3 +1,4 @@
 # .prettierignore
 dist
+.mdx-data
 .next
