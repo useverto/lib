@@ -8,4 +8,8 @@ export default class Verto {
   constructor(arweave: Arweave) {
     this.arweave = arweave;
   }
+
+  getTokens(src: string) {
+    return getTokens(src);
+  }
 }

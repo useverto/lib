@@ -1,7 +1,7 @@
 import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
 import Arweave from "arweave";
 import { query } from "@utils/gql";
-import tokensQuery from "@queries/tokens.gql";
+import tokensQuery from "./queries/tokens.gql";
 
 export const getTokens = async (contractSrc?: string) => {
   if (!contractSrc) contractSrc = exchangeContractSrc;
