@@ -7,7 +7,8 @@
     "fmt": "prettier --write .",
     "fmt:check": "prettier --check .",
     "build": "rollup -c",
-    "dev": "rollup -cw"
+    "dev": "rollup -cw",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -28,6 +29,9 @@
     "@rollup/pluginutils": "^4.0.0",
     "@types/node": "^14.6.2",
     "@types/node-fetch": "^2.5.7",
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/parser": "^4.1.1",
+    "eslint": "^7.9.0",
     "module-alias": "^2.2.2",
     "prettier": "^2.1.1",
     "rollup": "^2.26.6",

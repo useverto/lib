@@ -23,3 +23,6 @@ jobs:
 
       - name: Check formatting
         run: yarn fmt:check
+
+      - name: Check lint
+        run: yarn lint

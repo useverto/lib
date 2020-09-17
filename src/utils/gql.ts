@@ -2,13 +2,13 @@
 import fetch from "node-fetch";
 
 interface StringMap {
-  [key: string]: string | object | number;
+  [key: string]: string | string[] | Record<string, unknown> | number;
 }
 
 /**
  * Represents a graphql query
  */
-interface GrapqlQuery {
+export interface GrapqlQuery {
   /**
    * The graphql query as a string
    */
@@ -19,28 +19,35 @@ interface GrapqlQuery {
   variables?: string | StringMap;
 }
 
+export interface GraphQLResponse<T> {
+  data: T;
+}
+
 /**
  * Perform a HTTP request to the graphql server.
  * @param graphql The response body as string
  */
 async function request(graphql: string) {
-  var requestOptions = {
+  const requestOptions = {
     method: "POST",
     headers: {
       "content-type": "application/json",
     },
     body: graphql,
   };
-  let res = await fetch("https://arweave.dev/graphql", requestOptions);
+  const res = await fetch("https://arweave.dev/graphql", requestOptions);
   return await res.clone().json();
 }
 
 /**
  * Execute a graphql query with variables.
- * @param param0 A graphql query and its vaiables.
+ * @param payload A graphql query and its variables.
  */
-export async function query({ query, variables }: GrapqlQuery) {
-  var graphql = JSON.stringify({
+export async function query<T>({
+  query,
+  variables,
+}: GrapqlQuery): Promise<GraphQLResponse<T>> {
+  const graphql = JSON.stringify({
     query,
     variables,
   });
@@ -51,8 +58,10 @@ export async function query({ query, variables }: GrapqlQuery) {
  * Execute a simple graphql query without variables.
  * @param query The graphql query to be executed.
  */
-export async function simpleQuery(query: string) {
-  var graphql = JSON.stringify({
+export async function simpleQuery<T>(
+  query: string
+): Promise<GraphQLResponse<T>> {
+  const graphql = JSON.stringify({
     query,
     variables: {},
   });

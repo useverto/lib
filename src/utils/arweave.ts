@@ -18,8 +18,8 @@ export function createGenericClient(): Arweave {
  * @param client An arweave client instance
  * @param id txID of the transaction
  */
-export async function getTxData(client: Arweave, id: string) {
-  let buf: string | Uint8Array = await client.transactions.getData(id, {
+export async function getTxData(client: Arweave, id: string): Promise<string> {
+  const buf: string | Uint8Array = await client.transactions.getData(id, {
     decode: true,
     string: true,
   });
