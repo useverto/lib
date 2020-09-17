@@ -5,8 +5,13 @@
   "license": "MIT",
   "scripts": {
     "fmt": "prettier --write .",
-    "fmt:check": "prettier --check ."
+    "fmt:check": "prettier --check .",
+    "build": "rollup -c"
   },
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "files": ["dist"],
+  "types": "dist/index.d.ts",
   "dependencies": {
     "arweave": "^1.9.1",
     "node-fetch": "^2.6.1"

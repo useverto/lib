@@ -3,6 +3,7 @@
     "strict": true,
     "outDir": "./dist",
     "baseUrl": "./src",
+    "declaration": true,
     "downlevelIteration": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
