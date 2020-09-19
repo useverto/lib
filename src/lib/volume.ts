@@ -45,6 +45,7 @@ export const volume = async (
   orderTxs.map((order) => {
     orders.push({
       amnt: JSON.parse(
+        // @ts-ignore
         order.node.tags.find((tag) => tag.name === "Input").value
       ).qty,
       timestamp: order.node.block.timestamp,

@@ -95,6 +95,7 @@ export const price = async (
           dayPrices.push(
             order.amnt /
               parseFloat(
+                // @ts-ignore
                 confirmationTx[0].node.tags
                   .find((tag) => tag.name === "Received")
                   .value.split(" ")[0]
