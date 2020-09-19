@@ -22,9 +22,65 @@ This repository contains all of the utilities to integrate Verto into your appli
 
 > Important Notice: Verto is in its Alpha stage. If you have a suggestion, idea, or find a bug, please report it! The Verto team will not be held accountable for any funds lost.
 
-## Usage
+## Getting Started
 
-Coming soon...
+### Installation
+
+#### NPM:
+
+```sh
+npm install @verto/lib
+```
+
+#### Yarn:
+
+```sh
+yarn add @verto/lib
+```
+
+#### OpenBits:
+
+> Coming soon!
+
+#### Arweave:
+
+> Coming soon!
+
+### Initialization
+
+```js
+import Verto from "@verto/lib";
+import Arweave from "arweave";
+
+const arweave = Arweave.init();
+const client = new Verto(arweave);
+```
+
+You can alternatively initialize without a preconfigured Arweave Client.
+
+```js
+import Verto from "@verto/lib";
+
+const client = new Verto();
+```
+
+### Usage
+
+#### `get_tokens(contractID?)`
+
+Returns a list of tokens supported by the Verto Exchange Network. You can optionally pass in a specific contract source.
+
+#### `get_trading_posts()`
+
+Returns a list of trading post wallet addresses on the Verto Exchange Network.
+
+#### `price(contractID)`
+
+Returns a JSON object of prices and dates corresponding to each of those prices. Note: You must pass in a valid PST contract ID.
+
+#### `volume(contractID)`
+
+Returns a JSON object of volumes and dates corresponding to each of those volumes. Note: You must pass in a valid PST contract ID.
 
 ## Special Thanks
 
