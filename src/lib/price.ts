@@ -6,7 +6,7 @@ import moment from "moment";
 
 export const price = async (
   token: string
-): Promise<{ prices: number[]; dates: string[] }> => {
+): Promise<{ prices: number[]; dates: string[] } | undefined> => {
   const posts = await getTradingPosts();
 
   const orderTxs = (
@@ -92,14 +92,12 @@ export const price = async (
         ).data.transactions.edges;
 
         if (confirmationTx.length === 1) {
+          const recievedTag = confirmationTx[0].node.tags.find(
+            (tag) => tag.name === "Received"
+          );
+          if (!recievedTag) return;
           dayPrices.push(
-            order.amnt /
-              parseFloat(
-                // @ts-ignore
-                confirmationTx[0].node.tags
-                  .find((tag) => tag.name === "Received")
-                  .value.split(" ")[0]
-              )
+            order.amnt / parseFloat(recievedTag.value.split(" ")[0])
           );
         }
       }

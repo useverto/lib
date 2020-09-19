@@ -17,7 +17,9 @@ export default class Verto {
     return getTradingPosts();
   }
 
-  price(token: string): Promise<{ prices: number[]; dates: string[] }> {
+  price(
+    token: string
+  ): Promise<{ prices: number[]; dates: string[] } | undefined> {
     return price(token);
   }
 
