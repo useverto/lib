@@ -7,7 +7,7 @@
     "fmt": "prettier --write .",
     "fmt:check": "prettier --check .",
     "build": "rollup -c",
-    "test": "rollup -c rollup.test.js && mocha 'build/index.test.js'",
+    "test": "rollup -c rollup.test.js && mocha 'build/index.test.js' --no-timeout",
     "dev": "rollup -cw",
     "lint": "eslint . --ext .ts,.tsx"
   },
