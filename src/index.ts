@@ -1,5 +1,4 @@
 import { getTokens, getTradingPosts, price, volume } from "@lib/index";
-import Arweave from "arweave";
 import { VertoToken } from "types";
 
 export default class Verto {
