@@ -1,2 +1,3 @@
 # .prettierignore
 dist
+build
