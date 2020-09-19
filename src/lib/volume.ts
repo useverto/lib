@@ -4,7 +4,9 @@ import { EdgeQueryResponse } from "types";
 import { maxInt } from "@utils/constants";
 import moment from "moment";
 
-export const volume = async (token: string) => {
+export const volume = async (
+  token: string
+): Promise<{ volume: number[]; dates: string[] }> => {
   const posts = await getTradingPosts();
 
   const orderTxs = (
@@ -39,7 +41,7 @@ export const volume = async (token: string) => {
     })
   ).data.transactions.edges;
 
-  let orders: { amnt: number; timestamp: number }[] = [];
+  const orders: { amnt: number; timestamp: number }[] = [];
   orderTxs.map((order) => {
     orders.push({
       amnt: JSON.parse(
@@ -49,8 +51,8 @@ export const volume = async (token: string) => {
     });
   });
 
-  let volume: number[] = [];
-  let days: string[] = [];
+  const volume: number[] = [];
+  const days: string[] = [];
 
   if (orders.length > 0) {
     let high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
