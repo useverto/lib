@@ -17,4 +17,3 @@ cfg.plugins = [...cfg.plugins, multi()];
 cfg.input = "tests/**/*.test.ts";
 
 export default cfg;
-
