@@ -11,6 +11,13 @@ export interface EdgeQueryResponse {
         owner: {
           address: string;
         };
+        block: {
+          timestamp: number;
+        };
+        tags: {
+          name: string;
+          value: string;
+        }[];
       };
     }[];
   };
