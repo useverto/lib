@@ -1,13 +1,12 @@
 import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
 import { query } from "@utils/gql";
 import tokensQuery from "../queries/tokens.gql";
-import { createGenericClient, getTxData } from "@utils/arweave";
+import { getTxData } from "@utils/arweave";
 import Arweave from "arweave";
 import { VertoToken, EdgeQueryResponse } from "types";
 
-const client: Arweave = createGenericClient();
-
 export const getTokens = async (
+  client: Arweave,
   contractSrc?: string
 ): Promise<VertoToken[]> => {
   if (!contractSrc) contractSrc = exchangeContractSrc;

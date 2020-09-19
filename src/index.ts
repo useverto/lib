@@ -1,9 +1,21 @@
+import Arweave from "arweave";
 import { getTokens, getTradingPosts, price, volume } from "@lib/index";
 import { VertoToken } from "types";
+import { createGenericClient } from "@utils/arweave";
 
 export default class Verto {
-  getTokens(src: string): Promise<VertoToken[]> {
-    return getTokens(src);
+  public arweave!: Arweave;
+
+  constructor(arweave?: Arweave) {
+    if (!arweave) {
+      this.arweave = createGenericClient();
+    } else {
+      this.arweave = arweave;
+    }
+  }
+
+  getTokens(src?: string): Promise<VertoToken[]> {
+    return getTokens(this.arweave, src);
   }
 
   getTradingPosts(): Promise<string[]> {
