@@ -4,7 +4,7 @@ import { EdgeQueryResponse } from "types";
 import { maxInt } from "@utils/constants";
 import moment from "moment";
 
-export const grabPrices = async (
+export const price = async (
   token: string
 ): Promise<{ prices: number[]; dates: string[] }> => {
   const posts = await getTradingPosts();
