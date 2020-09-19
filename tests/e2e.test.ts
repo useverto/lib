@@ -12,7 +12,7 @@ describe("E2E Tests", () => {
     assert(vertoInstance);
     done();
   });
-  it("Test getTokens(<TOKEN>)", (done) => {
+  it("Test getTokens(<CONTRACT>)", (done) => {
     vertoInstance
       .getTokens(TOKEN)
       .then((res) => {
