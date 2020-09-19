@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "name": "lib.verto.exchange",
+  "author": "John Letey <johnletey@gmail.com>",
+  "scripts": {
+    "dev": "next dev",
+    "export": "next build && next export"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.2",
+    "next": "^9.5.3",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.49",
+    "typescript": "^4.0.2"
+  }
+}

@@ -1,4 +1,4 @@
-name: reviewdog
+name: review
 
 on: [pull_request]
 
@@ -14,3 +14,4 @@ jobs:
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
+          eslint_flags: --ext .ts,.tsx
