@@ -1,8 +1,6 @@
 import getFuncs from "../lib/get-funcs";
 
 const Home = ({ funcs }) => {
-  console.log(funcs);
-
   return (
     <div>
       <h1>Coming soon ...</h1>
