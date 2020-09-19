@@ -43,11 +43,10 @@ export const volume = async (
 
   const orders: { amnt: number; timestamp: number }[] = [];
   orderTxs.map((order) => {
+    const inputTag = order.node.tags.find((tag) => tag.name === "Input");
+    if (!inputTag) return;
     orders.push({
-      amnt: JSON.parse(
-        // @ts-ignore
-        order.node.tags.find((tag) => tag.name === "Input").value
-      ).qty,
+      amnt: JSON.parse(inputTag.value).qty,
       timestamp: order.node.block.timestamp,
     });
   });
