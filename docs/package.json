@@ -3,7 +3,8 @@
   "name": "lib.verto.exchange",
   "author": "John Letey <johnletey@gmail.com>",
   "scripts": {
-    "dev": "next dev"
+    "dev": "next dev",
+    "export": "next build && next export"
   },
   "dependencies": {
     "gray-matter": "^4.0.2",
