@@ -4,9 +4,7 @@ import { EdgeQueryResponse } from "types";
 import { maxInt } from "@utils/constants";
 import moment from "moment";
 
-export const latestVolume = async (
-  token: string
-): Promise<number> => {
+export const latestVolume = async (token: string): Promise<number> => {
   const posts = await getTradingPosts();
 
   const orderTxs = (
@@ -51,7 +49,7 @@ export const latestVolume = async (
     });
   });
 
-  let volume: number = 0;
+  let volume = 0;
 
   if (orders.length > 0) {
     const high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
