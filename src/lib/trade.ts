@@ -57,8 +57,7 @@ export const createTrade = async (
     );
 
     for (const [key, value] of Object.entries(tags)) {
-      // @ts-ignore
-      tx.addTag(key, value);
+      tx.addTag(key, value.toString());
     }
 
     return tx;
