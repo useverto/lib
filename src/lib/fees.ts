@@ -54,7 +54,11 @@ export const createTradingPostFeeTx = async (
     "App-Name": "SmartWeaveAction",
     "App-Version": "0.3.0",
     Contract: pst,
-    Input: `{"function":"transfer","target":"${post}","qty":${tradingPostFee}}`,
+    Input: JSON.stringify({
+      function: "transfer",
+      target: post,
+      qty: tradingPostFee,
+    }),
   };
   const tx = await client.createTransaction(
     {
@@ -89,7 +93,11 @@ export const createVRTHolderFeeTx = async (
     "App-Name": "SmartWeaveAction",
     "App-Version": "0.3.0",
     Contract: pst,
-    Input: `{"function":"transfer","target":"${tipReceiver}","qty":${fee}}`,
+    Input: JSON.stringify({
+      function: "transfer",
+      target: tipReceiver,
+      qty: fee,
+    }),
   };
 
   const tx = await client.createTransaction(

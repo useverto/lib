@@ -57,9 +57,11 @@ export const createOrder = async (
       "App-Version": "0.3.0",
       Contract: pst,
       Rate: 1 / rate,
-      Input: `{"function":"transfer","target":"${post}","qty":${Math.ceil(
-        amnt
-      )}}`,
+      Input: JSON.stringify({
+        function: "transfer",
+        target: post,
+        qty: Math.ceil(amnt),
+      }),
     };
 
     const tx = await client.createTransaction(
