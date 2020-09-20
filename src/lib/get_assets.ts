@@ -8,7 +8,7 @@ export const getAssets = async (
 ): Promise<{ id: string; ticker: string; balance: number }[]> => {
   const tokens = await getTokens(client);
 
-  let balances: { id: string; ticker: string; balance: number }[] = [];
+  const balances: { id: string; ticker: string; balance: number }[] = [];
 
   for (let i = 0; i < tokens.length; i++) {
     const contract = await interactRead(
