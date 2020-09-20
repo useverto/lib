@@ -21,7 +21,7 @@ export const getAssets = async (
       }
     );
 
-    if (contract.balance && contract.balance > 0) {
+    if (contract.balance > 0) {
       balances.push({
         id: tokens[i].id,
         ticker: tokens[i].ticker,
