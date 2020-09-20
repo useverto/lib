@@ -74,8 +74,6 @@ export const createOrder = async (
       tx.addTag(key, value.toString());
     }
 
-    //
-
     const tradingPostFeeTx = await createTradingPostFeeTx(
       client,
       keyfile,
@@ -89,8 +87,6 @@ export const createOrder = async (
       amnt,
       pst
     );
-
-    //
 
     return {
       txs: [tx, tradingPostFeeTx, VRTHolderFeeTx],
