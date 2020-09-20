@@ -3,7 +3,7 @@
     <img src="https://raw.githubusercontent.com/useverto/design/master/logo/logo_light.svg" alt="Verto logo (light version)" width="110" />
   </a>
 
-  <h3 align="center">Verto Lib</h3>
+  <h3 align="center">Verto Library</h3>
 
   <p align="center">
     Utilities for the Verto Exchange Network
