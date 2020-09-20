@@ -9,6 +9,7 @@ import {
   getTxFee,
 } from "./fees";
 import { exchangeFee } from "@utils/constants";
+import { getAssets } from "./get_assets";
 
 export const createOrder = async (
   client: Arweave,
@@ -19,6 +20,14 @@ export const createOrder = async (
   post: string,
   rate?: number
 ): Promise<{ txs: Transaction[]; ar: number; pst: number } | undefined> => {
+  const addr = await client.wallets.jwkToAddress(keyfile);
+  const arBalance = parseFloat(
+    client.ar.winstonToAr(await client.wallets.getBalance(addr))
+  );
+  const pstBalance = (await getAssets(client, addr)).find(
+    (balance) => balance.id === pst
+  )?.balance;
+
   if (type.toLowerCase() === "buy") {
     const tags = {
       Exchange: "Verto",
@@ -42,11 +51,16 @@ export const createOrder = async (
     const txFees =
       (await getTxFee(client, tx)) + (await getTxFee(client, exchangeFeeTx));
 
-    return {
-      txs: [tx, exchangeFeeTx],
-      ar: txFees + amnt + amnt * exchangeFee,
-      pst: 0,
-    };
+    const arAmnt = txFees + amnt + amnt * exchangeFee;
+    if (arBalance >= arAmnt) {
+      return {
+        txs: [tx, exchangeFeeTx],
+        ar: arAmnt,
+        pst: 0,
+      };
+    }
+
+    return;
   }
 
   if (type.toLowerCase() === "sell" && rate) {
@@ -90,17 +104,24 @@ export const createOrder = async (
       pst
     );
 
-    return {
-      txs: [tx, tradingPostFeeTx, VRTHolderFeeTx],
-      ar:
-        (await getTxFee(client, tx)) +
-        ((await getTxFee(client, tradingPostFeeTx)) +
-          (await getTxFee(client, VRTHolderFeeTx))),
-      pst:
-        Math.ceil(amnt) +
-        Math.ceil(Math.ceil(amnt) * (await getTradingPostFee(client, post))) +
-        Math.ceil(Math.ceil(amnt) * exchangeFee),
-    };
+    const arAmnt =
+      (await getTxFee(client, tx)) +
+      ((await getTxFee(client, tradingPostFeeTx)) +
+        (await getTxFee(client, VRTHolderFeeTx)));
+    const pstAmnt =
+      Math.ceil(amnt) +
+      Math.ceil(Math.ceil(amnt) * (await getTradingPostFee(client, post))) +
+      Math.ceil(Math.ceil(amnt) * exchangeFee);
+
+    if (arBalance >= arAmnt && pstBalance && pstBalance >= pstAmnt) {
+      return {
+        txs: [tx, tradingPostFeeTx, VRTHolderFeeTx],
+        ar: arAmnt,
+        pst: pstAmnt,
+      };
+    }
+
+    return;
   }
 
   return;
