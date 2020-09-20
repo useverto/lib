@@ -68,7 +68,7 @@ const client = new Verto();
 
 #### `getAssets(address)`
 
-Returns a list of balances that the given address has in tokens supported by the Verto Exchange Network.
+Returns a list of profit sharing token balances, which are supported by the Verto Exchange Network, for a given wallet address.
 
 #### `getTokens(contractID?)`
 
