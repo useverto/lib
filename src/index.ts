@@ -1,6 +1,7 @@
 import Arweave from "arweave";
 import {
   createOrder,
+  getAssets,
   getTokens,
   getTradingPosts,
   price,
@@ -48,6 +49,12 @@ export default class Verto {
     }
 
     return new Promise(() => undefined);
+  }
+
+  getAssets(
+    addr: string
+  ): Promise<{ id: string; ticker: string; balance: number }[]> {
+    return getAssets(this.arweave, addr);
   }
 
   getTokens(src?: string): Promise<VertoToken[]> {
