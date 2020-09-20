@@ -66,11 +66,11 @@ const client = new Verto();
 
 ### Usage
 
-#### `get_tokens(contractID?)`
+#### `getTokens(contractID?)`
 
 Returns a list of tokens supported by the Verto Exchange Network. You can optionally pass in a specific contract source.
 
-#### `get_trading_posts()`
+#### `getTradingPosts()`
 
 Returns a list of trading post wallet addresses on the Verto Exchange Network.
 
