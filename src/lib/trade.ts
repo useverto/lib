@@ -13,11 +13,10 @@ export const getFee = async (
   client: Arweave,
   tx: Transaction
 ): Promise<number> => {
-  let fee, txSize, recipient;
-
-  txSize = parseFloat(tx.data_size);
-  recipient = tx.target;
-  fee = await client.transactions.getPrice(txSize, recipient);
+  const fee: string = await client.transactions.getPrice(
+    parseFloat(tx.data_size),
+    tx.target
+  );
 
   return parseFloat(client.ar.winstonToAr(fee));
 };
