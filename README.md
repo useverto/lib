@@ -64,6 +64,15 @@ import Verto from "@verto/lib";
 const client = new Verto();
 ```
 
+If you are using the trade functions, you will need to intialise with a valid Arweave keyfile:
+
+```js
+import Verto from "@verto/lib";
+import keyfile from "./arweave.json";
+
+const client = new Verto(keyfile);
+```
+
 ### Usage
 
 #### `getAssets(address)`
@@ -85,6 +94,32 @@ Returns a JSON object of prices and dates corresponding to each of those prices.
 #### `volume(contractID)`
 
 Returns a JSON object of volumes and dates corresponding to each of those volumes. Note: You must pass in a valid PST contract ID.
+
+#### `createOrder(orderType, amount, pstContractID, tradingPost, rate?)`
+
+Returns a list of transactions & AR/PST prices for initiating the trades.
+
+It also validates to ensure the wallet associated with the keyfile, has enough AR/PST amounts to make the trade.
+
+- `orderType`
+  - "buy" or "sell"
+  - Type: string
+- `amount`
+  - The amount of currency you are inputting. Note: If you are selling, the amount must be an integer.
+  - Type: number
+- `pstContractID`
+  - The PST you are looking to buy, or the PST you are selling.
+  - Type: string
+- `tradingPost`
+  - The wallet address of the trading post you are using.
+  - Type: string
+- `rate?`
+  - The rate (in units of AR/PST) that you wish to sell at. Note: This field is only necessary if you are selling.
+  - Type: number
+
+#### `sendOrder(txs)`
+
+Accepts an array of Arweave transactions and subsequently signs & sends each using the configured keyfile.
 
 ## Special Thanks
 
