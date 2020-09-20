@@ -25,7 +25,7 @@ const getTradingPostFee = async (
     ).toString()
   );
 
-  return config["tradeFee"];
+  return config.tradeFee;
 };
 
 export const getTxFee = async (
