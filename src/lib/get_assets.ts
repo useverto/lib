@@ -30,5 +30,9 @@ export const getAssets = async (
     }
   }
 
+  balances.sort((a, b) => {
+    return b.balance - a.balance;
+  });
+
   return balances;
 };
