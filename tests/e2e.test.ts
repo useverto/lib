@@ -1,8 +1,9 @@
 import Verto from "../src";
 import { assert } from "chai";
 
-// Assign a token; Just for testing
+// Assign a token/address; Just for testing
 const TOKEN = "usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A";
+const ADDR = "aLemOhg9OGovn-0o4cOCbueiHT9VgdYnpJpq7NgMA1A";
 
 let vertoInstance: Verto;
 
@@ -11,6 +12,15 @@ describe("E2E Tests", () => {
     vertoInstance = new Verto();
     assert(vertoInstance);
     done();
+  });
+  it("Test getAssets(<ADDR>)", (done) => {
+    vertoInstance
+      .getAssets(ADDR)
+      .then((res) => {
+        assert(res);
+        done();
+      })
+      .catch(done);
   });
   it("Test getTokens(<CONTRACT>)", (done) => {
     vertoInstance
