@@ -40,7 +40,9 @@ yarn add @verto/lib
 
 #### OpenBits:
 
-> Coming soon!
+```sh
+openbits install @verto/lib@0.1.0-alpha
+```
 
 #### Arweave:
 
