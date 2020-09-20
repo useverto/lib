@@ -1,17 +1,53 @@
 import Arweave from "arweave";
-import { getTokens, getTradingPosts, price, volume } from "@lib/index";
+import {
+  createOrder,
+  getTokens,
+  getTradingPosts,
+  price,
+  sendOrder,
+  volume,
+} from "@lib/index";
 import { VertoToken } from "types";
 import { createGenericClient } from "@utils/arweave";
+import { JWKInterface } from "arweave/node/lib/wallet";
+import Transaction from "arweave/node/lib/transaction";
 
 export default class Verto {
   public arweave!: Arweave;
+  public keyfile!: JWKInterface | undefined;
 
-  constructor(arweave?: Arweave) {
+  constructor(keyfile?: JWKInterface, arweave?: Arweave) {
     if (!arweave) {
       this.arweave = createGenericClient();
     } else {
       this.arweave = arweave;
     }
+
+    if (keyfile) {
+      this.keyfile = keyfile;
+    }
+  }
+
+  createOrder(
+    type: string,
+    amnt: number,
+    pst: string,
+    post: string,
+    rate?: number
+  ): Promise<{ txs: Transaction[]; ar: number; pst: number } | undefined> {
+    if (this.keyfile) {
+      return createOrder(
+        this.arweave,
+        this.keyfile,
+        type,
+        amnt,
+        pst,
+        post,
+        rate
+      );
+    }
+
+    return new Promise(() => undefined);
   }
 
   getTokens(src?: string): Promise<VertoToken[]> {
@@ -26,6 +62,16 @@ export default class Verto {
     token: string
   ): Promise<{ prices: number[]; dates: string[] } | undefined> {
     return price(token);
+  }
+
+  sendOrder(txs: Transaction[]): Promise<void> {
+    if (this.keyfile) {
+      return sendOrder(this.arweave, this.keyfile, txs);
+    }
+
+    return new Promise(() => {
+      //
+    });
   }
 
   volume(token: string): Promise<{ volume: number[]; dates: string[] }> {
