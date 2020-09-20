@@ -67,8 +67,13 @@ export const createTrade = async (
   return;
 };
 
-export const sendTrade = async () => {
-  // TODO
+export const sendTrade = async (
+  client: Arweave,
+  keyfile: JWKInterface,
+  tx: Transaction
+): Promise<void> => {
+  await client.transactions.sign(tx, keyfile);
+  await client.transactions.post(tx);
 };
 
 export const getFee = async (
