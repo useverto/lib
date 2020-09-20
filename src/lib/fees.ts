@@ -11,7 +11,7 @@ import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
 import genesisQuery from "../queries/genesis.gql";
 
-const createExchangeFeeTx = async (
+export const createExchangeFeeTx = async (
   client: Arweave,
   keyfile: JWKInterface,
   amnt: number
@@ -37,7 +37,7 @@ const createExchangeFeeTx = async (
   return tx;
 };
 
-const createTradingPostFeeTx = async (
+export const createTradingPostFeeTx = async (
   client: Arweave,
   keyfile: JWKInterface,
   amnt: number,
@@ -71,7 +71,7 @@ const createTradingPostFeeTx = async (
   return tx;
 };
 
-const createVRTHolderFeeTx = async (
+export const createVRTHolderFeeTx = async (
   client: Arweave,
   keyfile: JWKInterface,
   amnt: number,
@@ -107,7 +107,7 @@ const createVRTHolderFeeTx = async (
   return tx;
 };
 
-const getTradingPostFee = async (
+export const getTradingPostFee = async (
   client: Arweave,
   post: string
 ): Promise<number> => {

@@ -1,8 +1,16 @@
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
+import {
+  createExchangeFeeTx,
+  createTradingPostFeeTx,
+  createVRTHolderFeeTx,
+  getTradingPostFee,
+  getTxFee,
+} from "./fees";
+import { exchangeFee } from "@utils/constants";
 
-export const createTrade = async (
+export const createOrder = async (
   client: Arweave,
   keyfile: JWKInterface,
   type: string,
@@ -10,9 +18,7 @@ export const createTrade = async (
   pst: string,
   post: string,
   rate?: number
-): Promise<Transaction | undefined> => {
-  // TODO(@johnletey): Add fee txs!!!
-
+): Promise<{ txs: Transaction[]; ar: number; pst: number } | undefined> => {
   if (type.toLowerCase() === "buy") {
     const tags = {
       Exchange: "Verto",
@@ -32,7 +38,15 @@ export const createTrade = async (
       tx.addTag(key, value);
     }
 
-    return tx;
+    const exchangeFeeTx = await createExchangeFeeTx(client, keyfile, amnt);
+    const txFees =
+      (await getTxFee(client, tx)) + (await getTxFee(client, exchangeFeeTx));
+
+    return {
+      txs: [tx, exchangeFeeTx],
+      ar: txFees + amnt + amnt * exchangeFee,
+      pst: 0,
+    };
   }
 
   if (type.toLowerCase() === "sell" && rate) {
@@ -60,17 +74,47 @@ export const createTrade = async (
       tx.addTag(key, value.toString());
     }
 
-    return tx;
+    //
+
+    const tradingPostFeeTx = await createTradingPostFeeTx(
+      client,
+      keyfile,
+      amnt,
+      pst,
+      post
+    );
+    const VRTHolderFeeTx = await createVRTHolderFeeTx(
+      client,
+      keyfile,
+      amnt,
+      pst
+    );
+
+    //
+
+    return {
+      txs: [tx, tradingPostFeeTx, VRTHolderFeeTx],
+      ar:
+        (await getTxFee(client, tx)) +
+        ((await getTxFee(client, tradingPostFeeTx)) +
+          (await getTxFee(client, VRTHolderFeeTx))),
+      pst:
+        Math.ceil(amnt) +
+        Math.ceil(Math.ceil(amnt) * (await getTradingPostFee(client, post))) +
+        Math.ceil(Math.ceil(amnt) * exchangeFee),
+    };
   }
 
   return;
 };
 
-export const sendTrade = async (
+export const sendOrder = async (
   client: Arweave,
   keyfile: JWKInterface,
-  tx: Transaction
+  txs: Transaction[]
 ): Promise<void> => {
-  await client.transactions.sign(tx, keyfile);
-  await client.transactions.post(tx);
+  for (const tx of txs) {
+    await client.transactions.sign(tx, keyfile);
+    await client.transactions.post(tx);
+  }
 };
