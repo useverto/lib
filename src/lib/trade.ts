@@ -74,15 +74,3 @@ export const sendTrade = async (
   await client.transactions.sign(tx, keyfile);
   await client.transactions.post(tx);
 };
-
-export const getFee = async (
-  client: Arweave,
-  tx: Transaction
-): Promise<number> => {
-  const fee: string = await client.transactions.getPrice(
-    parseFloat(tx.data_size),
-    tx.target
-  );
-
-  return parseFloat(client.ar.winstonToAr(fee));
-};
