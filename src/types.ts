@@ -1,5 +1,6 @@
 export interface VertoToken {
   id: string;
+  name: string;
   ticker: string;
 }
 
