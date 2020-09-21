@@ -31,9 +31,7 @@ This repository contains all of the utilities to integrate Verto into your appli
 ```sh
 npm install @verto/lib
 ```
-
-#### Yarn:
-
+or
 ```sh
 yarn add @verto/lib
 ```
@@ -46,7 +44,13 @@ openbits install @verto/lib@0.1.0-alpha
 
 #### Arweave:
 
-> Coming soon!
+```
+npm install https://arweave.net/M6HSQM4quRoewLzgMMD4y8LVwz3Fan13aW_dF89zm58
+```
+or
+```
+yarn add https://arweave.net/M6HSQM4quRoewLzgMMD4y8LVwz3Fan13aW_dF89zm58
+```
 
 ### Initialization
 
