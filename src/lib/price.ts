@@ -1,8 +1,10 @@
 import { getTradingPosts } from "./get_trading_posts";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
+import buyQuery from "../queries/buy.gql";
 import { maxInt } from "@utils/constants";
 import moment from "moment";
+import confirmationQuery from "../queries/confirmation.gql";
 
 export const price = async (
   token: string
@@ -11,32 +13,11 @@ export const price = async (
 
   const orderTxs = (
     await query<EdgeQueryResponse>({
-      query: `
-    query($recipients: [String!]) {
-      transactions(
-        recipients: $recipients
-        tags: [
-          { name: "Exchange", values: "Verto" }
-          { name: "Type", values: "Buy" }
-          { name: "Token", values: "${token}" }
-        ]
-        first: ${maxInt}
-      ) {
-        edges {
-          node {
-            id
-            block {
-              timestamp
-            }
-            quantity {
-              ar
-            }
-          }
-        }
-      }
-    }`,
+      query: buyQuery,
       variables: {
         recipients: posts,
+        token,
+        num: maxInt,
       },
     })
   ).data.transactions.edges;
@@ -66,25 +47,7 @@ export const price = async (
       if (order.timestamp <= high.unix() && order.timestamp >= low.unix()) {
         const confirmationTx = (
           await query<EdgeQueryResponse>({
-            query: `
-          query($txID: [String!]!) {
-            transactions(
-              tags: [
-                { name: "Exchange", values: "Verto" }
-                { name: "Type", values: "Confirmation" }
-                { name: "Match", values: $txID }
-              ]
-            ) {
-              edges {
-                node {
-                  tags {
-                    name
-                    value
-                  }
-                }
-              }
-            }
-          }`,
+            query: confirmationQuery,
             variables: {
               txID: order.id,
             },
