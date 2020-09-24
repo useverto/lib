@@ -19,7 +19,7 @@ export const createOrder = async (
   pst: string,
   post: string,
   rate?: number
-): Promise<{ txs: Transaction[]; ar: number; pst: number } | undefined> => {
+): Promise<{ txs: Transaction[]; ar: number; pst: number } | string> => {
   const addr = await client.wallets.jwkToAddress(keyfile);
   const arBalance = parseFloat(
     client.ar.winstonToAr(await client.wallets.getBalance(addr))
@@ -58,9 +58,9 @@ export const createOrder = async (
         ar: arAmnt,
         pst: 0,
       };
+    } else {
+      return "ar";
     }
-
-    return;
   }
 
   if (type.toLowerCase() === "sell" && rate) {
@@ -113,18 +113,22 @@ export const createOrder = async (
       Math.ceil(Math.ceil(amnt) * (await getTradingPostFee(client, post))) +
       Math.ceil(Math.ceil(amnt) * exchangeFee);
 
-    if (arBalance >= arAmnt && pstBalance && pstBalance >= pstAmnt) {
-      return {
-        txs: [tx, tradingPostFeeTx, VRTHolderFeeTx],
-        ar: arAmnt,
-        pst: pstAmnt,
-      };
+    if (arBalance >= arAmnt) {
+      if (pstBalance && pstBalance >= pstAmnt) {
+        return {
+          txs: [tx, tradingPostFeeTx, VRTHolderFeeTx],
+          ar: arAmnt,
+          pst: pstAmnt,
+        };
+      } else {
+        return "pst";
+      }
+    } else {
+      return "ar";
     }
-
-    return;
   }
 
-  return;
+  return "invalid";
 };
 
 export const sendOrder = async (

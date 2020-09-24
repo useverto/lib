@@ -35,7 +35,7 @@ export default class Verto {
     pst: string,
     post: string,
     rate?: number
-  ): Promise<{ txs: Transaction[]; ar: number; pst: number } | undefined> {
+  ): Promise<{ txs: Transaction[]; ar: number; pst: number } | string> {
     if (this.keyfile) {
       return createOrder(
         this.arweave,
@@ -46,9 +46,9 @@ export default class Verto {
         post,
         rate
       );
+    } else {
+      return new Promise((resolve) => resolve("keyfile"));
     }
-
-    return new Promise(() => undefined);
   }
 
   getAssets(
@@ -71,14 +71,12 @@ export default class Verto {
     return price(token);
   }
 
-  sendOrder(txs: Transaction[]): Promise<void> {
+  sendOrder(txs: Transaction[]): Promise<void | string> {
     if (this.keyfile) {
       return sendOrder(this.arweave, this.keyfile, txs);
+    } else {
+      return new Promise((resolve) => resolve("keyfile"));
     }
-
-    return new Promise(() => {
-      //
-    });
   }
 
   volume(token: string): Promise<{ volume: number[]; dates: string[] }> {
