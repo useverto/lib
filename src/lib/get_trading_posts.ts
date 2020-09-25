@@ -1,7 +1,7 @@
 import { query } from "@utils/gql";
 import genesisQuery from "../queries/genesis.gql";
-import { exchangeWallet } from "@utils/constants";
 import { EdgeQueryResponse } from "types";
+import { exchangeWallet, maxInt } from "@utils/constants";
 
 export const getTradingPosts = async (): Promise<string[]> => {
   const response = (
@@ -9,6 +9,7 @@ export const getTradingPosts = async (): Promise<string[]> => {
       query: genesisQuery,
       variables: {
         recipients: [exchangeWallet],
+        num: maxInt,
       },
     })
   ).data.transactions;

@@ -89,6 +89,10 @@ const client = new Verto(keyfile);
 
 Returns a list of profit sharing token balances, which are supported by the Verto Exchange Network, for a given wallet address.
 
+#### `getConfig(tradingPostAddress)`
+
+Returns the configuration, from the latest genesis transaction, for a specific trading post.
+
 #### `getTokens(contractID?)`
 
 Returns a list of tokens supported by the Verto Exchange Network. You can optionally pass in a specific contract source.
