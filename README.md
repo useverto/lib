@@ -97,6 +97,10 @@ Returns the configuration, from the latest genesis transaction, for a specific t
 
 Returns a list of tokens supported by the Verto Exchange Network. You can optionally pass in a specific contract source.
 
+#### `getTPTokens(tradingPostAddress)`
+
+Returns a list of tokens supported by a specific trading post.
+
 #### `getTradingPosts()`
 
 Returns a list of trading post wallet addresses on the Verto Exchange Network.

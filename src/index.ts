@@ -4,6 +4,7 @@ import {
   getAssets,
   getConfig,
   getTokens,
+  getTPTokens,
   getTradingPosts,
   price,
   sendOrder,
@@ -64,6 +65,10 @@ export default class Verto {
 
   getTokens(src?: string): Promise<VertoToken[]> {
     return getTokens(this.arweave, src);
+  }
+
+  getTPTokens(post: string): Promise<VertoToken[]> {
+    return getTPTokens(this.arweave, post);
   }
 
   getTradingPosts(): Promise<string[]> {

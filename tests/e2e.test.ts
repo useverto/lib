@@ -41,6 +41,15 @@ describe("E2E Tests", () => {
       })
       .catch(done);
   });
+  it("Test getTPTokens(<POST>)", (done) => {
+    vertoInstance
+      .getTPTokens(POST)
+      .then((res) => {
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
   it("Test getTradingPosts()", (done) => {
     vertoInstance
       .getTradingPosts()
