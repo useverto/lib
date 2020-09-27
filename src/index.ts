@@ -55,7 +55,7 @@ export default class Verto {
 
   getAssets(
     addr: string
-  ): Promise<{ id: string; ticker: string; balance: number }[]> {
+  ): Promise<{ id: string; name: string; ticker: string; balance: number }[]> {
     return getAssets(this.arweave, addr);
   }
 

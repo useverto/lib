@@ -5,10 +5,15 @@ import { interactRead } from "smartweave";
 export const getAssets = async (
   client: Arweave,
   addr: string
-): Promise<{ id: string; ticker: string; balance: number }[]> => {
+): Promise<{ id: string; name: string; ticker: string; balance: number }[]> => {
   const tokens = await getTokens(client);
 
-  const balances: { id: string; ticker: string; balance: number }[] = [];
+  const balances: {
+    id: string;
+    name: string;
+    ticker: string;
+    balance: number;
+  }[] = [];
 
   for (let i = 0; i < tokens.length; i++) {
     const contract = await interactRead(
@@ -24,6 +29,7 @@ export const getAssets = async (
     if (contract.balance > 0) {
       balances.push({
         id: tokens[i].id,
+        name: tokens[i].name,
         ticker: tokens[i].ticker,
         balance: contract.balance,
       });
