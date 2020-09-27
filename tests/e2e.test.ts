@@ -59,7 +59,7 @@ describe("E2E Tests", () => {
       })
       .catch(done);
   });
-  it("Test getTransactions()", (done) => {
+  it("Test getTransactions(<ADDR>)", (done) => {
     vertoInstance
       .getTransactions(ADDR)
       .then((res) => {
