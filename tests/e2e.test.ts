@@ -32,6 +32,15 @@ describe("E2E Tests", () => {
       })
       .catch(done);
   });
+  it("Test getExchanges(<ADDR>)", (done) => {
+    vertoInstance
+      .getExchanges(ADDR)
+      .then((res) => {
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
   it("Test getTokens(<CONTRACT>)", (done) => {
     vertoInstance
       .getTokens(TOKEN)

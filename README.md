@@ -93,6 +93,10 @@ Returns a list of profit sharing token balances, which are supported by the Vert
 
 Returns the configuration, from the latest genesis transaction, for a specific trading post.
 
+#### `getExchanges(address)`
+
+Returns a list of the latest five exchanges sent through the Verto Exchange Network, for a given wallet address.
+
 #### `getTokens(contractID?)`
 
 Returns a list of tokens supported by the Verto Exchange Network. You can optionally pass in a specific contract source.

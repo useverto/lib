@@ -1,15 +1,20 @@
-query($txID: [String!]!) {
+query($owners: [String!], $num: Int) {
   transactions(
+    owners: $owners
     tags: [
       { name: "Exchange", values: "Verto" }
-      { name: "Type", values: "Confirmation" }
-      { name: "Match", values: $txID }
+      { name: "Type", values: ["Buy", "Sell"] }
     ]
+    first: $num
   ) {
     edges {
       node {
+        id
         block {
           timestamp
+        }
+        quantity {
+          ar
         }
         tags {
           name
