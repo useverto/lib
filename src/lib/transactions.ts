@@ -64,7 +64,7 @@ export const getTransactions = async (
 
   for (let i = 0; i < txs.length; i++) {
     try {
-      let res = await client.transactions.getStatus(txs[i].id);
+      const res = await client.transactions.getStatus(txs[i].id);
       if (res.status === 200) txs[i].status = "success";
       else txs[i].status = "pending";
     } catch (error) {
