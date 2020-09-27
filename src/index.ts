@@ -6,6 +6,7 @@ import {
   getTokens,
   getTPTokens,
   getTradingPosts,
+  getTransactions,
   price,
   sendOrder,
   volume,
@@ -73,6 +74,20 @@ export default class Verto {
 
   getTradingPosts(): Promise<string[]> {
     return getTradingPosts();
+  }
+
+  getTransactions(
+    addr: string
+  ): Promise<
+    {
+      id: string;
+      amount: number;
+      type: string;
+      status: string;
+      timestamp: number;
+    }[]
+  > {
+    return getTransactions(this.arweave, addr);
   }
 
   price(

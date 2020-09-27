@@ -105,6 +105,10 @@ Returns a list of tokens supported by a specific trading post.
 
 Returns a list of trading post wallet addresses on the Verto Exchange Network.
 
+#### `getTransactions(address)`
+
+Returns a list of the latest five transactions for a given wallet address.
+
 #### `price(contractID)`
 
 Returns a JSON object of prices and dates corresponding to each of those prices. Note: You must pass in a valid PST contract ID.

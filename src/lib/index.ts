@@ -5,4 +5,5 @@ export * from "./get_tp_tokens";
 export * from "./get_trading_posts";
 export * from "./price";
 export * from "./trade";
+export * from "./transactions";
 export * from "./volume";

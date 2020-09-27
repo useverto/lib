@@ -59,6 +59,15 @@ describe("E2E Tests", () => {
       })
       .catch(done);
   });
+  it("Test getTransactions()", (done) => {
+    vertoInstance
+      .getTransactions(ADDR)
+      .then((res) => {
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
   it("Test price(<TOKEN>)", (done) => {
     vertoInstance
       .price(TOKEN)
