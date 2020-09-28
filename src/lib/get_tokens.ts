@@ -1,4 +1,4 @@
-import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
+import { exchangeContractSrc, exchangeWallet, maxInt } from "@utils/constants";
 import { query } from "@utils/gql";
 import tokensQuery from "../queries/tokens.gql";
 import { getTxData } from "@utils/arweave";
@@ -16,6 +16,7 @@ export const getTokens = async (
       variables: {
         owners: [exchangeWallet],
         contractSrc,
+        num: maxInt,
       },
     })
   ).data.transactions.edges;
