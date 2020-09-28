@@ -1,5 +1,9 @@
-query($recipients: [String!], $owners: [String!]) {
-  transactions(recipients: $recipients, owners: $owners) {
+query($recipients: [String!], $owners: [String!], $block: Int) {
+  transactions(
+    recipients: $recipients
+    owners: $owners
+    block: { max: $block }
+  ) {
     edges {
       node {
         id

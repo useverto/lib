@@ -23,11 +23,13 @@ export const getTransactions = async (
     timestamp: number;
   }[] = [];
 
+  const currentHeight = (await client.network.getInfo()).height;
   const outTxs = (
     await query<EdgeQueryResponse>({
       query: txsQuery,
       variables: {
         owners: [addr],
+        block: currentHeight,
       },
     })
   ).data.transactions.edges;
@@ -36,6 +38,7 @@ export const getTransactions = async (
       query: txsQuery,
       variables: {
         recipients: [addr],
+        block: currentHeight,
       },
     })
   ).data.transactions.edges;
