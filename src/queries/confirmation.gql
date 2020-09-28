@@ -1,0 +1,21 @@
+query($txID: [String!]!) {
+  transactions(
+    tags: [
+      { name: "Exchange", values: "Verto" }
+      { name: "Type", values: "Confirmation" }
+      { name: "Match", values: $txID }
+    ]
+  ) {
+    edges {
+      node {
+        block {
+          timestamp
+        }
+        tags {
+          name
+          value
+        }
+      }
+    }
+  }
+}

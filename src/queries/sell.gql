@@ -1,0 +1,23 @@
+query($recipients: [String!], $token: [String!]!, $num: Int) {
+  transactions(
+    recipients: $recipients
+    tags: [
+      { name: "Exchange", values: "Verto" }
+      { name: "Type", values: "Sell" }
+      { name: "Contract", values: $token }
+    ]
+    first: $num
+  ) {
+    edges {
+      node {
+        block {
+          timestamp
+        }
+        tags {
+          name
+          value
+        }
+      }
+    }
+  }
+}

@@ -3,7 +3,7 @@
     <img src="https://raw.githubusercontent.com/useverto/design/master/logo/logo_light.svg" alt="Verto logo (light version)" width="110" />
   </a>
 
-  <h3 align="center">Verto Lib</h3>
+  <h3 align="center">Verto Library</h3>
 
   <p align="center">
     Utilities for the Verto Exchange Network
@@ -32,7 +32,7 @@ This repository contains all of the utilities to integrate Verto into your appli
 npm install @verto/lib
 ```
 
-#### Yarn:
+or
 
 ```sh
 yarn add @verto/lib
@@ -40,11 +40,21 @@ yarn add @verto/lib
 
 #### OpenBits:
 
-> Coming soon!
+```sh
+openbits install @verto/lib@0.1.0-alpha
+```
 
 #### Arweave:
 
-> Coming soon!
+```
+npm install https://arweave.net/i2OhMY2iGCHSj9K7aA8_CP0quG3EoO5VGVd9pv7uu3c
+```
+
+or
+
+```
+yarn add https://arweave.net/i2OhMY2iGCHSj9K7aA8_CP0quG3EoO5VGVd9pv7uu3c
+```
 
 ### Initialization
 
@@ -64,15 +74,44 @@ import Verto from "@verto/lib";
 const client = new Verto();
 ```
 
+If you are using the trade functions, you will need to intialise with a valid Arweave keyfile:
+
+```js
+import Verto from "@verto/lib";
+import keyfile from "./arweave.json";
+
+const client = new Verto(keyfile);
+```
+
 ### Usage
+
+#### `getAssets(address)`
+
+Returns a list of profit sharing token balances, which are supported by the Verto Exchange Network, for a given wallet address.
+
+#### `getConfig(tradingPostAddress)`
+
+Returns the configuration, from the latest genesis transaction, for a specific trading post.
+
+#### `getExchanges(address)`
+
+Returns a list of the latest five exchanges sent through the Verto Exchange Network, for a given wallet address.
 
 #### `getTokens(contractID?)`
 
 Returns a list of tokens supported by the Verto Exchange Network. You can optionally pass in a specific contract source.
 
+#### `getTPTokens(tradingPostAddress)`
+
+Returns a list of tokens supported by a specific trading post.
+
 #### `getTradingPosts()`
 
 Returns a list of trading post wallet addresses on the Verto Exchange Network.
+
+#### `getTransactions(address)`
+
+Returns a list of the latest five transactions for a given wallet address.
 
 #### `price(contractID)`
 
@@ -81,6 +120,32 @@ Returns a JSON object of prices and dates corresponding to each of those prices.
 #### `volume(contractID)`
 
 Returns a JSON object of volumes and dates corresponding to each of those volumes. Note: You must pass in a valid PST contract ID.
+
+#### `createOrder(orderType, amount, pstContractID, tradingPost, rate?)`
+
+Returns a list of transactions & AR/PST prices for initiating the trades.
+
+It also validates to ensure the wallet associated with the keyfile, has enough AR/PST amounts to make the trade.
+
+- `orderType`
+  - "buy" or "sell"
+  - Type: string
+- `amount`
+  - The amount of currency you are inputting. Note: If you are selling, the amount must be an integer.
+  - Type: number
+- `pstContractID`
+  - The PST you are looking to buy, or the PST you are selling.
+  - Type: string
+- `tradingPost`
+  - The wallet address of the trading post you are using.
+  - Type: string
+- `rate?`
+  - The rate (in units of AR/PST) that you wish to sell at. Note: This field is only necessary if you are selling.
+  - Type: number
+
+#### `sendOrder(txs)`
+
+Accepts an array of Arweave transactions and subsequently signs & sends each using the configured keyfile.
 
 ## Special Thanks
 

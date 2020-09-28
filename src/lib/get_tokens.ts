@@ -31,6 +31,7 @@ export const getTokens = async (
 
     tokens.push({
       id: contractId,
+      name: contractData.name,
       ticker: contractData.ticker,
     });
   }
