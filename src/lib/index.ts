@@ -4,6 +4,7 @@ export * from "./get_config";
 export * from "./get_tokens";
 export * from "./get_tp_tokens";
 export * from "./get_trading_posts";
+export * from "./latest_price";
 export * from "./latest_volume";
 export * from "./price";
 export * from "./trade";
