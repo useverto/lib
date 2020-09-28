@@ -58,7 +58,7 @@ export const price = async (
     });
   });
 
-  const prices: number[] = [];
+  let prices: number[] = [];
   const days: string[] = [];
 
   let high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
@@ -99,5 +99,9 @@ export const price = async (
     high = low;
   }
 
-  return { prices: fillArray(prices.reverse()), dates: days.reverse() };
+  if (!prices.every((price) => isNaN(price))) {
+    prices = fillArray(prices.reverse());
+  }
+
+  return { prices, dates: days.reverse() };
 };
