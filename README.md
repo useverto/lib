@@ -117,9 +117,17 @@ Returns a list of the latest five transactions for a given wallet address.
 
 Returns a JSON object of prices and dates corresponding to each of those prices. Note: You must pass in a valid PST contract ID.
 
+#### `latestPrice(contractID)`
+
+Related to `price()`, returns the price for the current day. Note: You must pass in a valid PST contract ID.
+
 #### `volume(contractID)`
 
 Returns a JSON object of volumes and dates corresponding to each of those volumes. Note: You must pass in a valid PST contract ID.
+
+#### `latestVolume(contractID)`
+
+Related to `volume()`, returns the volume for the current day. Note: You must pass in a valid PST contract ID.
 
 #### `createOrder(orderType, amount, pstContractID, tradingPost, rate?)`
 
