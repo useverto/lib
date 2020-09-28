@@ -48,7 +48,7 @@ export const getExchanges = async (
       const tokenTag = type === "Buy" ? "Token" : "Contract";
       const token = node.tags.find(
         (tag: { name: string; value: string }) => tag.name === tokenTag
-      )?.value!;
+      )?.value;
       const ticker = psts.find((pst) => pst.id === token)?.ticker;
 
       const sent =
@@ -57,7 +57,7 @@ export const getExchanges = async (
           : JSON.parse(
               node.tags.find(
                 (tag: { name: string; value: string }) => tag.name === "Input"
-              )?.value!
+              )?.value || ""
             )["qty"] +
             " " +
             ticker;
