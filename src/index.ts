@@ -8,6 +8,8 @@ import {
   getTPTokens,
   getTradingPosts,
   getTransactions,
+  latestPrice,
+  latestVolume,
   price,
   sendOrder,
   volume,
@@ -105,6 +107,14 @@ export default class Verto {
     }[]
   > {
     return getTransactions(this.arweave, addr);
+  }
+
+  latestPrice(token: string): Promise<number | undefined> {
+    return latestPrice(token);
+  }
+
+  latestVolume(token: string): Promise<number> {
+    return latestVolume(token);
   }
 
   price(
