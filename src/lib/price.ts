@@ -6,6 +6,33 @@ import { maxInt } from "@utils/constants";
 import moment from "moment";
 import confirmationQuery from "../queries/confirmation.gql";
 
+const fillArray = (arr: number[]): number[] => {
+  const index = arr.findIndex((entry) => isNaN(entry));
+  if (index === -1) {
+    return arr;
+  }
+
+  let i = index;
+
+  while (i < arr.length) {
+    if (isNaN(arr[i])) {
+      i++;
+    } else {
+      break;
+    }
+  }
+
+  for (let j = index; j <= i; j++) {
+    if (index === 0) {
+      arr[j] = arr[i];
+    } else {
+      arr[j] = arr[index - 1];
+    }
+  }
+
+  return fillArray(arr);
+};
+
 export const price = async (
   token: string
 ): Promise<{ prices: number[]; dates: string[] } | undefined> => {
@@ -66,15 +93,11 @@ export const price = async (
       }
     }
 
-    if (dayPrices.length === 0) {
-      prices.push(prices[prices.length - 1]);
-    } else {
-      prices.push(dayPrices.reduce((a, b) => a + b, 0) / dayPrices.length);
-    }
+    prices.push(dayPrices.reduce((a, b) => a + b, 0) / dayPrices.length);
     days.push(low.format("MMM DD"));
 
     high = low;
   }
 
-  return { prices: prices.reverse(), dates: days.reverse() };
+  return { prices: fillArray(prices.reverse()), dates: days.reverse() };
 };
