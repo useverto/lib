@@ -1,6 +1,7 @@
 import { getTradingPosts } from "./get_trading_posts";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
+import sellQuery from "../queries/sell.gql";
 import { maxInt } from "@utils/constants";
 import moment from "moment";
 
@@ -9,32 +10,11 @@ export const latestVolume = async (token: string): Promise<number> => {
 
   const orderTxs = (
     await query<EdgeQueryResponse>({
-      query: `
-    query($recipients: [String!]) {
-      transactions(
-        recipients: $recipients
-        tags: [
-          { name: "Exchange", values: "Verto" }
-          { name: "Type", values: "Sell" }
-          { name: "Contract", values: "${token}" }
-        ]
-        first: ${maxInt}
-      ) {
-        edges {
-          node {
-            block {
-              timestamp
-            }
-            tags {
-              name
-              value
-            }
-          }
-        }
-      }
-    }`,
+      query: sellQuery,
       variables: {
         recipients: posts,
+        token,
+        num: maxInt,
       },
     })
   ).data.transactions.edges;
