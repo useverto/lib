@@ -8,7 +8,10 @@ const getBalance = async (client: Arweave, post: string): Promise<number> => {
   );
 };
 
-const getStake = async (client: Arweave, post: string): Promise<number> => {
+export const getPostStake = async (
+  client: Arweave,
+  post: string
+): Promise<number> => {
   const community = new Community(client);
   await community.setCommunityTx(exchangeContractSrc);
 
@@ -38,7 +41,7 @@ export const getReputation = async (
   client: Arweave,
   post: string
 ): Promise<number> => {
-  const stakeWeighted = ((await getStake(client, post)) * 1) / 2,
+  const stakeWeighted = ((await getPostStake(client, post)) * 1) / 2,
     timeStakedWeighted = ((await getTimeStaked(client, post)) * 1) / 3,
     balanceWeighted = ((await getBalance(client, post)) * 1) / 6;
 

@@ -47,13 +47,13 @@ openbits install @verto/lib@0.1.0-alpha
 #### Arweave:
 
 ```
-npm install https://arweave.net/RYYE922qhvHxN_iMr_8xZEKuUCxUdWxsxGYeMgjhOJw
+npm install https://arweave.net/WqCRe8juziw7w_5xulhvexiPuQgDph-TO1FX2nsoLB8
 ```
 
 or
 
 ```
-yarn add https://arweave.net/RYYE922qhvHxN_iMr_8xZEKuUCxUdWxsxGYeMgjhOJw
+yarn add https://arweave.net/WqCRe8juziw7w_5xulhvexiPuQgDph-TO1FX2nsoLB8
 ```
 
 ### Initialization
@@ -96,6 +96,10 @@ Returns the configuration, from the latest genesis transaction, for a specific t
 #### `getExchanges(address)`
 
 Returns a list of the latest five exchanges sent through the Verto Exchange Network, for a given wallet address.
+
+#### `getPostStake(tradingPostAddress)`
+
+Returns the stake of a specific trading post.
 
 #### `getReputation(tradingPostAddress)`
 

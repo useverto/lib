@@ -4,6 +4,7 @@ import {
   getAssets,
   getConfig,
   getExchanges,
+  getPostStake,
   getReputation,
   getTokens,
   getTPTokens,
@@ -83,6 +84,10 @@ export default class Verto {
     }[]
   > {
     return getExchanges(this.arweave, addr);
+  }
+
+  getPostStake(post: string): Promise<number> {
+    return getPostStake(this.arweave, post);
   }
 
   getReputation(post: string): Promise<number> {
