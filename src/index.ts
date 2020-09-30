@@ -4,6 +4,7 @@ import {
   getAssets,
   getConfig,
   getExchanges,
+  getReputation,
   getTokens,
   getTPTokens,
   getTradingPosts,
@@ -11,6 +12,7 @@ import {
   latestPrice,
   latestVolume,
   price,
+  recommendPost,
   sendOrder,
   volume,
 } from "@lib/index";
@@ -83,6 +85,10 @@ export default class Verto {
     return getExchanges(this.arweave, addr);
   }
 
+  getReputation(post: string): Promise<number> {
+    return getReputation(this.arweave, post);
+  }
+
   getTokens(src?: string): Promise<VertoToken[]> {
     return getTokens(this.arweave, src);
   }
@@ -121,6 +127,10 @@ export default class Verto {
     token: string
   ): Promise<{ prices: number[]; dates: string[] } | undefined> {
     return price(token);
+  }
+
+  recommendPost(): Promise<string | undefined> {
+    return recommendPost(this.arweave);
   }
 
   sendOrder(txs: Transaction[]): Promise<void | string> {

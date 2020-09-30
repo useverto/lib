@@ -41,6 +41,15 @@ describe("E2E Tests", () => {
       })
       .catch(done);
   });
+  it("Test getReputation(<POST>)", (done) => {
+    vertoInstance
+      .getReputation(POST)
+      .then((res) => {
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
   it("Test getTokens(<CONTRACT>)", (done) => {
     vertoInstance
       .getTokens(TOKEN)
@@ -80,6 +89,15 @@ describe("E2E Tests", () => {
   it("Test price(<TOKEN>)", (done) => {
     vertoInstance
       .price(TOKEN)
+      .then((res) => {
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
+  it("Test recommendPost()", (done) => {
+    vertoInstance
+      .recommendPost()
       .then((res) => {
         assert(res);
         done();
