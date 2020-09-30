@@ -95,6 +95,16 @@ describe("E2E Tests", () => {
       })
       .catch(done);
   });
+  it("Test recommendPost()", (done) => {
+    vertoInstance
+      .recommendPost()
+      .then((res) => {
+        console.log(res);
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
   it("Test volume(<TOKEN>)", (done) => {
     vertoInstance
       .volume(TOKEN)

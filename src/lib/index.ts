@@ -7,6 +7,7 @@ export * from "./get_trading_posts";
 export * from "./latest_price";
 export * from "./latest_volume";
 export * from "./price";
+export * from "./recommend_post";
 export * from "./reputation";
 export * from "./trade";
 export * from "./txs";

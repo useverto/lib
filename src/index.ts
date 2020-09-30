@@ -12,6 +12,7 @@ import {
   latestPrice,
   latestVolume,
   price,
+  recommendPost,
   sendOrder,
   volume,
 } from "@lib/index";
@@ -126,6 +127,10 @@ export default class Verto {
     token: string
   ): Promise<{ prices: number[]; dates: string[] } | undefined> {
     return price(token);
+  }
+
+  recommendPost(): Promise<string | undefined> {
+    return recommendPost(this.arweave);
   }
 
   sendOrder(txs: Transaction[]): Promise<void | string> {
