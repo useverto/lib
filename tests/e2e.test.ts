@@ -41,6 +41,15 @@ describe("E2E Tests", () => {
       })
       .catch(done);
   });
+  it("Test getReputation(<POST>)", (done) => {
+    vertoInstance
+      .getReputation(POST)
+      .then((res) => {
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
   it("Test getTokens(<CONTRACT>)", (done) => {
     vertoInstance
       .getTokens(TOKEN)
