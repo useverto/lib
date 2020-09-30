@@ -119,7 +119,7 @@ Returns a list of the latest five transactions for a given wallet address.
 
 #### `recommendPost()`
 
-Returns a trading post address that was selected using a weighted random based on the trading post reputations.
+Returns a recommended trading post address to trade with. Note: Uses a weighted random on reputations.
 
 #### `price(contractID)`
 
