@@ -99,7 +99,6 @@ describe("E2E Tests", () => {
     vertoInstance
       .recommendPost()
       .then((res) => {
-        console.log(res);
         assert(res);
         done();
       })
