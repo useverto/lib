@@ -97,6 +97,10 @@ Returns the configuration, from the latest genesis transaction, for a specific t
 
 Returns a list of the latest five exchanges sent through the Verto Exchange Network, for a given wallet address.
 
+#### `getReputation(tradingPostAddress)`
+
+Returns the reputation of a specific trading post.
+
 #### `getTokens(contractID?)`
 
 Returns a list of tokens supported by the Verto Exchange Network. You can optionally pass in a specific contract source.
@@ -112,6 +116,10 @@ Returns a list of trading post wallet addresses on the Verto Exchange Network.
 #### `getTransactions(address)`
 
 Returns a list of the latest five transactions for a given wallet address.
+
+#### `recommendPost()`
+
+Returns a trading post address that was selected using a weighted random based on the trading post reputations.
 
 #### `price(contractID)`
 
