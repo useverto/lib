@@ -5,6 +5,7 @@ import exchangesQuery from "../queries/exchanges.gql";
 import { getTokens } from "./get_tokens";
 import moment from "moment";
 import confirmationQuery from "../queries/confirmation.gql";
+import cancelQuery from "../queries/cancel.gql";
 
 export const getExchanges = async (
   client: Arweave,
@@ -110,6 +111,20 @@ export const getExchanges = async (
       if (receivedTag) {
         exchanges[i].received = receivedTag.value;
       }
+    }
+
+    const cancel = (
+      await query<EdgeQueryResponse>({
+        query: cancelQuery,
+        variables: {
+          txID: exchanges[i].id,
+        },
+      })
+    ).data.transactions.edges;
+
+    if (cancel[0]) {
+      exchanges[i].status = "failed";
+      exchanges[i].duration = "cancelled";
     }
   }
 

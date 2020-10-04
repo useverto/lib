@@ -1,0 +1,15 @@
+query($txID: [String!]!) {
+  transactions(
+    tags: [
+      { name: "Exchange", values: "Verto" }
+      { name: "Type", values: "Cancel" }
+      { name: "Order", values: $txID }
+    ]
+  ) {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}
