@@ -1,3 +1,4 @@
+import Arweave from "arweave";
 import { getTradingPosts } from "./get_trading_posts";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
@@ -5,8 +6,11 @@ import sellQuery from "../queries/sell.gql";
 import { maxInt } from "@utils/constants";
 import moment from "moment";
 
-export const latestVolume = async (token: string): Promise<number> => {
-  const posts = await getTradingPosts();
+export const latestVolume = async (
+  client: Arweave,
+  token: string
+): Promise<number> => {
+  const posts = await getTradingPosts(client);
 
   const orderTxs = (
     await query<EdgeQueryResponse>({

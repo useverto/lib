@@ -103,7 +103,7 @@ export default class Verto {
   }
 
   getTradingPosts(): Promise<string[]> {
-    return getTradingPosts();
+    return getTradingPosts(this.arweave);
   }
 
   getTransactions(
@@ -121,17 +121,17 @@ export default class Verto {
   }
 
   latestPrice(token: string): Promise<number | undefined> {
-    return latestPrice(token);
+    return latestPrice(this.arweave, token);
   }
 
   latestVolume(token: string): Promise<number> {
-    return latestVolume(token);
+    return latestVolume(this.arweave, token);
   }
 
   price(
     token: string
   ): Promise<{ prices: number[]; dates: string[] } | undefined> {
-    return price(token);
+    return price(this.arweave, token);
   }
 
   recommendPost(): Promise<string | undefined> {
@@ -147,6 +147,6 @@ export default class Verto {
   }
 
   volume(token: string): Promise<{ volume: number[]; dates: string[] }> {
-    return volume(token);
+    return volume(this.arweave, token);
   }
 }

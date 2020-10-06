@@ -1,3 +1,4 @@
+import Arweave from "arweave";
 import { getTradingPosts } from "./get_trading_posts";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
@@ -34,9 +35,10 @@ const fillArray = (arr: number[]): number[] => {
 };
 
 export const price = async (
+  client: Arweave,
   token: string
 ): Promise<{ prices: number[]; dates: string[] } | undefined> => {
-  const posts = await getTradingPosts();
+  const posts = await getTradingPosts(client);
 
   const orderTxs = (
     await query<EdgeQueryResponse>({

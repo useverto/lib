@@ -6,7 +6,7 @@ import { getReputation } from "./reputation";
 export const recommendPost = async (
   client: Arweave
 ): Promise<string | undefined> => {
-  const tradingPosts = await getTradingPosts();
+  const tradingPosts = await getTradingPosts(client);
 
   const reputations: Record<string, number> = {};
   let total = 0;
