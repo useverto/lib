@@ -12,9 +12,11 @@ export const getTPTokens = async (
   const tokens: VertoToken[] = await getTokens(client);
   // @ts-ignore
   config.blockedTokens.map((token: string) => {
-    const index = tokens.indexOf(
-      tokens.find((element) => element.id === token)!
-    );
+    const element = tokens.find((element) => element.id === token);
+    let index = -1;
+    if (element) {
+      index = tokens.indexOf(element);
+    }
     if (index > -1) {
       tokens.splice(index, 1);
     }
