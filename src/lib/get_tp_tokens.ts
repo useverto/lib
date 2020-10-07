@@ -1,7 +1,7 @@
 import Arweave from "arweave";
 import { getConfig } from "./get_config";
 import { VertoToken } from "types";
-import { getTxData } from "@utils/arweave";
+import { getTokens } from "./get_tokens";
 
 export const getTPTokens = async (
   client: Arweave,
@@ -9,18 +9,18 @@ export const getTPTokens = async (
 ): Promise<VertoToken[]> => {
   const config = await getConfig(client, post);
 
-  const tokens: VertoToken[] = [];
+  const tokens: VertoToken[] = await getTokens(client);
   // @ts-ignore
-  for (const id of config.acceptedTokens) {
-    const rawContractData = await getTxData(client, id);
-    const contractData = JSON.parse(rawContractData);
-
-    tokens.push({
-      id,
-      name: contractData.name,
-      ticker: contractData.ticker,
-    });
-  }
+  config.blockedTokens.map((token: string) => {
+    const element = tokens.find((element) => element.id === token);
+    let index = -1;
+    if (element) {
+      index = tokens.indexOf(element);
+    }
+    if (index > -1) {
+      tokens.splice(index, 1);
+    }
+  });
 
   return tokens;
 };
