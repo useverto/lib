@@ -20,12 +20,14 @@ export const getTradingPosts = async (client: Arweave): Promise<string[]> => {
   ).data.transactions;
   const gensisTxs = response.edges;
   const posts: string[] = [];
+  const encountered: string[] = [];
   for (const tx of gensisTxs) {
-    if (!posts.find((addr) => addr === tx.node.owner.address)) {
+    if (!encountered.find((addr) => addr === tx.node.owner.address)) {
       const stake = await community.getVaultBalance(tx.node.owner.address);
       if (stake > 0) {
         posts.push(tx.node.owner.address);
       }
+      encountered.push(tx.node.owner.address);
     }
   }
 
