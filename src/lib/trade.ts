@@ -10,6 +10,7 @@ import {
   getTxFee,
 } from "./fees";
 import { exchangeFee } from "@utils/constants";
+import { getConfig } from "./get_config";
 
 export const createOrder = async (
   client: Arweave,
@@ -20,20 +21,21 @@ export const createOrder = async (
   post: string,
   rate?: number
 ): Promise<{ txs: Transaction[]; ar: number; pst: number } | string> => {
+  const config = getConfig(client, post);
+  // @ts-ignore
+  if (pst in config.blockedList) {
+    return "token";
+  }
+
   const addr = await client.wallets.jwkToAddress(keyfile);
   const arBalance = parseFloat(
     client.ar.winstonToAr(await client.wallets.getBalance(addr))
   );
   const pstBalance = (
-    await interactRead(
-      client,
-      await client.wallets.generate(),
-      pst,
-      {
-        target: addr,
-        function: "unlockedBalance",
-      }
-    )
+    await interactRead(client, await client.wallets.generate(), pst, {
+      target: addr,
+      function: "unlockedBalance",
+    })
   ).balance;
 
   if (type.toLowerCase() === "buy") {
