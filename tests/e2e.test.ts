@@ -14,6 +14,15 @@ describe("E2E Tests", () => {
     assert(vertoInstance);
     done();
   });
+  it("Test arVolume()", (done) => {
+    vertoInstance
+      .arVolume()
+      .then((res) => {
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
   it("Test getAssets(<ADDR>)", (done) => {
     vertoInstance
       .getAssets(ADDR)

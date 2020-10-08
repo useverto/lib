@@ -1,5 +1,6 @@
 import Arweave from "arweave";
 import {
+  arVolume,
   createOrder,
   getAssets,
   getConfig,
@@ -36,6 +37,10 @@ export default class Verto {
     if (keyfile) {
       this.keyfile = keyfile;
     }
+  }
+
+  arVolume() {
+    return arVolume(this.arweave);
   }
 
   createOrder(
