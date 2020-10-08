@@ -1,6 +1,7 @@
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
+import { getConfig } from "./get_config";
 import { interactRead } from "smartweave";
 import {
   createExchangeFeeTx,
@@ -10,7 +11,6 @@ import {
   getTxFee,
 } from "./fees";
 import { exchangeFee } from "@utils/constants";
-import { getConfig } from "./get_config";
 
 export const createOrder = async (
   client: Arweave,
