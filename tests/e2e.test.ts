@@ -8,7 +8,7 @@ const POST = "WNeEQzI24ZKWslZkQT573JZ8bhatwDVx6XVDrrGbUyk";
 
 let vertoInstance: Verto;
 
-describe("E2E Tests", () => {
+describe("E2E Tests", function() {
   it("Create Verto instance", (done) => {
     vertoInstance = new Verto();
     assert(vertoInstance);
