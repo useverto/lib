@@ -21,7 +21,7 @@ export const createOrder = async (
   post: string,
   rate?: number
 ): Promise<{ txs: Transaction[]; ar: number; pst: number } | string> => {
-  const config = getConfig(client, post);
+  const config = await getConfig(client, post);
   // @ts-ignore
   if (pst in config.blockedTokens) {
     return "token";
