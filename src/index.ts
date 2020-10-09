@@ -23,7 +23,7 @@ import { createGenericClient } from "@utils/arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
 
-globalThis.console.log = (x: any) => x;
+globalThis.console.log = (x: string) => x;
 
 export default class Verto {
   public arweave!: Arweave;
@@ -41,7 +41,7 @@ export default class Verto {
     }
   }
 
-  arVolume() {
+  arVolume(): Promise<{ volume: number[]; dates: string[] }> {
     return arVolume(this.arweave);
   }
 
