@@ -21,10 +21,11 @@ export function createGenericClient(): Arweave {
 export async function getTxData(client: Arweave, id: string): Promise<string> {
   // @ts-ignore
   const isBrowser = process.browser;
-  // @ts-ignore
-  const cache = JSON.parse(localStorage.getItem("arCache")) || {};
 
   if (isBrowser) {
+    // @ts-ignore
+    const cache = JSON.parse(localStorage.getItem("cache")) || {};
+
     if (id in cache) {
       return cache[id];
     }
@@ -36,10 +37,13 @@ export async function getTxData(client: Arweave, id: string): Promise<string> {
   });
 
   if (isBrowser) {
+    // @ts-ignore
+    const cache = JSON.parse(localStorage.getItem("cache")) || {};
+
     cache[id] = buf.toString();
 
     // @ts-ignore
-    localStorage.setItem("arCache", JSON.stringify(cache));
+    localStorage.setItem("cache", JSON.stringify(cache));
   }
 
   return buf.toString();
