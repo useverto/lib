@@ -19,9 +19,36 @@ export function createGenericClient(): Arweave {
  * @param id txID of the transaction
  */
 export async function getTxData(client: Arweave, id: string): Promise<string> {
+  const isBrowser =
+    // @ts-ignore
+    typeof window !== "undefined" && typeof window.document !== "undefined";
+
+  if (isBrowser) {
+    // @ts-ignore
+    const cache = JSON.parse(localStorage.getItem("arCache"));
+
+    if (id in cache) {
+      return cache.id;
+    }
+  }
+
   const buf: string | Uint8Array = await client.transactions.getData(id, {
     decode: true,
     string: true,
   });
+
+  if (isBrowser) {
+    // @ts-ignore
+    const cache = JSON.parse(localStorage.getItem("arCache"));
+    // @ts-ignore
+    localStorage.setItem(
+      "arCache",
+      JSON.parse({
+        ...cache,
+        id: buf.toString(),
+      })
+    );
+  }
+
   return buf.toString();
 }
