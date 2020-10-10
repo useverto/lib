@@ -23,7 +23,11 @@ import { createGenericClient } from "@utils/arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
 
-globalThis.console.log = (x: string) => x;
+// eslint-disable-next-line
+globalThis.console.log = (x: any) => {
+  if (new Error().stack?.includes("smartweave")) return;
+  console.info(x);
+};
 
 export default class Verto {
   public arweave!: Arweave;
