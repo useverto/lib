@@ -6,7 +6,7 @@ import {
   exchangeWallet,
   exchangeContractSrc,
 } from "@utils/constants";
-import Community from "community-js";
+import { selectWeightedHolder } from "@utils/arweave";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
 import genesisQuery from "../queries/genesis.gql";
@@ -81,9 +81,8 @@ export const createVRTHolderFeeTx = async (
   amnt: number,
   pst: string
 ): Promise<Transaction> => {
-  const community = new Community(client);
-  await community.setCommunityTx(exchangeContractSrc);
-  const tipReceiver = await community.selectWeightedHolder();
+  const tipReceiver = await selectWeightedHolder(client, exchangeContractSrc);
+  console.log(tipReceiver);
 
   const fee = Math.ceil(Math.ceil(amnt) * exchangeFee);
 
