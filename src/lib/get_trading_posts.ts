@@ -1,14 +1,11 @@
 import Arweave from "arweave";
-import Community from "community-js";
-import { exchangeContractSrc, exchangeWallet, maxInt } from "@utils/constants";
 import { query } from "@utils/gql";
-import genesisQuery from "../queries/genesis.gql";
 import { EdgeQueryResponse } from "types";
+import genesisQuery from "../queries/genesis.gql";
+import { exchangeWallet, maxInt } from "@utils/constants";
+import { getPostStake } from "./reputation";
 
 export const getTradingPosts = async (client: Arweave): Promise<string[]> => {
-  const community = new Community(client);
-  await community.setCommunityTx(exchangeContractSrc);
-
   const response = (
     await query<EdgeQueryResponse>({
       query: genesisQuery,
@@ -23,7 +20,8 @@ export const getTradingPosts = async (client: Arweave): Promise<string[]> => {
   const encountered: string[] = [];
   for (const tx of gensisTxs) {
     if (!encountered.find((addr) => addr === tx.node.owner.address)) {
-      const stake = await community.getVaultBalance(tx.node.owner.address);
+      const stake = await getPostStake(client, tx.node.owner.address);
+
       if (stake > 0) {
         posts.push(tx.node.owner.address);
       }
