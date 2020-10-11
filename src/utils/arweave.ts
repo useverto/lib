@@ -1,4 +1,5 @@
 import Arweave from "arweave";
+import { updateCache } from "./cache";
 
 /**
  * Utility to create a general Arweave client instance
@@ -36,15 +37,7 @@ export async function getTxData(client: Arweave, id: string): Promise<string> {
     string: true,
   });
 
-  if (isBrowser) {
-    // @ts-ignore
-    const cache = JSON.parse(localStorage.getItem("dataCache")) || {};
-
-    cache[id] = buf.toString();
-
-    // @ts-ignore
-    localStorage.setItem("dataCache", JSON.stringify(cache));
-  }
+  if (isBrowser) updateCache("dataCache", id, buf.toString());
 
   return buf.toString();
 }
