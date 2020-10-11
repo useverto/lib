@@ -1,0 +1,15 @@
+query($contract: [String!]!) {
+  transactions(
+    tags: [
+      { name: "App-Name", values: "SmartWeaveAction" }
+      { name: "Contract", values: $contract }
+    ]
+    first: 1
+  ) {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}

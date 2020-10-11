@@ -24,7 +24,7 @@ export async function getTxData(client: Arweave, id: string): Promise<string> {
 
   if (isBrowser) {
     // @ts-ignore
-    const cache = JSON.parse(localStorage.getItem("cache")) || {};
+    const cache = JSON.parse(localStorage.getItem("dataCache")) || {};
 
     if (id in cache) {
       return cache[id];
@@ -38,12 +38,12 @@ export async function getTxData(client: Arweave, id: string): Promise<string> {
 
   if (isBrowser) {
     // @ts-ignore
-    const cache = JSON.parse(localStorage.getItem("cache")) || {};
+    const cache = JSON.parse(localStorage.getItem("dataCache")) || {};
 
     cache[id] = buf.toString();
 
     // @ts-ignore
-    localStorage.setItem("cache", JSON.stringify(cache));
+    localStorage.setItem("dataCache", JSON.stringify(cache));
   }
 
   return buf.toString();
