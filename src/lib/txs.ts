@@ -46,7 +46,7 @@ export const getTransactions = async (
   outTxs.map(({ node }) => {
     txs.push({
       id: node.id,
-      amount: parseFloat(node.quantity.ar),
+      amount: parseFloat(parseFloat(node.quantity.ar).toFixed(2)),
       type: "out",
       status: "",
       timestamp: node.block.timestamp,
@@ -55,7 +55,7 @@ export const getTransactions = async (
   inTxs.map(({ node }) => {
     txs.push({
       id: node.id,
-      amount: parseFloat(node.quantity.ar),
+      amount: parseFloat(parseFloat(node.quantity.ar).toFixed(2)),
       type: "in",
       status: "",
       timestamp: node.block.timestamp,
