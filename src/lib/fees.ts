@@ -82,7 +82,6 @@ export const createVRTHolderFeeTx = async (
   pst: string
 ): Promise<Transaction> => {
   const tipReceiver = await selectWeightedHolder(client, exchangeContractSrc);
-  console.log(tipReceiver);
 
   const fee = Math.ceil(Math.ceil(amnt) * exchangeFee);
 
