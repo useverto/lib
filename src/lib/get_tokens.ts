@@ -1,7 +1,7 @@
 import { exchangeContractSrc, exchangeWallet, maxInt } from "@utils/constants";
 import { query } from "@utils/gql";
 import tokensQuery from "../queries/tokens.gql";
-import { getTxData } from "@utils/arweave";
+import { getData } from "cacheweave";
 import Arweave from "arweave";
 import { VertoToken, EdgeQueryResponse } from "types";
 
@@ -26,8 +26,8 @@ export const getTokens = async (
 
   const tokens: VertoToken[] = [];
   for (const id of txIDs) {
-    const contractId = await getTxData(client, id);
-    const rawContractData = await getTxData(client, contractId);
+    const contractId = await getData(client, id);
+    const rawContractData = await getData(client, contractId);
     const contractData = JSON.parse(rawContractData);
 
     tokens.push({

@@ -2,7 +2,7 @@ import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
 import { getConfig } from "./get_config";
-import { getContractState } from "@utils/cache";
+import { getContract } from "cacheweave";
 import {
   createExchangeFeeTx,
   createTradingPostFeeTx,
@@ -31,7 +31,7 @@ export const createOrder = async (
   const arBalance = parseFloat(
     client.ar.winstonToAr(await client.wallets.getBalance(addr))
   );
-  const pstBalance = (await getContractState(client, pst)).balances[addr];
+  const pstBalance = (await getContract(client, pst)).balances[addr];
 
   if (type.toLowerCase() === "buy") {
     const tags = {

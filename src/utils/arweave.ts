@@ -1,5 +1,5 @@
 import Arweave from "arweave";
-import { updateCache, getContractState } from "./cache";
+import { getContract } from "cacheweave";
 import { weightedRandom } from "./weighted_random";
 
 /**
@@ -15,39 +15,11 @@ export function createGenericClient(): Arweave {
   });
 }
 
-/**
- * Pull transaction data from Arweave
- * @param client An arweave client instance
- * @param id txID of the transaction
- */
-export async function getTxData(client: Arweave, id: string): Promise<string> {
-  // @ts-ignore
-  const isBrowser = process.browser;
-
-  if (isBrowser) {
-    // @ts-ignore
-    const cache = JSON.parse(localStorage.getItem("dataCache")) || {};
-
-    if (id in cache) {
-      return cache[id];
-    }
-  }
-
-  const buf: string | Uint8Array = await client.transactions.getData(id, {
-    decode: true,
-    string: true,
-  });
-
-  if (isBrowser) updateCache("dataCache", id, buf.toString());
-
-  return buf.toString();
-}
-
 export const selectWeightedHolder = async (
   client: Arweave,
   contract: string
 ): Promise<string | undefined> => {
-  const state = await getContractState(client, contract);
+  const state = await getContract(client, contract);
   const balances = state.balances;
   const vault = state.vault;
 

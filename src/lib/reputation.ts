@@ -1,5 +1,5 @@
 import Arweave from "arweave";
-import { getContractState } from "@utils/cache";
+import { getContract } from "cacheweave";
 import { exchangeContractSrc } from "@utils/constants";
 
 const getBalance = async (client: Arweave, post: string): Promise<number> => {
@@ -12,7 +12,7 @@ export const getPostStake = async (
   client: Arweave,
   post: string
 ): Promise<number> => {
-  const vault = (await getContractState(client, exchangeContractSrc)).vault;
+  const vault = (await getContract(client, exchangeContractSrc)).vault;
 
   let stake = 0;
   if (post in vault) {
@@ -29,7 +29,7 @@ const getTimeStaked = async (
   client: Arweave,
   post: string
 ): Promise<number> => {
-  const vault = (await getContractState(client, exchangeContractSrc)).vault;
+  const vault = (await getContract(client, exchangeContractSrc)).vault;
 
   if (post in vault) {
     const height = (await client.network.getInfo()).height;

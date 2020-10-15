@@ -1,6 +1,6 @@
 import Arweave from "arweave";
 import { getTokens } from "./get_tokens";
-import { getContractState } from "@utils/cache";
+import { getContract } from "cacheweave";
 
 export const getAssets = async (
   client: Arweave,
@@ -16,7 +16,7 @@ export const getAssets = async (
   }[] = [];
 
   for (let i = 0; i < tokens.length; i++) {
-    const contract = await getContractState(client, tokens[i].id);
+    const contract = await getContract(client, tokens[i].id);
 
     if (contract.balances[addr] > 0) {
       balances.push({
