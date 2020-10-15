@@ -9,7 +9,9 @@ import cancelQuery from "../queries/cancel.gql";
 
 export const getExchanges = async (
   client: Arweave,
-  addr: string
+  addr: string,
+  exchangeContract: string,
+  exchangeWallet: string
 ): Promise<
   {
     id: string;
@@ -41,7 +43,7 @@ export const getExchanges = async (
     })
   ).data.transactions.edges;
 
-  const psts = await getTokens(client);
+  const psts = await getTokens(client, exchangeContract, exchangeWallet);
 
   txs.map(({ node }) => {
     const type = node.tags.find((tag) => tag.name === "Type")?.value;

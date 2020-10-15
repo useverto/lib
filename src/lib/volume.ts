@@ -8,9 +8,11 @@ import moment from "moment";
 
 export const volume = async (
   client: Arweave,
-  token: string
+  token: string,
+  exchangeContract: string,
+  exchangeWallet: string
 ): Promise<{ volume: number[]; dates: string[] }> => {
-  const posts = await getTradingPosts(client);
+  const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
 
   const orderTxs = (
     await query<EdgeQueryResponse>({
@@ -59,9 +61,11 @@ export const volume = async (
 };
 
 export const arVolume = async (
-  client: Arweave
+  client: Arweave,
+  exchangeContract: string,
+  exchangeWallet: string
 ): Promise<{ volume: number[]; dates: string[] }> => {
-  const posts = await getTradingPosts(client);
+  const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
 
   const orderTxs = (
     await query<EdgeQueryResponse>({

@@ -1,11 +1,7 @@
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
-import {
-  exchangeFee,
-  exchangeWallet,
-  exchangeContractSrc,
-} from "@utils/constants";
+import { exchangeFee } from "@utils/constants";
 import { selectWeightedHolder } from "@utils/arweave";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
@@ -14,7 +10,8 @@ import genesisQuery from "../queries/genesis.gql";
 export const createExchangeFeeTx = async (
   client: Arweave,
   keyfile: JWKInterface,
-  amnt: number
+  amnt: number,
+  exchangeWallet: string
 ): Promise<Transaction> => {
   const tags = {
     Exchange: "Verto",
@@ -42,10 +39,11 @@ export const createTradingPostFeeTx = async (
   keyfile: JWKInterface,
   amnt: number,
   pst: string,
-  post: string
+  post: string,
+  exchangeWallet: string
 ): Promise<Transaction> => {
   const tradingPostFee = Math.ceil(
-    Math.ceil(amnt) * (await getTradingPostFee(client, post))
+    Math.ceil(amnt) * (await getTradingPostFee(client, post, exchangeWallet))
   );
 
   const tags = {
@@ -79,9 +77,10 @@ export const createVRTHolderFeeTx = async (
   client: Arweave,
   keyfile: JWKInterface,
   amnt: number,
-  pst: string
+  pst: string,
+  exchangeContract: string
 ): Promise<Transaction> => {
-  const tipReceiver = await selectWeightedHolder(client, exchangeContractSrc);
+  const tipReceiver = await selectWeightedHolder(client, exchangeContract);
 
   const fee = Math.ceil(Math.ceil(amnt) * exchangeFee);
 
@@ -115,7 +114,8 @@ export const createVRTHolderFeeTx = async (
 
 export const getTradingPostFee = async (
   client: Arweave,
-  post: string
+  post: string,
+  exchangeWallet: string
 ): Promise<number> => {
   const txID = (
     await query<EdgeQueryResponse>({

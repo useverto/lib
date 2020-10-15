@@ -1,15 +1,17 @@
-import { exchangeContractSrc, exchangeWallet, maxInt } from "@utils/constants";
 import { query } from "@utils/gql";
 import tokensQuery from "../queries/tokens.gql";
+import { maxInt } from "@utils/constants";
 import { getData } from "cacheweave";
 import Arweave from "arweave";
 import { VertoToken, EdgeQueryResponse } from "types";
 
 export const getTokens = async (
   client: Arweave,
+  exchangeContract: string,
+  exchangeWallet: string,
   contractSrc?: string
 ): Promise<VertoToken[]> => {
-  if (!contractSrc) contractSrc = exchangeContractSrc;
+  if (!contractSrc) contractSrc = exchangeContract;
   const tokenTxs = (
     await query<EdgeQueryResponse>({
       query: tokensQuery,
