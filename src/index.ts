@@ -18,6 +18,7 @@ import {
   sendOrder,
   volume,
 } from "@lib/index";
+import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
 import { VertoToken } from "types";
 import { createGenericClient } from "@utils/arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
@@ -50,11 +51,8 @@ export default class Verto {
       ? (this.arweave = createGenericClient())
       : (this.arweave = arweave);
     this.keyfile = keyfile;
-    this.exchangeContract =
-      options?.exchangeContract ||
-      "usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A";
-    this.exchangeWallet =
-      options?.exchangeWallet || "aLemOhg9OGovn-0o4cOCbueiHT9VgdYnpJpq7NgMA1A";
+    this.exchangeContract = options?.exchangeContract || exchangeContractSrc;
+    this.exchangeWallet = options?.exchangeWallet || exchangeWallet;
   }
 
   arVolume(): Promise<{ volume: number[]; dates: string[] }> {
