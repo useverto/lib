@@ -29,6 +29,11 @@ console.log = (x: any) => {
   console.info(x);
 };
 
+interface VertoLibOptions {
+  exchangeContract?: string;
+  exchangeWallet?: string;
+}
+
 export default class Verto {
   public arweave!: Arweave;
   public keyfile!: JWKInterface | undefined;
@@ -39,29 +44,17 @@ export default class Verto {
   constructor(
     keyfile?: JWKInterface,
     arweave?: Arweave,
-    exchangeContract?: string,
-    exchangeWallet?: string
+    options?: VertoLibOptions
   ) {
-    if (!arweave) {
-      this.arweave = createGenericClient();
-    } else {
-      this.arweave = arweave;
-    }
-
-    if (keyfile) {
-      this.keyfile = keyfile;
-    }
-
-    if (exchangeContract) {
-      this.exchangeContract = exchangeContract;
-    } else {
-      this.exchangeContract = "usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A";
-    }
-    if (exchangeWallet) {
-      this.exchangeWallet = exchangeWallet;
-    } else {
-      this.exchangeWallet = "aLemOhg9OGovn-0o4cOCbueiHT9VgdYnpJpq7NgMA1A";
-    }
+    !arweave
+      ? (this.arweave = createGenericClient())
+      : (this.arweave = arweave);
+    this.keyfile = keyfile;
+    this.exchangeContract =
+      options?.exchangeContract ||
+      "usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A";
+    this.exchangeWallet =
+      options?.exchangeWallet || "aLemOhg9OGovn-0o4cOCbueiHT9VgdYnpJpq7NgMA1A";
   }
 
   arVolume(): Promise<{ volume: number[]; dates: string[] }> {
