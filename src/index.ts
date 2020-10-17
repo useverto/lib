@@ -18,6 +18,7 @@ import {
   sendOrder,
   volume,
 } from "@lib/index";
+import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
 import { VertoToken } from "types";
 import { createGenericClient } from "@utils/arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
@@ -29,24 +30,33 @@ console.log = (x: any) => {
   console.info(x);
 };
 
+interface VertoLibOptions {
+  exchangeContract?: string;
+  exchangeWallet?: string;
+}
+
 export default class Verto {
   public arweave!: Arweave;
   public keyfile!: JWKInterface | undefined;
 
-  constructor(keyfile?: JWKInterface, arweave?: Arweave) {
-    if (!arweave) {
-      this.arweave = createGenericClient();
-    } else {
-      this.arweave = arweave;
-    }
+  public exchangeContract!: string;
+  public exchangeWallet!: string;
 
-    if (keyfile) {
-      this.keyfile = keyfile;
-    }
+  constructor(
+    keyfile?: JWKInterface,
+    arweave?: Arweave,
+    options?: VertoLibOptions
+  ) {
+    !arweave
+      ? (this.arweave = createGenericClient())
+      : (this.arweave = arweave);
+    this.keyfile = keyfile;
+    this.exchangeContract = options?.exchangeContract || exchangeContractSrc;
+    this.exchangeWallet = options?.exchangeWallet || exchangeWallet;
   }
 
   arVolume(): Promise<{ volume: number[]; dates: string[] }> {
-    return arVolume(this.arweave);
+    return arVolume(this.arweave, this.exchangeContract, this.exchangeWallet);
   }
 
   createOrder(
@@ -64,6 +74,8 @@ export default class Verto {
         amnt,
         pst,
         post,
+        this.exchangeContract,
+        this.exchangeWallet,
         rate
       );
     } else {
@@ -74,11 +86,16 @@ export default class Verto {
   getAssets(
     addr: string
   ): Promise<{ id: string; name: string; ticker: string; balance: number }[]> {
-    return getAssets(this.arweave, addr);
+    return getAssets(
+      this.arweave,
+      addr,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 
   getConfig(post: string): Promise<JSON | string> {
-    return getConfig(this.arweave, post);
+    return getConfig(this.arweave, post, this.exchangeWallet);
   }
 
   getExchanges(
@@ -94,27 +111,46 @@ export default class Verto {
       duration: string;
     }[]
   > {
-    return getExchanges(this.arweave, addr);
+    return getExchanges(
+      this.arweave,
+      addr,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 
   getPostStake(post: string): Promise<number> {
-    return getPostStake(this.arweave, post);
+    return getPostStake(this.arweave, post, this.exchangeContract);
   }
 
   getReputation(post: string): Promise<number> {
-    return getReputation(this.arweave, post);
+    return getReputation(this.arweave, post, this.exchangeContract);
   }
 
   getTokens(src?: string): Promise<VertoToken[]> {
-    return getTokens(this.arweave, src);
+    return getTokens(
+      this.arweave,
+      this.exchangeContract,
+      this.exchangeWallet,
+      src
+    );
   }
 
   getTPTokens(post: string): Promise<VertoToken[]> {
-    return getTPTokens(this.arweave, post);
+    return getTPTokens(
+      this.arweave,
+      post,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 
   getTradingPosts(): Promise<string[]> {
-    return getTradingPosts(this.arweave);
+    return getTradingPosts(
+      this.arweave,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 
   getTransactions(
@@ -132,21 +168,40 @@ export default class Verto {
   }
 
   latestPrice(token: string): Promise<number | undefined> {
-    return latestPrice(this.arweave, token);
+    return latestPrice(
+      this.arweave,
+      token,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 
   latestVolume(token: string): Promise<number> {
-    return latestVolume(this.arweave, token);
+    return latestVolume(
+      this.arweave,
+      token,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 
   price(
     token: string
   ): Promise<{ prices: number[]; dates: string[] } | undefined> {
-    return price(this.arweave, token);
+    return price(
+      this.arweave,
+      token,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 
   recommendPost(): Promise<string | undefined> {
-    return recommendPost(this.arweave);
+    return recommendPost(
+      this.arweave,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 
   sendOrder(txs: Transaction[]): Promise<void | string> {
@@ -158,6 +213,11 @@ export default class Verto {
   }
 
   volume(token: string): Promise<{ volume: number[]; dates: string[] }> {
-    return volume(this.arweave, token);
+    return volume(
+      this.arweave,
+      token,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 }

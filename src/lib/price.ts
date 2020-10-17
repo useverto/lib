@@ -36,9 +36,11 @@ const fillArray = (arr: number[]): number[] => {
 
 export const price = async (
   client: Arweave,
-  token: string
+  token: string,
+  exchangeContract: string,
+  exchangeWallet: string
 ): Promise<{ prices: number[]; dates: string[] } | undefined> => {
-  const posts = await getTradingPosts(client);
+  const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
 
   const orderTxs = (
     await query<EdgeQueryResponse>({

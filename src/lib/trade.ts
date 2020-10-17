@@ -19,9 +19,11 @@ export const createOrder = async (
   amnt: number,
   pst: string,
   post: string,
+  exchangeContract: string,
+  exchangeWallet: string,
   rate?: number
 ): Promise<{ txs: Transaction[]; ar: number; pst: number } | string> => {
-  const config = await getConfig(client, post);
+  const config = await getConfig(client, post, exchangeWallet);
   // @ts-ignore
   if (pst in config.blockedTokens) {
     return "token";
@@ -52,7 +54,12 @@ export const createOrder = async (
       tx.addTag(key, value);
     }
 
-    const exchangeFeeTx = await createExchangeFeeTx(client, keyfile, amnt);
+    const exchangeFeeTx = await createExchangeFeeTx(
+      client,
+      keyfile,
+      amnt,
+      exchangeWallet
+    );
     const txFees =
       (await getTxFee(client, tx)) + (await getTxFee(client, exchangeFeeTx));
 
@@ -100,13 +107,15 @@ export const createOrder = async (
       keyfile,
       amnt,
       pst,
-      post
+      post,
+      exchangeWallet
     );
     const VRTHolderFeeTx = await createVRTHolderFeeTx(
       client,
       keyfile,
       amnt,
-      pst
+      pst,
+      exchangeContract
     );
 
     const arAmnt =
@@ -115,7 +124,10 @@ export const createOrder = async (
         (await getTxFee(client, VRTHolderFeeTx)));
     const pstAmnt =
       Math.ceil(amnt) +
-      Math.ceil(Math.ceil(amnt) * (await getTradingPostFee(client, post))) +
+      Math.ceil(
+        Math.ceil(amnt) *
+          (await getTradingPostFee(client, post, exchangeWallet))
+      ) +
       Math.ceil(Math.ceil(amnt) * exchangeFee);
 
     if (arBalance >= arAmnt) {

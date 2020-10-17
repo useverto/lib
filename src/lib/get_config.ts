@@ -2,11 +2,11 @@ import Arweave from "arweave";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
 import genesisQuery from "../queries/genesis.gql";
-import { exchangeWallet } from "@utils/constants";
 
 export const getConfig = async (
   client: Arweave,
-  post: string
+  post: string,
+  exchangeWallet: string
 ): Promise<JSON | string> => {
   const genesis = (
     await query<EdgeQueryResponse>({

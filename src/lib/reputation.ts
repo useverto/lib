@@ -1,6 +1,5 @@
 import Arweave from "arweave";
 import { getContract } from "cacheweave";
-import { exchangeContractSrc } from "@utils/constants";
 
 const getBalance = async (client: Arweave, post: string): Promise<number> => {
   return parseFloat(
@@ -10,9 +9,10 @@ const getBalance = async (client: Arweave, post: string): Promise<number> => {
 
 export const getPostStake = async (
   client: Arweave,
-  post: string
+  post: string,
+  exchangeContract: string
 ): Promise<number> => {
-  const vault = (await getContract(client, exchangeContractSrc)).vault;
+  const vault = (await getContract(client, exchangeContract)).vault;
 
   let stake = 0;
   if (post in vault) {
@@ -27,9 +27,10 @@ export const getPostStake = async (
 
 const getTimeStaked = async (
   client: Arweave,
-  post: string
+  post: string,
+  exchangeContract: string
 ): Promise<number> => {
-  const vault = (await getContract(client, exchangeContractSrc)).vault;
+  const vault = (await getContract(client, exchangeContract)).vault;
 
   if (post in vault) {
     const height = (await client.network.getInfo()).height;
@@ -46,10 +47,13 @@ const getTimeStaked = async (
 
 export const getReputation = async (
   client: Arweave,
-  post: string
+  post: string,
+  exchangeContract: string
 ): Promise<number> => {
-  const stakeWeighted = ((await getPostStake(client, post)) * 1) / 2,
-    timeStakedWeighted = ((await getTimeStaked(client, post)) * 1) / 3,
+  const stakeWeighted =
+      ((await getPostStake(client, post, exchangeContract)) * 1) / 2,
+    timeStakedWeighted =
+      ((await getTimeStaked(client, post, exchangeContract)) * 1) / 3,
     balanceWeighted = ((await getBalance(client, post)) * 1) / 6;
 
   return parseFloat(
