@@ -1,0 +1,16 @@
+query($addr: String!, $chain: [String!]!) {
+  transactions(
+    owners: [$addr]
+    tags: [
+      { name: "Application", values: "ArLink" }
+      { name: "Chain", values: $chain }
+    ]
+    first: 1
+  ) {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}
