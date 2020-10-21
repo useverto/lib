@@ -69,10 +69,8 @@ export const createSwap = async (
   );
 
   if (arAmnt) {
-    // Selling AR, Buying ETH
-
     const transfer = await getAddr(addr, chain);
-    if (transfer === "invalid") return "arlink";
+    if (transfer === "invalid") return "arLink";
 
     if (!rate) return "invalid";
     const tags = {
@@ -117,8 +115,19 @@ export const createSwap = async (
       return "ar";
     }
   } else if (ethAmnt) {
-    // Selling ETH, Buying AR
-    return "todo";
+    // @ts-ignore
+    const isBrowser: boolean = typeof window !== "undefined";
+
+    if (isBrowser) {
+      // @ts-ignore
+      if (typeof window.ethereum !== "undefined") {
+        return "todo";
+      } else {
+        return "metamask";
+      }
+    } else {
+      return "browser";
+    }
   } else {
     return "invalid";
   }
