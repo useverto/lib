@@ -162,7 +162,8 @@ export const createSwap = async (
 export const selectWeightedHolder = async (
   client: Arweave,
   contract: string,
-  chain: string
+  chain: string,
+  exchangeWallet: string
 ): Promise<string | undefined> => {
   const state = await getContract(client, contract);
   const balances = state.balances;
@@ -200,5 +201,5 @@ export const selectWeightedHolder = async (
     weighted[addr] = balances[addr] / totalTokens;
   }
 
-  return await getAddr(weightedRandom(weighted)!, chain);
+  return await getAddr(weightedRandom(weighted) || exchangeWallet, chain);
 };
