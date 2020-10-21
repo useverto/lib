@@ -5,6 +5,9 @@ import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
 import { getTradingPostFee, getTxFee } from "./fees";
+import { exchangeFee } from "@utils/constants";
+import { getContract } from "cacheweave";
+import { weightedRandom } from "@utils/weighted_random";
 
 const getAddr = async (addr: string, chain: string): Promise<string> => {
   const txs = (
@@ -62,7 +65,10 @@ export const createSwap = async (
   arAmnt?: number,
   ethAmnt?: number,
   rate?: number
-): Promise<{ txs: Transaction[]; ar: number; chain: number } | string> => {
+): Promise<
+  | { txs: (Transaction | Record<string, string>)[]; ar: number; chain: number }
+  | string
+> => {
   const addr = await client.wallets.jwkToAddress(keyfile);
   const arBalance = parseFloat(
     client.ar.winstonToAr(await client.wallets.getBalance(addr))
@@ -75,7 +81,8 @@ export const createSwap = async (
     if (!rate) return "invalid";
     const tags = {
       Exchange: "Verto",
-      Type: "Buy",
+      Type: "Swap",
+      Chain: chain,
       Rate: rate,
       Transfer: transfer,
     };
@@ -115,20 +122,83 @@ export const createSwap = async (
       return "ar";
     }
   } else if (ethAmnt) {
-    // @ts-ignore
-    const isBrowser: boolean = typeof window !== "undefined";
+    const tags = {
+      Exchange: "Verto",
+      Type: "Swap",
+      Chain: chain,
+      Amount: ethAmnt,
+    };
 
-    if (isBrowser) {
-      // @ts-ignore
-      if (typeof window.ethereum !== "undefined") {
-        return "todo";
-      } else {
-        return "metamask";
-      }
+    const tx = await client.createTransaction(
+      {
+        target: post,
+        data: Math.random().toString().slice(-4),
+      },
+      keyfile
+    );
+
+    for (const [key, value] of Object.entries(tags)) {
+      tx.addTag(key, value.toString());
+    }
+
+    const txFee = await getTxFee(client, tx);
+    const ethTotal = ethAmnt + ethAmnt * exchangeFee;
+
+    if (arBalance >= txFee) {
+      // TODO(@johnletey): Check the user's ETH balance
+      return {
+        txs: [tx /* TODO(@johnletey): Create tx config to smart contract */],
+        ar: txFee,
+        chain: ethTotal,
+      };
     } else {
-      return "browser";
+      return "ar";
     }
   } else {
     return "invalid";
   }
+};
+
+export const selectWeightedHolder = async (
+  client: Arweave,
+  contract: string,
+  chain: string
+): Promise<string | undefined> => {
+  const state = await getContract(client, contract);
+  const balances = state.balances;
+  const vault = state.vault;
+
+  for (const addr of Object.keys(balances)) {
+    const chainAddr = await getAddr(addr, chain);
+    if (chainAddr === "invalid") {
+      delete balances[addr];
+      delete vault[addr];
+    }
+  }
+
+  let totalTokens = 0;
+  for (const addr of Object.keys(balances)) {
+    totalTokens += balances[addr];
+  }
+
+  for (const addr of Object.keys(vault)) {
+    if (!vault[addr].length) continue;
+
+    const vaultBalance = vault[addr]
+      .map((a) => a.balance)
+      .reduce((a, b) => a + b, 0);
+    totalTokens += vaultBalance;
+    if (addr in balances) {
+      balances[addr] += vaultBalance;
+    } else {
+      balances[addr] = vaultBalance;
+    }
+  }
+
+  const weighted: { [addr: string]: number } = {};
+  for (const addr of Object.keys(balances)) {
+    weighted[addr] = balances[addr] / totalTokens;
+  }
+
+  return await getAddr(weightedRandom(weighted)!, chain);
 };
