@@ -159,6 +159,34 @@ export const createSwap = async (
   }
 };
 
+export const sendSwap = async (
+  client: Arweave,
+  keyfile: JWKInterface,
+  txs: (Transaction | Record<string, string>)[]
+): Promise<void> => {
+  for (const tx of txs) {
+    if (tx.id) {
+      // @ts-ignore
+      await client.transactions.sign(tx, keyfile);
+      await client.transactions.post(tx);
+    } else {
+      // @ts-ignore
+      const isBrowser: boolean = typeof window !== "undefined";
+
+      if (isBrowser) {
+        // @ts-ignore
+        if (typeof window.ethereum !== "undefined") {
+          // @ts-ignore
+          await window.ethereum.request({
+            method: "eth_sendTransaction",
+            params: [tx],
+          });
+        }
+      }
+    }
+  }
+};
+
 export const selectWeightedHolder = async (
   client: Arweave,
   contract: string,
