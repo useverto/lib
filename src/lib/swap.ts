@@ -56,7 +56,7 @@ export const createTradingPostFeeTx = async (
   return { tx, fee };
 };
 
-interface Account {
+interface Transfer {
   addr: string;
   amnt: number;
 }
@@ -73,7 +73,7 @@ export const createSwap = async (
   rate?: number
 ): Promise<
   | {
-      txs: (Transaction | Account[])[];
+      txs: (Transaction | Transfer[])[];
       ar: number;
       chain: number;
     }
@@ -186,9 +186,10 @@ export const createSwap = async (
 export const sendSwap = async (
   client: Arweave,
   keyfile: JWKInterface,
-  txs: (Transaction | Record<string, string>)[]
+  txs: (Transaction | Transfer[])[]
 ): Promise<void> => {
   for (const tx of txs) {
+    // @ts-ignore
     if (tx.id) {
       // @ts-ignore
       await client.transactions.sign(tx, keyfile);
@@ -200,11 +201,7 @@ export const sendSwap = async (
       if (isBrowser) {
         // @ts-ignore
         if (typeof window.ethereum !== "undefined") {
-          // @ts-ignore
-          await window.ethereum.request({
-            method: "eth_sendTransaction",
-            params: [tx],
-          });
+          // TODO(@johnletey): Sign and send tx to "distribute" contract
         }
       }
     }
