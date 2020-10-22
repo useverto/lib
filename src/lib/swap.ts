@@ -56,17 +56,27 @@ export const createTradingPostFeeTx = async (
   return { tx, fee };
 };
 
+interface Account {
+  addr: string;
+  amnt: number;
+}
+
 export const createSwap = async (
   client: Arweave,
   keyfile: JWKInterface,
   chain: string,
   post: string,
   exchangeWallet: string,
+  exchangeContract: string,
   arAmnt?: number,
   ethAmnt?: number,
   rate?: number
 ): Promise<
-  | { txs: (Transaction | Record<string, string>)[]; ar: number; chain: number }
+  | {
+      txs: (Transaction | Account[])[];
+      ar: number;
+      chain: number;
+    }
   | string
 > => {
   const addr = await client.wallets.jwkToAddress(keyfile);
@@ -147,7 +157,21 @@ export const createSwap = async (
     if (arBalance >= txFee) {
       // TODO(@johnletey): Check the user's ETH balance
       return {
-        txs: [tx /* TODO(@johnletey): Create tx config to smart contract */],
+        txs: [
+          tx,
+          [
+            { addr: post, amnt: ethAmnt },
+            {
+              addr: await selectWeightedHolder(
+                client,
+                exchangeContract,
+                chain,
+                exchangeWallet
+              ),
+              amnt: ethAmnt * exchangeFee,
+            },
+          ],
+        ],
         ar: txFee,
         chain: ethTotal,
       };
@@ -192,7 +216,7 @@ export const selectWeightedHolder = async (
   contract: string,
   chain: string,
   exchangeWallet: string
-): Promise<string | undefined> => {
+): Promise<string> => {
   const state = await getContract(client, contract);
   const balances = state.balances;
   const vault = state.vault;
