@@ -57,8 +57,8 @@ export const createTradingPostFeeTx = async (
 };
 
 interface Transfer {
-  addr: string;
-  amnt: number;
+  to: string;
+  value: number;
 }
 
 export const createSwap = async (
@@ -73,7 +73,7 @@ export const createSwap = async (
   rate?: number
 ): Promise<
   | {
-      txs: (Transaction | Transfer[])[];
+      txs: (Transaction | Transfer)[];
       ar: number;
       chain: number;
     }
@@ -124,7 +124,7 @@ export const createSwap = async (
 
     if (arBalance >= txFees + arAmnt + tradingPostFee) {
       return {
-        txs: [tx, tradingPostFeeTx],
+        txs: [tradingPostFeeTx, tx],
         ar: txFees + arAmnt + tradingPostFee,
         chain: 0,
       };
@@ -158,19 +158,17 @@ export const createSwap = async (
       // TODO(@johnletey): Check the user's ETH balance
       return {
         txs: [
+          {
+            to: await selectWeightedHolder(
+              client,
+              exchangeContract,
+              chain,
+              exchangeWallet
+            ),
+            value: ethAmnt * exchangeFee,
+          },
+          { to: post, value: ethAmnt },
           tx,
-          [
-            { addr: post, amnt: ethAmnt },
-            {
-              addr: await selectWeightedHolder(
-                client,
-                exchangeContract,
-                chain,
-                exchangeWallet
-              ),
-              amnt: ethAmnt * exchangeFee,
-            },
-          ],
         ],
         ar: txFee,
         chain: ethTotal,
@@ -186,7 +184,7 @@ export const createSwap = async (
 export const sendSwap = async (
   client: Arweave,
   keyfile: JWKInterface,
-  txs: (Transaction | Transfer[])[]
+  txs: (Transaction | Transfer)[]
 ): Promise<void> => {
   for (const tx of txs) {
     // @ts-ignore
@@ -201,7 +199,12 @@ export const sendSwap = async (
       if (isBrowser) {
         // @ts-ignore
         if (typeof window.ethereum !== "undefined") {
-          // TODO(@johnletey): Sign and send tx to "distribute" contract
+          tx.value *= 1e18; // convert ETH to WEI
+          // @ts-ignore
+          await window.ethereum.request({
+            method: "eth_sendTransaction",
+            params: [tx],
+          });
         }
       }
     }
