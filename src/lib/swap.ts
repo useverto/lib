@@ -8,6 +8,7 @@ import { getTradingPostFee, getTxFee } from "./fees";
 import { exchangeFee } from "@utils/constants";
 import { getContract } from "cacheweave";
 import { weightedRandom } from "@utils/weighted_random";
+import { getConfig } from "./get_config";
 
 const getAddr = async (addr: string, chain: string): Promise<string> => {
   const txs = (
@@ -69,7 +70,7 @@ export const createSwap = async (
   exchangeWallet: string,
   exchangeContract: string,
   arAmnt?: number,
-  ethAmnt?: number,
+  chainAmnt?: number,
   rate?: number
 ): Promise<
   | {
@@ -131,12 +132,12 @@ export const createSwap = async (
     } else {
       return "ar";
     }
-  } else if (ethAmnt) {
+  } else if (chainAmnt) {
     const tags = {
       Exchange: "Verto",
       Type: "Swap",
       Chain: chain,
-      Amount: ethAmnt,
+      Amount: chainAmnt,
     };
 
     const tx = await client.createTransaction(
@@ -152,7 +153,7 @@ export const createSwap = async (
     }
 
     const txFee = await getTxFee(client, tx);
-    const ethTotal = ethAmnt + ethAmnt * exchangeFee;
+    const chainTotal = chainAmnt + chainAmnt * exchangeFee;
 
     if (arBalance >= txFee) {
       // TODO(@johnletey): Check the user's ETH balance
@@ -165,13 +166,13 @@ export const createSwap = async (
               chain,
               exchangeWallet
             ),
-            value: ethAmnt * exchangeFee,
+            value: chainAmnt * exchangeFee,
           },
-          { to: post, value: ethAmnt },
+          { to: post, value: chainAmnt },
           tx,
         ],
         ar: txFee,
-        chain: ethTotal,
+        chain: chainTotal,
       };
     } else {
       return "ar";
