@@ -23,7 +23,13 @@ const getAddr = async (addr: string, chain: string): Promise<string> => {
   ).data.transactions.edges;
 
   if (txs.length === 1) {
-    return txs[0].node.tags.find((tag) => tag.name === "Wallet")?.value!;
+    const tag = txs[0].node.tags.find((tag) => tag.name === "Wallet");
+
+    if (tag) {
+      return tag.value;
+    } else {
+      return "invalid";
+    }
   }
 
   return "invalid";

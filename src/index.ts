@@ -91,18 +91,36 @@ export default class Verto {
     arAmnt?: number,
     chainAmnt?: number,
     rate?: number
-  ) {
-    return createSwap(
-      this.arweave,
-      this.keyfile!,
-      chain,
-      post,
-      this.exchangeWallet,
-      this.exchangeContract,
-      arAmnt,
-      chainAmnt,
-      rate
-    );
+  ): Promise<
+    | {
+        txs: (
+          | Transaction
+          | {
+              chain: string;
+              to: string;
+              value: number;
+            }
+        )[];
+        ar: number;
+        chain: number;
+      }
+    | string
+  > {
+    if (this.keyfile) {
+      return createSwap(
+        this.arweave,
+        this.keyfile,
+        chain,
+        post,
+        this.exchangeWallet,
+        this.exchangeContract,
+        arAmnt,
+        chainAmnt,
+        rate
+      );
+    } else {
+      return new Promise((resolve) => resolve("keyfile"));
+    }
   }
 
   getAssets(
@@ -243,8 +261,12 @@ export default class Verto {
           value: number;
         }
     )[]
-  ) {
-    return sendSwap(this.arweave, this.keyfile!, txs);
+  ): Promise<void | string> {
+    if (this.keyfile) {
+      return sendSwap(this.arweave, this.keyfile, txs);
+    } else {
+      return new Promise((resolve) => resolve("keyfile"));
+    }
   }
 
   volume(token: string): Promise<{ volume: number[]; dates: string[] }> {
