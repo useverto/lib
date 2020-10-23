@@ -8,7 +8,6 @@ import { getTradingPostFee, getTxFee } from "./fees";
 import { exchangeFee } from "@utils/constants";
 import { getContract } from "cacheweave";
 import { weightedRandom } from "@utils/weighted_random";
-import { getConfig } from "./get_config";
 
 const getAddr = async (addr: string, chain: string): Promise<string> => {
   const txs = (
