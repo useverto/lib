@@ -8,6 +8,7 @@ import { getTradingPostFee, getTxFee } from "./fees";
 import { exchangeFee } from "@utils/constants";
 import { getContract } from "cacheweave";
 import { weightedRandom } from "@utils/weighted_random";
+import { getConfig } from "./get_config";
 
 const getAddr = async (addr: string, chain: string): Promise<string> => {
   const txs = (
@@ -57,6 +58,7 @@ export const createTradingPostFeeTx = async (
 };
 
 interface Transfer {
+  chain: string;
   to: string;
   value: number;
 }
@@ -132,6 +134,10 @@ export const createSwap = async (
       return "ar";
     }
   } else if (chainAmnt) {
+    // @ts-ignore
+    if (!(chain in (await getConfig(client, post, exchangeWallet).chains)))
+      return "support";
+
     const tags = {
       Exchange: "Verto",
       Type: "Swap",
@@ -155,10 +161,11 @@ export const createSwap = async (
     const chainTotal = chainAmnt + chainAmnt * exchangeFee;
 
     if (arBalance >= txFee) {
-      // TODO(@johnletey): Check the user's ETH balance
+      // TODO(@johnletey): Check the user's chain balance
       return {
         txs: [
           {
+            chain,
             to: await selectWeightedHolder(
               client,
               exchangeContract,
@@ -167,7 +174,7 @@ export const createSwap = async (
             ),
             value: chainAmnt * exchangeFee,
           },
-          { to: post, value: chainAmnt },
+          { chain, to: post, value: chainAmnt },
           tx,
         ],
         ar: txFee,
@@ -193,18 +200,20 @@ export const sendSwap = async (
       await client.transactions.sign(tx, keyfile);
       await client.transactions.post(tx);
     } else {
-      // @ts-ignore
-      const isBrowser: boolean = typeof window !== "undefined";
-
-      if (isBrowser) {
+      if (tx.chain === "ETH") {
         // @ts-ignore
-        if (typeof window.ethereum !== "undefined") {
-          tx.value *= 1e18; // convert ETH to WEI
+        const isBrowser: boolean = typeof window !== "undefined";
+
+        if (isBrowser) {
           // @ts-ignore
-          await window.ethereum.request({
-            method: "eth_sendTransaction",
-            params: [tx],
-          });
+          if (typeof window.ethereum !== "undefined") {
+            tx.value *= 1e18; // convert ETH to WEI
+            // @ts-ignore
+            await window.ethereum.request({
+              method: "eth_sendTransaction",
+              params: [tx],
+            });
+          }
         }
       }
     }
