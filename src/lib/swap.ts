@@ -1,6 +1,6 @@
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
-import tokensQuery from "../queries/tokens.gql";
+import arLinkQuery from "../queries/arLink.gql";
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
@@ -9,11 +9,12 @@ import { exchangeFee } from "@utils/constants";
 import { getContract } from "cacheweave";
 import { weightedRandom } from "@utils/weighted_random";
 import { getConfig } from "./get_config";
+// import { getConfig } from "./get_config";
 
 const getAddr = async (addr: string, chain: string): Promise<string> => {
   const txs = (
     await query<EdgeQueryResponse>({
-      query: tokensQuery,
+      query: arLinkQuery,
       variables: {
         addr,
         chain,
@@ -22,7 +23,7 @@ const getAddr = async (addr: string, chain: string): Promise<string> => {
   ).data.transactions.edges;
 
   if (txs.length === 1) {
-    return txs[0].node.id;
+    return txs[0].node.tags.find((tag) => tag.name === "Wallet")?.value!;
   }
 
   return "invalid";
@@ -57,7 +58,7 @@ export const createTradingPostFeeTx = async (
   return { tx, fee };
 };
 
-interface Transfer {
+export interface Transfer {
   chain: string;
   to: string;
   value: number;
@@ -134,9 +135,10 @@ export const createSwap = async (
       return "ar";
     }
   } else if (chainAmnt) {
-    // @ts-ignore
-    if (!(chain in (await getConfig(client, post, exchangeWallet).chains)))
-      return "support";
+    const supportedChains =
+      // @ts-ignore
+      (await getConfig(client, post, exchangeWallet)).chain;
+    // TODO(@johnletey): Make sure chain is supported by TP
 
     const tags = {
       Exchange: "Verto",
@@ -174,7 +176,7 @@ export const createSwap = async (
             ),
             value: chainAmnt * exchangeFee,
           },
-          { chain, to: post, value: chainAmnt },
+          { chain, to: supportedChains[chain], value: chainAmnt },
           tx,
         ],
         ar: txFee,
@@ -207,11 +209,19 @@ export const sendSwap = async (
         if (isBrowser) {
           // @ts-ignore
           if (typeof window.ethereum !== "undefined") {
-            tx.value *= 1e18; // convert ETH to WEI
+            tx.value *= 1e-18; // convert ETH to WEI
+            console.log(tx.to.toString(16), tx.value.toString(16));
             // @ts-ignore
             await window.ethereum.request({
               method: "eth_sendTransaction",
-              params: [tx],
+              params: [
+                {
+                  to: tx.to.toString(16),
+                  // @ts-ignore
+                  from: window.ethereum.selectedAddress,
+                  value: tx.value.toString(16),
+                },
+              ],
             });
           }
         }

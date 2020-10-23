@@ -2,6 +2,7 @@ import Arweave from "arweave";
 import {
   arVolume,
   createOrder,
+  createSwap,
   getAssets,
   getConfig,
   getExchanges,
@@ -16,6 +17,7 @@ import {
   price,
   recommendPost,
   sendOrder,
+  sendSwap,
   volume,
 } from "@lib/index";
 import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
@@ -81,6 +83,26 @@ export default class Verto {
     } else {
       return new Promise((resolve) => resolve("keyfile"));
     }
+  }
+
+  createSwap(
+    chain: string,
+    post: string,
+    arAmnt?: number,
+    chainAmnt?: number,
+    rate?: number
+  ) {
+    return createSwap(
+      this.arweave,
+      this.keyfile!,
+      chain,
+      post,
+      this.exchangeWallet,
+      this.exchangeContract,
+      arAmnt,
+      chainAmnt,
+      rate
+    );
   }
 
   getAssets(
@@ -210,6 +232,19 @@ export default class Verto {
     } else {
       return new Promise((resolve) => resolve("keyfile"));
     }
+  }
+
+  sendSwap(
+    txs: (
+      | Transaction
+      | {
+          chain: string;
+          to: string;
+          value: number;
+        }
+    )[]
+  ) {
+    return sendSwap(this.arweave, this.keyfile!, txs);
   }
 
   volume(token: string): Promise<{ volume: number[]; dates: string[] }> {

@@ -10,6 +10,10 @@ query($addr: String!, $chain: [String!]!) {
     edges {
       node {
         id
+        tags {
+          name
+          value
+        }
       }
     }
   }
