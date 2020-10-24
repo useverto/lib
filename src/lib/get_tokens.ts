@@ -35,6 +35,7 @@ export const getTokens = async (
         localStorage;
   const cache = JSON.parse(storage.getItem("customTokens") || "[]");
   cache.map((entry: string) => IDs.push({ type: "contract", id: entry }));
+
   const tokens: VertoToken[] = [];
   for (const entry of IDs) {
     const contractID =
