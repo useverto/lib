@@ -45,6 +45,7 @@ const config = {
     resolve({
       preferBuiltins: true,
       jsnext: true,
+      browser: true,
     }),
     alias({
       "@utils": __dirname + "/src/utils",
