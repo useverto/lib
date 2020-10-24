@@ -31,8 +31,8 @@ export const getTokens = async (
     // @ts-ignore
     typeof localStorage == "undefined"
       ? new localPorridge("./.cache.json")
-      // @ts-ignore
-      : localStorage;
+      : // @ts-ignore
+        localStorage;
   const cache = JSON.parse(storage.getItem("customTokens") || "[]");
   cache.map((entry: string) => IDs.push({ type: "contract", id: entry }));
   const tokens: VertoToken[] = [];
