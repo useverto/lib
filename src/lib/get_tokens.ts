@@ -27,10 +27,11 @@ export const getTokens = async (
   const IDs: { type: string; id: string }[] = [];
   tokenTxs.map((tx) => IDs.push({ type: "tx", id: tx.node.id }));
 
-  // @ts-ignore
   const storage =
+    // @ts-ignore
     typeof localStorage == "undefined"
       ? new localPorridge("./.cache.json")
+      // @ts-ignore
       : localStorage;
   const cache = JSON.parse(storage.getItem("customTokens") || "[]");
   cache.map((entry: string) => IDs.push({ type: "contract", id: entry }));
