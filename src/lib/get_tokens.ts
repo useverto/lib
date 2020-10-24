@@ -28,7 +28,10 @@ export const getTokens = async (
   tokenTxs.map((tx) => IDs.push({ type: "tx", id: tx.node.id }));
 
   // @ts-ignore
-  const storage = typeof localStorage == "undefined" ?  new localPorridge("./.cache.json") : localStorage;
+  const storage =
+    typeof localStorage == "undefined"
+      ? new localPorridge("./.cache.json")
+      : localStorage;
   const cache = JSON.parse(storage.getItem("customTokens") || "[]");
   cache.map((entry: string) => IDs.push({ type: "contract", id: entry }));
   const tokens: VertoToken[] = [];
