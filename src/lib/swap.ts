@@ -229,7 +229,7 @@ export const sendSwap = async (
                   // @ts-ignore
                   from: window.ethereum.selectedAddress,
                   // @ts-ignore
-                  value: tx.value.toString(),
+                  value: tx.value.toString(16),
                 },
               ],
             });
