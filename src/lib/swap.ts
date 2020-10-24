@@ -215,17 +215,21 @@ export const sendSwap = async (
         if (isBrowser) {
           // @ts-ignore
           if (typeof window.ethereum !== "undefined") {
-            tx.value *= 1e-18; // convert ETH to WEI
-            console.log(tx.to.toString(16), tx.value.toString(16));
+            tx.value *= 1e18;
+            // @ts-ignore
+            const accounts = await window.ethereum.request({
+              method: "eth_requestAccounts",
+            });
             // @ts-ignore
             await window.ethereum.request({
               method: "eth_sendTransaction",
               params: [
                 {
-                  to: tx.to.toString(16),
+                  to: tx.to,
                   // @ts-ignore
                   from: window.ethereum.selectedAddress,
-                  value: tx.value.toString(16),
+                  // @ts-ignore
+                  value: tx.value.toString(),
                 },
               ],
             });
