@@ -27,11 +27,10 @@ export const getTokens = async (
   const IDs: { type: string; id: string }[] = [];
   tokenTxs.map((tx) => IDs.push({ type: "tx", id: tx.node.id }));
 
-  // TODO(@johnletey): Use `localPorridge` to grab custom tokens.
   // @ts-ignore
-    const storage = typeof storage == "undefined" ?  new localPorridge("./.cache.json") : localStorage;
-    const cache = JSON.parse(storage.getItem("customTokens") || "[]");
-    cache.map((entry: string) => IDs.push({ type: "contract", id: entry }));
+  const storage = typeof localStorage == "undefined" ?  new localPorridge("./.cache.json") : localStorage;
+  const cache = JSON.parse(storage.getItem("customTokens") || "[]");
+  cache.map((entry: string) => IDs.push({ type: "contract", id: entry }));
   const tokens: VertoToken[] = [];
   for (const entry of IDs) {
     const contractID =
