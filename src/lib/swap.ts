@@ -217,7 +217,7 @@ export const sendSwap = async (
           if (typeof window.ethereum !== "undefined") {
             tx.value *= 1e18;
             // @ts-ignore
-            const accounts = await window.ethereum.request({
+            await window.ethereum.request({
               method: "eth_requestAccounts",
             });
             // @ts-ignore
