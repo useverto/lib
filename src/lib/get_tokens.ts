@@ -4,6 +4,7 @@ import { maxInt } from "@utils/constants";
 import { getData } from "cacheweave";
 import Arweave from "arweave";
 import { VertoToken, EdgeQueryResponse } from "types";
+import localPorridge from "localporridge";
 
 export const getTokens = async (
   client: Arweave,
@@ -26,14 +27,14 @@ export const getTokens = async (
   const IDs: { type: string; id: string }[] = [];
   tokenTxs.map((tx) => IDs.push({ type: "tx", id: tx.node.id }));
 
-  // TODO(@johnletey): Use `localPorridge` to grab custom tokens.
-  // @ts-ignore
-  if (typeof window !== "undefined") {
+  const storage =
     // @ts-ignore
-    const cache = JSON.parse(localStorage.getItem("customTokens") || "[]");
-
-    cache.map((entry: string) => IDs.push({ type: "contract", id: entry }));
-  }
+    typeof localStorage == "undefined"
+      ? new localPorridge("./.cache.json")
+      : // @ts-ignore
+        localStorage;
+  const cache = JSON.parse(storage.getItem("customTokens") || "[]");
+  cache.map((entry: string) => IDs.push({ type: "contract", id: entry }));
 
   const tokens: VertoToken[] = [];
   for (const entry of IDs) {

@@ -16,6 +16,9 @@
   },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
+  "browser": {
+    "localPorridge": false
+  },
   "files": [
     "dist"
   ],
@@ -23,6 +26,7 @@
   "dependencies": {
     "arweave": "^1.9.1",
     "cacheweave": "^1.0.0",
+    "localporridge": "^1.0.0",
     "moment": "^2.28.0",
     "node-fetch": "^2.6.1",
     "smartweave": "^0.3.6"
