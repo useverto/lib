@@ -3,6 +3,10 @@ import { VertoToken } from "types";
 import { getData } from "cacheweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { volume } from "./volume";
+import { query } from "@utils/gql";
+import { EdgeQueryResponse } from "types";
+import tokensQuery from "../queries/tokens.gql";
+import tokenQuery from "../queries/token.gql";
 
 export const getTokens = async (
   client: Arweave,
@@ -20,7 +24,12 @@ export const getTokens = async (
     cache.map((id: string) => contractIDs.push(id));
   }
 
-  const tokens: VertoToken[] = [];
+  const tokens: {
+    id: string;
+    name: string;
+    ticker: string;
+    volume: number;
+  }[] = [];
   for (const contractID of contractIDs) {
     const rawContract = await getData(client, contractID);
     const contract = JSON.parse(rawContract);
@@ -85,4 +94,61 @@ export const saveToken = async (
       localStorage.setItem("tokens", JSON.stringify(cache));
     }
   }
+};
+
+export const popularTokens = async (
+  client: Arweave,
+  exchangeWallet: string
+): Promise<VertoToken[]> => {
+  const tokensTxs = (
+    await query<EdgeQueryResponse>({
+      query: tokensQuery,
+      variables: {
+        exchange: exchangeWallet,
+      },
+    })
+  ).data.transactions.edges;
+
+  const tokens: {
+    id: string;
+    name: string;
+    ticker: string;
+    amnt: number;
+  }[] = [];
+  tokensTxs.map(({ node }) => {
+    const idTag = node.tags.find((tag) => tag.name === "Contract");
+    if (idTag) {
+      const id = idTag.value;
+      if (!tokens.find((entry) => entry.id === id)) {
+        tokens.push({
+          id,
+          name: "",
+          ticker: "",
+          amnt: 0,
+        });
+      }
+    }
+  });
+
+  for (let i = 0; i < tokens.length; i++) {
+    const rawContract = await getData(client, tokens[i].id);
+    const contract = JSON.parse(rawContract);
+
+    tokens[i].name = contract.name;
+    tokens[i].ticker = contract.ticker;
+
+    tokens[i].amnt = (
+      await query<EdgeQueryResponse>({
+        query: tokenQuery,
+        variables: {
+          exchange: exchangeWallet,
+          contract: tokens[i].id,
+        },
+      })
+    ).data.transactions.edges.length;
+  }
+
+  tokens.sort((a, b) => b.amnt - a.amnt);
+
+  return tokens;
 };

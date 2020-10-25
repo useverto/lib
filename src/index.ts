@@ -13,6 +13,7 @@ import {
   getTransactions,
   latestPrice,
   latestVolume,
+  popularTokens,
   price,
   recommendPost,
   saveToken,
@@ -179,6 +180,10 @@ export default class Verto {
       this.exchangeContract,
       this.exchangeWallet
     );
+  }
+
+  popularTokens(): Promise<VertoToken[]> {
+    return popularTokens(this.arweave, this.exchangeWallet);
   }
 
   price(

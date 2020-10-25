@@ -2,7 +2,6 @@ export interface VertoToken {
   id: string;
   name: string;
   ticker: string;
-  volume: number;
 }
 
 export interface EdgeQueryResponse {

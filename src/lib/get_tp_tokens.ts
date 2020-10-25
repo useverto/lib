@@ -1,7 +1,7 @@
 import Arweave from "arweave";
 import { getConfig } from "./get_config";
 import { VertoToken } from "types";
-import { getTokens } from "./tokens";
+import { popularTokens, getTokens } from "./tokens";
 
 export const getTPTokens = async (
   client: Arweave,
@@ -11,11 +11,10 @@ export const getTPTokens = async (
 ): Promise<VertoToken[]> => {
   const config = await getConfig(client, post, exchangeWallet);
 
-  const tokens: VertoToken[] = await getTokens(
-    client,
-    exchangeContract,
-    exchangeWallet
-  );
+  const tokens: VertoToken[] = [
+    ...(await popularTokens(client, exchangeWallet)),
+    ...(await getTokens(client, exchangeContract, exchangeWallet)),
+  ];
   // @ts-ignore
   config.blockedTokens.map((token: string) => {
     const element = tokens.find((element) => element.id === token);
