@@ -51,7 +51,16 @@ export const getTokens = async (
 
   tokens.sort((a, b) => b.volume - a.volume);
 
-  return tokens;
+  const returnedTokens: VertoToken[] = [];
+  tokens.map((token) =>
+    returnedTokens.push({
+      id: token.id,
+      name: token.name,
+      ticker: token.ticker,
+    })
+  );
+
+  return returnedTokens;
 };
 
 export const saveToken = async (
@@ -93,6 +102,8 @@ export const saveToken = async (
       // @ts-ignore
       localStorage.setItem("tokens", JSON.stringify(cache));
     }
+
+    return JSON.parse(await getData(client, contract)).ticker;
   }
 };
 
@@ -150,5 +161,14 @@ export const popularTokens = async (
 
   tokens.sort((a, b) => b.amnt - a.amnt);
 
-  return tokens;
+  const returnedTokens: VertoToken[] = [];
+  tokens.map((token) =>
+    returnedTokens.push({
+      id: token.id,
+      name: token.name,
+      ticker: token.ticker,
+    })
+  );
+
+  return returnedTokens;
 };

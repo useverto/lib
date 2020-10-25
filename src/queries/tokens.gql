@@ -1,6 +1,6 @@
 query($exchange: String!) {
   transactions(
-    owners: [$exchange]
+    recipients: [$exchange]
     tags: [
       { name: "Exchange", values: "Verto" }
       { name: "Type", values: "Token" }

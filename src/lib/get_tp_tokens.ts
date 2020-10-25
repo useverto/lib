@@ -3,6 +3,13 @@ import { getConfig } from "./get_config";
 import { VertoToken } from "types";
 import { popularTokens, getTokens } from "./tokens";
 
+const unique = (arr: VertoToken[]): VertoToken[] => {
+  const seen: Record<string, boolean> = {};
+  return arr.filter((item) => {
+    return seen.hasOwnProperty(item.id) ? false : (seen[item.id] = true);
+  });
+};
+
 export const getTPTokens = async (
   client: Arweave,
   post: string,
@@ -27,5 +34,5 @@ export const getTPTokens = async (
     }
   });
 
-  return tokens;
+  return unique(tokens);
 };
