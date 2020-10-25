@@ -6,7 +6,7 @@ import { popularTokens, getTokens } from "./tokens";
 const unique = (arr: VertoToken[]): VertoToken[] => {
   const seen: Record<string, boolean> = {};
   return arr.filter((item) => {
-    return seen.hasOwnProperty(item.id) ? false : (seen[item.id] = true);
+    return item.id in seen ? false : (seen[item.id] = true);
   });
 };
 
