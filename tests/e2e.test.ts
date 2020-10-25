@@ -68,9 +68,9 @@ describe("E2E Tests", function () {
       })
       .catch(done);
   });
-  it("Test getTokens(<CONTRACT>)", (done) => {
+  it("Test getTokens()", (done) => {
     vertoInstance
-      .getTokens(TOKEN)
+      .getTokens()
       .then((res) => {
         assert(res);
         done();
