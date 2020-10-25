@@ -15,6 +15,7 @@ import {
   latestVolume,
   price,
   recommendPost,
+  saveToken,
   sendOrder,
   volume,
 } from "@lib/index";
@@ -127,13 +128,8 @@ export default class Verto {
     return getReputation(this.arweave, post, this.exchangeContract);
   }
 
-  getTokens(src?: string): Promise<VertoToken[]> {
-    return getTokens(
-      this.arweave,
-      this.exchangeContract,
-      this.exchangeWallet,
-      src
-    );
+  getTokens(): Promise<VertoToken[]> {
+    return getTokens(this.arweave, this.exchangeContract, this.exchangeWallet);
   }
 
   getTPTokens(post: string): Promise<VertoToken[]> {
@@ -202,6 +198,19 @@ export default class Verto {
       this.exchangeContract,
       this.exchangeWallet
     );
+  }
+
+  saveToken(contract: string): Promise<void> {
+    if (this.keyfile) {
+      return saveToken(
+        this.arweave,
+        contract,
+        this.keyfile,
+        this.exchangeContract,
+        this.exchangeWallet
+      );
+    }
+    return new Promise((resolve) => resolve());
   }
 
   sendOrder(txs: Transaction[]): Promise<void | string> {

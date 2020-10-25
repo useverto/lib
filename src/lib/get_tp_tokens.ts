@@ -1,7 +1,7 @@
 import Arweave from "arweave";
 import { getConfig } from "./get_config";
 import { VertoToken } from "types";
-import { getTokens } from "./get_tokens";
+import { getTokens } from "./tokens";
 
 export const getTPTokens = async (
   client: Arweave,
