@@ -1,5 +1,6 @@
-query($exchange: String!, $contract: [String!]!) {
+query($exchange: String!, $user: String!, $contract: [String!]!) {
   transactions(
+    owners: [$user]
     recipients: [$exchange]
     tags: [
       { name: "Exchange", values: "Verto" }
@@ -12,6 +13,10 @@ query($exchange: String!, $contract: [String!]!) {
       node {
         owner {
           address
+        }
+        tags {
+          name
+          value
         }
       }
     }

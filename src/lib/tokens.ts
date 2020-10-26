@@ -76,25 +76,38 @@ export const saveToken = async (
     const tokens = await getTokens(client, exchangeContract, exchangeWallet);
 
     if (!tokens.find((token) => token.id === contract)) {
-      const tags = {
-        Exchange: "Verto",
-        Type: "Token",
-        Contract: contract,
-      };
+      const userTokenTxs = (
+        await query<EdgeQueryResponse>({
+          query: tokensQuery,
+          variables: {
+            exchange: exchangeWallet,
+            user: await client.wallets.jwkToAddress(keyfile),
+            contract,
+          },
+        })
+      ).data.transactions.edges;
 
-      const tx = await client.createTransaction(
-        {
-          target: exchangeWallet,
-          data: Math.random().toString().slice(-4),
-        },
-        keyfile
-      );
-      for (const [key, value] of Object.entries(tags)) {
-        tx.addTag(key, value);
+      if (userTokenTxs.length === 0) {
+        const tags = {
+          Exchange: "Verto",
+          Type: "Token",
+          Contract: contract,
+        };
+
+        const tx = await client.createTransaction(
+          {
+            target: exchangeWallet,
+            data: Math.random().toString().slice(-4),
+          },
+          keyfile
+        );
+        for (const [key, value] of Object.entries(tags)) {
+          tx.addTag(key, value);
+        }
+
+        await client.transactions.sign(tx, keyfile);
+        await client.transactions.post(tx);
       }
-
-      await client.transactions.sign(tx, keyfile);
-      await client.transactions.post(tx);
 
       // @ts-ignore
       const cache = JSON.parse(localStorage.getItem("tokens") || "[]");
@@ -148,7 +161,7 @@ export const popularTokens = async (
     tokens[i].name = contract.name;
     tokens[i].ticker = contract.ticker;
 
-    tokens[i].amnt = (
+    let tokenTxs = (
       await query<EdgeQueryResponse>({
         query: tokenQuery,
         variables: {
@@ -156,7 +169,14 @@ export const popularTokens = async (
           contract: tokens[i].id,
         },
       })
-    ).data.transactions.edges.length;
+    ).data.transactions.edges;
+    const seen: Record<string, boolean> = {};
+    tokenTxs = tokenTxs.filter(({ node }) => {
+      return node.owner.address in seen
+        ? false
+        : (seen[node.owner.address] = true);
+    });
+    tokens[i].amnt = tokenTxs.length;
   }
 
   tokens.sort((a, b) => b.amnt - a.amnt);
