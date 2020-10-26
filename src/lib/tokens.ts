@@ -190,5 +190,5 @@ export const popularTokens = async (
     })
   );
 
-  return returnedTokens;
+  return returnedTokens.splice(0, 10);
 };
