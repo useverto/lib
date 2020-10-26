@@ -31,22 +31,26 @@ export const getTokens = async (
     volume: number;
   }[] = [];
   for (const contractID of contractIDs) {
-    const rawContract = await getData(client, contractID);
-    const contract = JSON.parse(rawContract);
+    try {
+      const rawContract = await getData(client, contractID);
+      const contract = JSON.parse(rawContract);
 
-    const volumeData = await volume(
-      client,
-      contractID,
-      exchangeContract,
-      exchangeWallet
-    );
+      const volumeData = await volume(
+        client,
+        contractID,
+        exchangeContract,
+        exchangeWallet
+      );
 
-    tokens.push({
-      id: contractID,
-      name: contract.name,
-      ticker: contract.ticker,
-      volume: volumeData.volume.reduce((a, b) => a + b, 0),
-    });
+      tokens.push({
+        id: contractID,
+        name: contract.name,
+        ticker: contract.ticker,
+        volume: volumeData.volume.reduce((a, b) => a + b, 0),
+      });
+    } catch (err) {
+      // token is invalid, don't do anything
+    }
   }
 
   tokens.sort((a, b) => b.volume - a.volume);
@@ -138,6 +142,7 @@ export const popularTokens = async (
     name: string;
     ticker: string;
     amnt: number;
+    valid: boolean;
   }[] = [];
   tokensTxs.map(({ node }) => {
     const idTag = node.tags.find((tag) => tag.name === "Contract");
@@ -149,46 +154,53 @@ export const popularTokens = async (
           name: "",
           ticker: "",
           amnt: 0,
+          valid: true,
         });
       }
     }
   });
 
   for (let i = 0; i < tokens.length; i++) {
-    const rawContract = await getData(client, tokens[i].id);
-    const contract = JSON.parse(rawContract);
+    try {
+      const rawContract = await getData(client, tokens[i].id);
+      const contract = JSON.parse(rawContract);
 
-    tokens[i].name = contract.name;
-    tokens[i].ticker = contract.ticker;
+      tokens[i].name = contract.name;
+      tokens[i].ticker = contract.ticker;
 
-    let tokenTxs = (
-      await query<EdgeQueryResponse>({
-        query: tokenQuery,
-        variables: {
-          exchange: exchangeWallet,
-          contract: tokens[i].id,
-        },
-      })
-    ).data.transactions.edges;
-    const seen: Record<string, boolean> = {};
-    tokenTxs = tokenTxs.filter(({ node }) => {
-      return node.owner.address in seen
-        ? false
-        : (seen[node.owner.address] = true);
-    });
-    tokens[i].amnt = tokenTxs.length;
+      let tokenTxs = (
+        await query<EdgeQueryResponse>({
+          query: tokenQuery,
+          variables: {
+            exchange: exchangeWallet,
+            contract: tokens[i].id,
+          },
+        })
+      ).data.transactions.edges;
+      const seen: Record<string, boolean> = {};
+      tokenTxs = tokenTxs.filter(({ node }) => {
+        return node.owner.address in seen
+          ? false
+          : (seen[node.owner.address] = true);
+      });
+      tokens[i].amnt = tokenTxs.length;
+    } catch (err) {
+      tokens[i].valid = false;
+    }
   }
 
   tokens.sort((a, b) => b.amnt - a.amnt);
 
   const returnedTokens: VertoToken[] = [];
-  tokens.map((token) =>
-    returnedTokens.push({
-      id: token.id,
-      name: token.name,
-      ticker: token.ticker,
-    })
-  );
+  tokens.map((token) => {
+    if (token.valid) {
+      returnedTokens.push({
+        id: token.id,
+        name: token.name,
+        ticker: token.ticker,
+      });
+    }
+  });
 
   return returnedTokens.splice(0, 10);
 };
