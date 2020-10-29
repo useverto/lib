@@ -9,7 +9,6 @@ import { exchangeFee } from "@utils/constants";
 import { getContract } from "cacheweave";
 import { weightedRandom } from "@utils/weighted_random";
 import { getConfig } from "./get_config";
-// import { getConfig } from "./get_config";
 
 const getAddr = async (addr: string, chain: string): Promise<string> => {
   const txs = (
@@ -94,16 +93,12 @@ export const createSwap = async (
   );
 
   if (arAmnt) {
-    const transfer = await getAddr(addr, chain);
-    if (transfer === "invalid") return "arLink";
-
     if (!rate) return "invalid";
     const tags = {
       Exchange: "Verto",
       Type: "Swap",
       Chain: chain,
       Rate: rate,
-      Transfer: transfer,
     };
 
     const tx = await client.createTransaction(
@@ -146,51 +141,26 @@ export const createSwap = async (
       (await getConfig(client, post, exchangeWallet)).chain;
     // TODO(@johnletey): Make sure chain is supported by TP
 
-    const tags = {
-      Exchange: "Verto",
-      Type: "Swap",
-      Chain: chain,
-      Amount: chainAmnt,
-    };
-
-    const tx = await client.createTransaction(
-      {
-        target: post,
-        data: Math.random().toString().slice(-4),
-      },
-      keyfile
-    );
-
-    for (const [key, value] of Object.entries(tags)) {
-      tx.addTag(key, value.toString());
-    }
-
-    const txFee = await getTxFee(client, tx);
     const chainTotal = chainAmnt + chainAmnt * exchangeFee;
 
-    if (arBalance >= txFee) {
-      // TODO(@johnletey): Check the user's chain balance
-      return {
-        txs: [
-          {
+    // TODO(@johnletey): Check the user's chain balance
+    return {
+      txs: [
+        {
+          chain,
+          to: await selectWeightedHolder(
+            client,
+            exchangeContract,
             chain,
-            to: await selectWeightedHolder(
-              client,
-              exchangeContract,
-              chain,
-              exchangeWallet
-            ),
-            value: chainAmnt * exchangeFee,
-          },
-          { chain, to: supportedChains[chain], value: chainAmnt },
-          tx,
-        ],
-        ar: txFee,
-        chain: chainTotal,
-      };
-    } else {
-      return "ar";
-    }
+            exchangeWallet
+          ),
+          value: chainAmnt * exchangeFee,
+        },
+        { chain, to: supportedChains[chain], value: chainAmnt },
+      ],
+      ar: 0,
+      chain: chainTotal,
+    };
   } else {
     return "invalid";
   }
