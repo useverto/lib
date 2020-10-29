@@ -1,7 +1,14 @@
 import Arweave from "arweave";
 import { getConfig } from "./get_config";
 import { VertoToken } from "types";
-import { getTokens } from "./get_tokens";
+import { popularTokens, getTokens } from "./tokens";
+
+const unique = (arr: VertoToken[]): VertoToken[] => {
+  const seen: Record<string, boolean> = {};
+  return arr.filter((item) => {
+    return item.id in seen ? false : (seen[item.id] = true);
+  });
+};
 
 export const getTPTokens = async (
   client: Arweave,
@@ -11,11 +18,10 @@ export const getTPTokens = async (
 ): Promise<VertoToken[]> => {
   const config = await getConfig(client, post, exchangeWallet);
 
-  const tokens: VertoToken[] = await getTokens(
-    client,
-    exchangeContract,
-    exchangeWallet
-  );
+  const tokens: VertoToken[] = [
+    ...(await popularTokens(client, exchangeWallet)),
+    ...(await getTokens(client, exchangeContract, exchangeWallet)),
+  ];
   // @ts-ignore
   config.blockedTokens.map((token: string) => {
     const element = tokens.find((element) => element.id === token);
@@ -28,5 +34,5 @@ export const getTPTokens = async (
     }
   });
 
-  return tokens;
+  return unique(tokens);
 };

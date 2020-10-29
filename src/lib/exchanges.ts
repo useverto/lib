@@ -2,7 +2,7 @@ import Arweave from "arweave";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
 import exchangesQuery from "../queries/exchanges.gql";
-import { getTokens } from "./get_tokens";
+import { getTokens } from "./tokens";
 import moment from "moment";
 import confirmationQuery from "../queries/confirmation.gql";
 import cancelQuery from "../queries/cancel.gql";

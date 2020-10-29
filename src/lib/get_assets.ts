@@ -1,5 +1,5 @@
 import Arweave from "arweave";
-import { getTokens } from "./get_tokens";
+import { getTokens } from "./tokens";
 import { getContract } from "cacheweave";
 
 export const getAssets = async (

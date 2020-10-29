@@ -1,17 +1,17 @@
-query($exchange: String!) {
+query($exchange: String!, $contract: [String!]!) {
   transactions(
     recipients: [$exchange]
     tags: [
       { name: "Exchange", values: "Verto" }
       { name: "Type", values: "Token" }
+      { name: "Contract", values: $contract }
     ]
     first: 2147483647
   ) {
     edges {
       node {
-        tags {
-          name
-          value
+        owner {
+          address
         }
       }
     }

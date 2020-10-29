@@ -65,46 +65,48 @@ export const price = async (
   let prices: number[] = [];
   const days: string[] = [];
 
-  let high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
-  const limit =
-    orders[orders.length - 1].timestamp >= 1599955200
-      ? orders[orders.length - 1].timestamp
-      : 1599955200;
-  while (high.unix() >= limit) {
-    const dayPrices: number[] = [];
+  if (orders.length > 0) {
+    let high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
+    const limit =
+      orders[orders.length - 1].timestamp >= 1599955200
+        ? orders[orders.length - 1].timestamp
+        : 1599955200;
+    while (high.unix() >= limit) {
+      const dayPrices: number[] = [];
 
-    const low = high.clone().subtract(1, "days");
-    for (const order of orders) {
-      if (order.timestamp <= high.unix() && order.timestamp >= low.unix()) {
-        const confirmationTx = (
-          await query<EdgeQueryResponse>({
-            query: confirmationQuery,
-            variables: {
-              txID: order.id,
-            },
-          })
-        ).data.transactions.edges;
+      const low = high.clone().subtract(1, "days");
+      for (const order of orders) {
+        if (order.timestamp <= high.unix() && order.timestamp >= low.unix()) {
+          const confirmationTx = (
+            await query<EdgeQueryResponse>({
+              query: confirmationQuery,
+              variables: {
+                txID: order.id,
+              },
+            })
+          ).data.transactions.edges;
 
-        if (confirmationTx.length === 1) {
-          const recievedTag = confirmationTx[0].node.tags.find(
-            (tag) => tag.name === "Received"
-          );
-          if (!recievedTag) return;
-          dayPrices.push(
-            order.amnt / parseFloat(recievedTag.value.split(" ")[0])
-          );
+          if (confirmationTx.length === 1) {
+            const recievedTag = confirmationTx[0].node.tags.find(
+              (tag) => tag.name === "Received"
+            );
+            if (!recievedTag) return;
+            dayPrices.push(
+              order.amnt / parseFloat(recievedTag.value.split(" ")[0])
+            );
+          }
         }
       }
+
+      prices.push(dayPrices.reduce((a, b) => a + b, 0) / dayPrices.length);
+      days.push(low.format("MMM DD"));
+
+      high = low;
     }
 
-    prices.push(dayPrices.reduce((a, b) => a + b, 0) / dayPrices.length);
-    days.push(low.format("MMM DD"));
-
-    high = low;
-  }
-
-  if (!prices.every((price) => isNaN(price))) {
-    prices = fillArray(prices.reverse());
+    if (!prices.every((price) => isNaN(price))) {
+      prices = fillArray(prices.reverse());
+    }
   }
 
   return { prices, dates: days.reverse() };
