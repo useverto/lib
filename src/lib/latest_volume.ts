@@ -26,27 +26,29 @@ export const latestVolume = async (
   ).data.transactions.edges;
 
   const orders: { amnt: number; timestamp: number }[] = [];
-  orderTxs.map((order) => {
-    const inputTag = order.node.tags.find((tag) => tag.name === "Input");
-    if (!inputTag) return;
-    orders.push({
-      amnt: JSON.parse(inputTag.value).qty,
-      timestamp: order.node.block.timestamp,
-    });
-  });
+  orderTxs.map(({ node }) => {
+    const inputTag = node.tags.find((tag) => tag.name === "Input");
 
-  let volume = 0;
+    if (inputTag) {
+      orders.push({
+        amnt: JSON.parse(inputTag.value).qty,
+        timestamp: node.block.timestamp,
+      });
+    }
+  });
 
   if (orders.length > 0) {
     const high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
     const low = high.clone().subtract(1, "days");
 
-    orders.map((order) => {
-      if (order.timestamp <= high.unix() && order.timestamp >= low.unix()) {
-        volume += order.amnt;
-      }
-    });
+    return orders
+      .filter(
+        (order) =>
+          order.timestamp <= high.unix() && order.timestamp >= low.unix()
+      )
+      .map((order) => order.amnt)
+      .reduce((a, b) => a + b, 0);
   }
 
-  return volume;
+  return 0;
 };
