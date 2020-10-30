@@ -1,0 +1,24 @@
+query($posts: [String!]!, $chain: [String!]!, $num: Int) {
+  transactions(
+    recipients: $posts
+    tags: [
+      { name: "Exchange", values: "Verto" }
+      { name: "Type", values: "Swap" }
+      { name: "Chain", values: $chain }
+    ]
+    first: $num
+  ) {
+    edges {
+      node {
+        id
+        tags {
+          name
+          value
+        }
+        block {
+          timestamp
+        }
+      }
+    }
+  }
+}

@@ -1,3 +1,4 @@
+export * from "./chainRate";
 export * from "./exchanges";
 export * from "./get_assets";
 export * from "./get_config";

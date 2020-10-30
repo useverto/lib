@@ -1,6 +1,7 @@
 import Arweave from "arweave";
 import {
   arVolume,
+  chainRate,
   createOrder,
   createSwap,
   getAssets,
@@ -12,6 +13,7 @@ import {
   getTPTokens,
   getTradingPosts,
   getTransactions,
+  latestChainRate,
   latestPrice,
   latestVolume,
   popularTokens,
@@ -61,6 +63,15 @@ export default class Verto {
 
   arVolume(): Promise<{ volume: number[]; dates: string[] }> {
     return arVolume(this.arweave, this.exchangeContract, this.exchangeWallet);
+  }
+
+  chainRate(chain: string): Promise<{ rates: number[]; dates: string[] }> {
+    return chainRate(
+      this.arweave,
+      chain,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 
   createOrder(
@@ -202,6 +213,15 @@ export default class Verto {
     }[]
   > {
     return getTransactions(this.arweave, addr);
+  }
+
+  latestChainRate(chain: string): Promise<number> {
+    return latestChainRate(
+      this.arweave,
+      chain,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 
   latestPrice(token: string): Promise<number | undefined> {
