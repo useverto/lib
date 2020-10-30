@@ -26,13 +26,15 @@ export const volume = async (
   ).data.transactions.edges;
 
   const orders: { amnt: number; timestamp: number }[] = [];
-  orderTxs.map((order) => {
-    const inputTag = order.node.tags.find((tag) => tag.name === "Input");
-    if (!inputTag) return;
-    orders.push({
-      amnt: JSON.parse(inputTag.value).qty,
-      timestamp: order.node.block.timestamp,
-    });
+  orderTxs.map(({ node }) => {
+    const inputTag = node.tags.find((tag) => tag.name === "Input");
+
+    if (inputTag) {
+      orders.push({
+        amnt: JSON.parse(inputTag.value).qty,
+        timestamp: node.block.timestamp,
+      });
+    }
   });
 
   const volume: number[] = [];
@@ -40,15 +42,17 @@ export const volume = async (
 
   if (orders.length > 0) {
     let high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
-    while (high.unix() >= orders[orders.length - 1].timestamp) {
-      let sum = 0;
 
+    while (high.unix() >= orders[orders.length - 1].timestamp) {
       const low = high.clone().subtract(1, "days");
-      orders.map((order) => {
-        if (order.timestamp <= high.unix() && order.timestamp >= low.unix()) {
-          sum += order.amnt;
-        }
-      });
+
+      const sum = orders
+        .filter(
+          (order) =>
+            order.timestamp <= high.unix() && order.timestamp >= low.unix()
+        )
+        .map((order) => order.amnt)
+        .reduce((a, b) => a + b, 0);
 
       volume.push(sum);
       days.push(low.format("MMM DD"));
@@ -100,10 +104,10 @@ export const arVolume = async (
   ).data.transactions.edges;
 
   const orders: { amnt: number; timestamp: number }[] = [];
-  orderTxs.map((order) => {
+  orderTxs.map(({ node }) => {
     orders.push({
-      amnt: parseFloat(order.node.quantity.ar),
-      timestamp: order.node.block.timestamp,
+      amnt: parseFloat(node.quantity.ar),
+      timestamp: node.block.timestamp,
     });
   });
 
@@ -112,15 +116,17 @@ export const arVolume = async (
 
   if (orders.length > 0) {
     let high = moment().add(1, "days").hours(0).minutes(0).seconds(0);
-    while (high.unix() >= orders[orders.length - 1].timestamp) {
-      let sum = 0;
 
+    while (high.unix() >= orders[orders.length - 1].timestamp) {
       const low = high.clone().subtract(1, "days");
-      orders.map((order) => {
-        if (order.timestamp <= high.unix() && order.timestamp >= low.unix()) {
-          sum += order.amnt;
-        }
-      });
+
+      const sum = orders
+        .filter(
+          (order) =>
+            order.timestamp <= high.unix() && order.timestamp >= low.unix()
+        )
+        .map((order) => order.amnt)
+        .reduce((a, b) => a + b, 0);
 
       volume.push(sum);
       days.push(low.format("MMM DD"));
