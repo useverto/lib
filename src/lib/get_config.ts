@@ -2,7 +2,6 @@ import Arweave from "arweave";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
 import genesisQuery from "../queries/genesis.gql";
-import { getData } from "cacheweave";
 
 export const getConfig = async (
   client: Arweave,
@@ -24,7 +23,11 @@ export const getConfig = async (
     return "invalid";
   }
 
-  const config = JSON.parse(await getData(client, genesis));
+  const config = JSON.parse(
+    (
+      await client.transactions.getData(genesis, { decode: true, string: true })
+    ).toString()
+  );
 
   return config;
 };
