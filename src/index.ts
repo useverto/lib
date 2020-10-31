@@ -265,7 +265,7 @@ export default class Verto {
     );
   }
 
-  saveToken(contract: string): Promise<void> {
+  saveToken(contract: string): Promise<string | void> {
     if (this.keyfile) {
       return saveToken(
         this.arweave,
