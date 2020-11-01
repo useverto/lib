@@ -141,7 +141,16 @@ export const createSwap = async (
       (await getConfig(client, post, exchangeWallet)).chain;
     // TODO(@johnletey): Make sure chain is supported by TP
 
-    const chainTotal = chainAmnt + chainAmnt * exchangeFee;
+    let fee = chainAmnt * exchangeFee;
+    if (chainAmnt < 0.000001) {
+      chainAmnt = 0.000001;
+      fee = 0.000001;
+    } else {
+      if (fee < 0.000001) {
+        fee = 0.000001;
+      }
+    }
+    const chainTotal = chainAmnt + fee;
 
     // TODO(@johnletey): Check the user's chain balance
     return {
@@ -154,7 +163,7 @@ export const createSwap = async (
             chain,
             exchangeWallet
           ),
-          value: chainAmnt * exchangeFee,
+          value: fee,
         },
         { chain, to: supportedChains[chain], value: chainAmnt },
       ],

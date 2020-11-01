@@ -71,7 +71,9 @@ export const chainRate = async (
       swaps.push({
         id: node.id,
         rate: parseFloat(rateTag.value),
-        timestamp: node.block.timestamp,
+        timestamp: node.block
+          ? node.block.timestamp
+          : parseInt(new Date().getTime().toString().slice(0, -3)),
       });
     }
   });
