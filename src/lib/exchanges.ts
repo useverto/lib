@@ -2,9 +2,11 @@ import Arweave from "arweave";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
 import exchangesQuery from "../queries/exchanges.gql";
+import swapsQuery from "../queries/swaps.gql";
 import { getTokens } from "./tokens";
 import moment from "moment";
 import confirmationQuery from "../queries/confirmation.gql";
+import swapConfirmationQuery from "../queries/swapConfirmation.gql";
 import cancelQuery from "../queries/cancel.gql";
 
 export const getExchanges = async (
@@ -80,8 +82,57 @@ export const getExchanges = async (
     }
   });
 
+  //
+
+  const swapTxs = (
+    await query<EdgeQueryResponse>({
+      query: swapsQuery,
+      variables: {
+        owners: [addr],
+        num: 5,
+      },
+    })
+  ).data.transactions.edges;
+
+  swapTxs.map(({ node }) => {
+    const chain = node.tags.find((tag) => tag.name === "Chain")?.value;
+    if (chain) {
+      exchanges.push({
+        id: node.id,
+        timestamp: node.block
+          ? moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
+          : "not mined yet",
+        type: "",
+        sent: parseFloat(node.quantity.ar) + " AR",
+        received: "??? " + chain,
+        status: "pending",
+        duration: "not completed",
+      });
+    }
+  });
+
+  // @ts-ignore
+  if (typeof window !== "undefined") {
+    // @ts-ignore
+    const cache = JSON.parse(localStorage.getItem("swaps") || "[]");
+
+    cache.map((swap: { id: string; timestamp: string; value: number }) => {
+      exchanges.push({
+        id: swap.id,
+        timestamp: swap.timestamp,
+        type: "",
+        sent: swap.value + " ETH",
+        received: "??? AR",
+        status: "pending",
+        duration: "not completed",
+      });
+    });
+  }
+
+  //
+
   for (let i = 0; i < exchanges.length; i++) {
-    const match = (
+    let match = (
       await query<EdgeQueryResponse>({
         query: confirmationQuery,
         variables: {
@@ -89,6 +140,16 @@ export const getExchanges = async (
         },
       })
     ).data.transactions.edges;
+    if (!match[0]) {
+      match = (
+        await query<EdgeQueryResponse>({
+          query: swapConfirmationQuery,
+          variables: {
+            txID: exchanges[i].id,
+          },
+        })
+      ).data.transactions.edges;
+    }
 
     if (match[0]) {
       exchanges[i].status = "success";
@@ -113,7 +174,7 @@ export const getExchanges = async (
       if (receivedTag) {
         const received = receivedTag.value.split(" ");
         exchanges[i].received =
-          parseFloat(parseFloat(received[0]).toFixed(2)) + " " + received[1];
+          parseFloat(parseFloat(received[0]).toFixed(5)) + " " + received[1];
       }
     }
 
@@ -132,5 +193,9 @@ export const getExchanges = async (
     }
   }
 
-  return exchanges;
+  return exchanges
+    .sort((a, b) => {
+      return moment(b.timestamp).unix() - moment(a.timestamp).unix();
+    })
+    .slice(0, 5);
 };
