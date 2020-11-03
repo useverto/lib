@@ -111,7 +111,9 @@ export const getExchanges = async (
         (tag: { name: string; value: string }) => tag.name === "Received"
       );
       if (receivedTag) {
-        exchanges[i].received = receivedTag.value;
+        const received = receivedTag.value.split(" ");
+        exchanges[i].received =
+          parseFloat(parseFloat(received[0]).toFixed(2)) + " " + received[1];
       }
     }
 

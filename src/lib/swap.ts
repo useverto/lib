@@ -65,6 +65,7 @@ export const createTradingPostFeeTx = async (
 
 export interface Transfer {
   chain: string;
+  type?: string;
   to: string;
   value: number;
 }
@@ -157,6 +158,7 @@ export const createSwap = async (
       txs: [
         {
           chain,
+          type: "FEE",
           to: await selectWeightedHolder(
             client,
             exchangeContract,
