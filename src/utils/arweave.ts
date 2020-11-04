@@ -56,7 +56,7 @@ export const getArAddr = async (
   addr: string,
   chain: string
 ): Promise<string> => {
-  let txs = (
+  const txs = (
     await query<EdgeQueryResponse>({
       query: `
         query($addr: [String!]!, $chain: [String!]!) {
@@ -96,7 +96,7 @@ export const getChainAddr = async (
   addr: string,
   chain: string
 ): Promise<string> => {
-  let txs = (
+  const txs = (
     await query<EdgeQueryResponse>({
       query: `
         query($addr: String!, $chain: [String!]!) {
