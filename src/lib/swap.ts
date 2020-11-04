@@ -1,6 +1,3 @@
-import { query } from "@utils/gql";
-import { EdgeQueryResponse } from "types";
-import arLinkQuery from "../queries/arLink.gql";
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
@@ -9,30 +6,7 @@ import { exchangeFee } from "@utils/constants";
 import { getContract } from "cacheweave";
 import { weightedRandom } from "@utils/weighted_random";
 import { getConfig } from "./get_config";
-
-const getAddr = async (addr: string, chain: string): Promise<string> => {
-  const txs = (
-    await query<EdgeQueryResponse>({
-      query: arLinkQuery,
-      variables: {
-        addr,
-        chain,
-      },
-    })
-  ).data.transactions.edges;
-
-  if (txs.length === 1) {
-    const tag = txs[0].node.tags.find((tag) => tag.name === "Wallet");
-
-    if (tag) {
-      return tag.value;
-    } else {
-      return "invalid";
-    }
-  }
-
-  return "invalid";
-};
+import { getArAddr, getChainAddr } from "@utils/arweave";
 
 export const createTradingPostFeeTx = async (
   client: Arweave,
@@ -94,6 +68,8 @@ export const createSwap = async (
   );
 
   if (arAmnt) {
+    if (!(await getChainAddr(addr, chain))) return "arLink";
+
     if (!rate) return "invalid";
     const tags = {
       Exchange: "Verto",
@@ -137,6 +113,10 @@ export const createSwap = async (
       return "ar";
     }
   } else if (chainAmnt) {
+    // @ts-ignore
+    if (!(await getArAddr(window.ethereum.selectedAddress, chain)))
+      return "arLink";
+
     const supportedChains =
       // @ts-ignore
       (await getConfig(client, post, exchangeWallet)).chain;
@@ -153,25 +133,36 @@ export const createSwap = async (
     }
     const chainTotal = chainAmnt + fee;
 
-    // TODO(@johnletey): Check the user's chain balance
-    return {
-      txs: [
-        {
-          chain,
-          type: "FEE",
-          to: await selectWeightedHolder(
-            client,
-            exchangeContract,
+    // @ts-ignore
+    let balance = await window.ethereum.request({
+      method: "eth_getBalance",
+      // @ts-ignore
+      params: [window.ethereum.selectedAddress, "latest"],
+    });
+    balance = parseInt(balance, 16) / 1e18;
+
+    if (balance >= chainTotal) {
+      return {
+        txs: [
+          {
             chain,
-            exchangeWallet
-          ),
-          value: fee,
-        },
-        { chain, to: supportedChains[chain], value: chainAmnt },
-      ],
-      ar: 0,
-      chain: chainTotal,
-    };
+            type: "FEE",
+            to: await selectWeightedHolder(
+              client,
+              exchangeContract,
+              chain,
+              exchangeWallet
+            ),
+            value: fee,
+          },
+          { chain, to: supportedChains[chain], value: chainAmnt },
+        ],
+        ar: 0,
+        chain: chainTotal,
+      };
+    } else {
+      return "chain";
+    }
   } else {
     return "invalid";
   }
@@ -232,7 +223,7 @@ export const selectWeightedHolder = async (
   const vault = state.vault;
 
   for (const addr of Object.keys(balances)) {
-    const chainAddr = await getAddr(addr, chain);
+    const chainAddr = await getChainAddr(addr, chain);
     if (chainAddr === "invalid") {
       delete balances[addr];
       delete vault[addr];
@@ -263,5 +254,5 @@ export const selectWeightedHolder = async (
     weighted[addr] = balances[addr] / totalTokens;
   }
 
-  return await getAddr(weightedRandom(weighted) || exchangeWallet, chain);
+  return await getChainAddr(weightedRandom(weighted) || exchangeWallet, chain);
 };

@@ -1,6 +1,8 @@
 import Arweave from "arweave";
 import { getContract } from "cacheweave";
 import { weightedRandom } from "./weighted_random";
+import { query } from "./gql";
+import { EdgeQueryResponse } from "types";
 
 /**
  * Utility to create a general Arweave client instance
@@ -48,4 +50,91 @@ export const selectWeightedHolder = async (
   }
 
   return weightedRandom(weighted);
+};
+
+export const getArAddr = async (
+  addr: string,
+  chain: string
+): Promise<string> => {
+  let txs = (
+    await query<EdgeQueryResponse>({
+      query: `
+        query($addr: [String!]!, $chain: [String!]!) {
+          transactions(
+            tags: [
+              { name: "Application", values: "ArLink" }
+              { name: "Chain", values: $chain }
+              { name: "Wallet", values: $addr }
+            ]
+            first: 1
+          ) {
+            edges {
+              node {
+                owner {
+                  address
+                }
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        addr,
+        chain,
+      },
+    })
+  ).data.transactions.edges;
+
+  if (txs.length === 1) {
+    return txs[0].node.owner.address;
+  }
+
+  return "invalid";
+};
+
+export const getChainAddr = async (
+  addr: string,
+  chain: string
+): Promise<string> => {
+  let txs = (
+    await query<EdgeQueryResponse>({
+      query: `
+        query($addr: String!, $chain: [String!]!) {
+          transactions(
+            owners: [$addr]
+            tags: [
+              { name: "Application", values: "ArLink" }
+              { name: "Chain", values: $chain }
+            ]
+            first: 1
+          ) {
+            edges {
+              node {
+                tags {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        addr,
+        chain,
+      },
+    })
+  ).data.transactions.edges;
+
+  if (txs.length === 1) {
+    const tag = txs[0].node.tags.find(
+      (tag: { name: string; value: string }) => tag.name === "Wallet"
+    );
+
+    if (tag) {
+      return tag.value;
+    }
+  }
+
+  return "invalid";
 };
