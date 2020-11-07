@@ -8,6 +8,8 @@ import { weightedRandom } from "@utils/weighted_random";
 import { getConfig } from "./get_config";
 import { getArAddr, getChainAddr } from "@utils/arweave";
 
+import Web3 from "web3";
+
 export const createTradingPostFeeTx = async (
   client: Arweave,
   keyfile: JWKInterface,
@@ -116,6 +118,33 @@ export const createSwap = async (
     // @ts-ignore
     if (!(await getArAddr(window.ethereum.selectedAddress, chain)))
       return "arLink";
+
+    const web3 = new Web3(
+      new Web3.providers.HttpProvider(
+        "https://rinkeby.infura.io/v3/3bf0fb3706b942138503176dc1b1d545"
+      )
+    );
+    const contract = new web3.eth.Contract([
+      {
+        inputs: [
+          {
+            internalType: "address[]",
+            name: "recipients",
+            type: "address[]",
+          },
+          {
+            internalType: "uint256[]",
+            name: "amounts",
+            type: "uint256[]",
+          },
+        ],
+        name: "send",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+    ]);
+    console.log(contract);
 
     const supportedChains =
       // @ts-ignore
