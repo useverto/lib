@@ -1,6 +1,14 @@
 import Arweave from "arweave";
+import { VertoToken } from "types";
 import { popularTokens, getTokens } from "./tokens";
 import { getContract } from "cacheweave";
+
+const unique = (arr: VertoToken[]): VertoToken[] => {
+  const seen: Record<string, boolean> = {};
+  return arr.filter((item) => {
+    return item.id in seen ? false : (seen[item.id] = true);
+  });
+};
 
 export const getAssets = async (
   client: Arweave,
@@ -8,10 +16,10 @@ export const getAssets = async (
   exchangeContract: string,
   exchangeWallet: string
 ): Promise<{ id: string; name: string; ticker: string; balance: number }[]> => {
-  const tokens = [
+  const tokens = unique([
     ...(await popularTokens(client, exchangeWallet)),
     ...(await getTokens(client, exchangeContract, exchangeWallet)),
-  ];
+  ]);
 
   const balances: {
     id: string;

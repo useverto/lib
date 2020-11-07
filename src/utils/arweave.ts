@@ -9,7 +9,7 @@ import { EdgeQueryResponse } from "types";
  */
 export function createGenericClient(): Arweave {
   return new Arweave({
-    host: "arweave.dev",
+    host: "arweave.net",
     port: 443,
     protocol: "https",
     // Disable the arweave logger

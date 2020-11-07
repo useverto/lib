@@ -6,7 +6,6 @@ import { volume } from "./volume";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
 import tokensQuery from "../queries/tokens.gql";
-import tokenQuery from "../queries/token.gql";
 
 export const getTokens = async (
   client: Arweave,
@@ -81,7 +80,28 @@ export const saveToken = async (
     if (!tokens.find((token) => token.id === contract)) {
       const userTokenTxs = (
         await query<EdgeQueryResponse>({
-          query: tokensQuery,
+          query: `
+            query($exchange: String!, $user: String!, $contract: [String!]!) {
+              transactions(
+                owners: [$user]
+                recipients: [$exchange]
+                tags: [
+                  { name: "Exchange", values: "Verto" }
+                  { name: "Type", values: "Token" }
+                  { name: "Contract", values: $contract }
+                ]
+                first: 2147483647
+              ) {
+                edges {
+                  node {
+                    owner {
+                      address
+                    }
+                  }
+                }
+              }
+            }
+          `,
           variables: {
             exchange: exchangeWallet,
             user: await client.wallets.jwkToAddress(keyfile),
@@ -169,7 +189,27 @@ export const popularTokens = async (
 
       let tokenTxs = (
         await query<EdgeQueryResponse>({
-          query: tokenQuery,
+          query: `
+            query($exchange: String!, $contract: [String!]!) {
+              transactions(
+                recipients: [$exchange]
+                tags: [
+                  { name: "Exchange", values: "Verto" }
+                  { name: "Type", values: "Token" }
+                  { name: "Contract", values: $contract }
+                ]
+                first: 2147483647
+              ) {
+                edges {
+                  node {
+                    owner {
+                      address
+                    }
+                  }
+                }
+              }
+            }
+          `,
           variables: {
             exchange: exchangeWallet,
             contract: tokens[i].id,
