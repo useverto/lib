@@ -1,7 +1,9 @@
 import Arweave from "arweave";
 import {
   arVolume,
+  chainRate,
   createOrder,
+  createSwap,
   getAssets,
   getConfig,
   getExchanges,
@@ -11,6 +13,7 @@ import {
   getTPTokens,
   getTradingPosts,
   getTransactions,
+  latestChainRate,
   latestPrice,
   latestVolume,
   popularTokens,
@@ -18,6 +21,7 @@ import {
   recommendPost,
   saveToken,
   sendOrder,
+  sendSwap,
   volume,
 } from "@lib/index";
 import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
@@ -61,6 +65,15 @@ export default class Verto {
     return arVolume(this.arweave, this.exchangeContract, this.exchangeWallet);
   }
 
+  chainRate(chain: string): Promise<{ rates: number[]; dates: string[] }> {
+    return chainRate(
+      this.arweave,
+      chain,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
+  }
+
   createOrder(
     type: string,
     amnt: number,
@@ -78,6 +91,44 @@ export default class Verto {
         post,
         this.exchangeContract,
         this.exchangeWallet,
+        rate
+      );
+    } else {
+      return new Promise((resolve) => resolve("keyfile"));
+    }
+  }
+
+  createSwap(
+    chain: string,
+    post: string,
+    arAmnt?: number,
+    chainAmnt?: number,
+    rate?: number
+  ): Promise<
+    | {
+        txs: (
+          | Transaction
+          | {
+              chain: string;
+              to: string;
+              value: number;
+            }
+        )[];
+        ar: number;
+        chain: number;
+      }
+    | string
+  > {
+    if (this.keyfile) {
+      return createSwap(
+        this.arweave,
+        this.keyfile,
+        chain,
+        post,
+        this.exchangeWallet,
+        this.exchangeContract,
+        arAmnt,
+        chainAmnt,
         rate
       );
     } else {
@@ -164,6 +215,15 @@ export default class Verto {
     return getTransactions(this.arweave, addr);
   }
 
+  latestChainRate(chain: string): Promise<number> {
+    return latestChainRate(
+      this.arweave,
+      chain,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
+  }
+
   latestPrice(token: string): Promise<number | undefined> {
     return latestPrice(
       this.arweave,
@@ -205,7 +265,7 @@ export default class Verto {
     );
   }
 
-  saveToken(contract: string): Promise<void> {
+  saveToken(contract: string): Promise<string | void> {
     if (this.keyfile) {
       return saveToken(
         this.arweave,
@@ -221,6 +281,23 @@ export default class Verto {
   sendOrder(txs: Transaction[]): Promise<void | string> {
     if (this.keyfile) {
       return sendOrder(this.arweave, this.keyfile, txs);
+    } else {
+      return new Promise((resolve) => resolve("keyfile"));
+    }
+  }
+
+  sendSwap(
+    txs: (
+      | Transaction
+      | {
+          chain: string;
+          to: string;
+          value: number;
+        }
+    )[]
+  ): Promise<void | string> {
+    if (this.keyfile) {
+      return sendSwap(this.arweave, this.keyfile, txs);
     } else {
       return new Promise((resolve) => resolve("keyfile"));
     }

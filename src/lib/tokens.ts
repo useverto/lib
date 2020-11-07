@@ -1,6 +1,6 @@
 import Arweave from "arweave";
 import { VertoToken } from "types";
-import { getData } from "cacheweave";
+import { getContract, getData } from "cacheweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { volume } from "./volume";
 import { query } from "@utils/gql";
@@ -32,8 +32,7 @@ export const getTokens = async (
   }[] = [];
   for (const contractID of contractIDs) {
     try {
-      const rawContract = await getData(client, contractID);
-      const contract = JSON.parse(rawContract);
+      const contract = await getContract(client, contractID);
 
       const volumeData = await volume(
         client,
@@ -73,7 +72,7 @@ export const saveToken = async (
   keyfile: JWKInterface,
   exchangeContract: string,
   exchangeWallet: string
-): Promise<void> => {
+): Promise<string | void> => {
   // TODO(@johnletey): Use `localPorridge` as well.
   // @ts-ignore
   if (typeof window !== "undefined") {
@@ -120,7 +119,7 @@ export const saveToken = async (
       localStorage.setItem("tokens", JSON.stringify(cache));
     }
 
-    return JSON.parse(await getData(client, contract)).ticker;
+    return contract;
   }
 };
 

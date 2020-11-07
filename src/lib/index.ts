@@ -1,3 +1,4 @@
+export * from "./chainRate";
 export * from "./exchanges";
 export * from "./get_assets";
 export * from "./get_config";
@@ -9,6 +10,7 @@ export * from "./latest_volume";
 export * from "./price";
 export * from "./recommend_post";
 export * from "./reputation";
+export * from "./swap";
 export * from "./trade";
 export * from "./txs";
 export * from "./volume";

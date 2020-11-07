@@ -1,5 +1,5 @@
 import Arweave from "arweave";
-import { getTokens } from "./tokens";
+import { popularTokens, getTokens } from "./tokens";
 import { getContract } from "cacheweave";
 
 export const getAssets = async (
@@ -8,7 +8,10 @@ export const getAssets = async (
   exchangeContract: string,
   exchangeWallet: string
 ): Promise<{ id: string; name: string; ticker: string; balance: number }[]> => {
-  const tokens = await getTokens(client, exchangeContract, exchangeWallet);
+  const tokens = [
+    ...(await popularTokens(client, exchangeWallet)),
+    ...(await getTokens(client, exchangeContract, exchangeWallet)),
+  ];
 
   const balances: {
     id: string;
