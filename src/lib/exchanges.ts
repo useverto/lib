@@ -119,7 +119,9 @@ export const getExchanges = async (
     cache.map((swap: { id: string; timestamp: string; value: number }) => {
       exchanges.push({
         id: swap.id,
-        timestamp: swap.timestamp,
+        timestamp: moment
+          .unix(parseFloat(swap.timestamp))
+          .format("YYYY-MM-DD hh:mm:ss"),
         type: "",
         sent: swap.value + " ETH",
         received: "??? AR",

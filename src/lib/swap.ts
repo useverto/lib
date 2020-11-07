@@ -120,7 +120,6 @@ export const createSwap = async (
     const supportedChains =
       // @ts-ignore
       (await getConfig(client, post, exchangeWallet)).chain;
-    // TODO(@johnletey): Make sure chain is supported by TP
 
     let fee = chainAmnt * exchangeFee;
     if (chainAmnt < 0.000001) {
