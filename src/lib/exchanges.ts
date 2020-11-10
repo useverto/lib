@@ -96,40 +96,36 @@ export const getExchanges = async (
 
   swapTxs.map(({ node }) => {
     const chain = node.tags.find((tag) => tag.name === "Chain")?.value;
+    const hash = node.tags.find((tag) => tag.name === "Hash")?.value;
     if (chain) {
-      exchanges.push({
-        id: node.id,
-        timestamp: node.block
-          ? moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
-          : "not mined yet",
-        type: "",
-        sent: parseFloat(node.quantity.ar) + " AR",
-        received: "??? " + chain,
-        status: "pending",
-        duration: "not completed",
-      });
+      if (hash) {
+        exchanges.push({
+          id: node.id,
+          timestamp: node.block
+            ? moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
+            : "not mined yet",
+          type: "",
+          sent:
+            node.tags.find((tag) => tag.name === "Value")?.value + " " + chain,
+          received: "??? AR",
+          status: "pending",
+          duration: "not completed",
+        });
+      } else {
+        exchanges.push({
+          id: node.id,
+          timestamp: node.block
+            ? moment.unix(node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
+            : "not mined yet",
+          type: "",
+          sent: parseFloat(node.quantity.ar) + " AR",
+          received: "??? " + chain,
+          status: "pending",
+          duration: "not completed",
+        });
+      }
     }
   });
-
-  // @ts-ignore
-  if (typeof window !== "undefined") {
-    // @ts-ignore
-    const cache = JSON.parse(localStorage.getItem("swaps") || "[]");
-
-    cache.map((swap: { id: string; timestamp: string; value: number }) => {
-      exchanges.push({
-        id: swap.id,
-        timestamp: moment
-          .unix(parseFloat(swap.timestamp))
-          .format("YYYY-MM-DD hh:mm:ss"),
-        type: "",
-        sent: swap.value + " ETH",
-        received: "??? AR",
-        status: "pending",
-        duration: "not completed",
-      });
-    });
-  }
 
   //
 

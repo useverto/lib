@@ -2,7 +2,6 @@ import Arweave from "arweave";
 import { getTradingPosts } from "./get_trading_posts";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
-import sellQuery from "../queries/sell.gql";
 import { maxInt } from "@utils/constants";
 import moment from "moment";
 
@@ -41,12 +40,35 @@ export const price = async (
 ): Promise<{ prices: number[]; dates: string[] } | undefined> => {
   const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
 
-  const orderTxs = (
+  const confirmationTxs = (
     await query<EdgeQueryResponse>({
-      query: sellQuery,
+      query: `
+        query($posts: [String!], $num: Int) {
+          transactions(
+            owners: $posts
+            tags: [
+              { name: "Exchange", values: "Verto" }
+              { name: "Type", values: "Confirmation" }
+            ]
+            first: $num
+          ) {
+            edges {
+              node {
+                id
+                block {
+                  timestamp
+                }
+                tags {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }      
+      `,
       variables: {
-        recipients: posts,
-        token,
+        posts,
         num: maxInt,
       },
     })
@@ -56,16 +78,49 @@ export const price = async (
     rate: number;
     timestamp: number;
   }[] = [];
-  orderTxs.map(({ node }) => {
-    const rateTag = node.tags.find((tag) => tag.name === "Rate");
+  for (const confirmation of confirmationTxs) {
+    const node = confirmation.node;
+    const receiveTag = node.tags.find((tag) => tag.name === "Received");
 
-    if (rateTag) {
-      orders.push({
-        rate: 1 / parseFloat(rateTag.value),
-        timestamp: node.block.timestamp,
-      });
+    if (receiveTag) {
+      if (receiveTag.value.split(" ")[1] === "AR") {
+        const matchTag = node.tags.find((tag) => tag.name === "Match");
+
+        if (matchTag) {
+          const tx = (
+            await query<EdgeQueryResponse>({
+              query: `
+                query($txID: ID!) {
+                  transaction(id: $txID) {
+                    tags {
+                      name
+                      value
+                    }
+                  }
+                }          
+              `,
+              variables: {
+                txID: matchTag.value,
+              },
+            })
+          ).data.transaction;
+
+          const contractTag = tx.tags.find((tag) => tag.name === "Contract");
+          if (contractTag && contractTag.value === token) {
+            const rateTag = tx.tags.find((tag) => tag.name === "Rate");
+            if (rateTag) {
+              orders.push({
+                rate: 1 / parseFloat(rateTag.value),
+                timestamp: node.block
+                  ? node.block.timestamp
+                  : parseInt(new Date().getTime().toString().slice(0, -3)),
+              });
+            }
+          }
+        }
+      }
     }
-  });
+  }
 
   let prices: number[] = [];
   const days: string[] = [];

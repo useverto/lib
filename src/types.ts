@@ -25,4 +25,20 @@ export interface EdgeQueryResponse {
       };
     }[];
   };
+  transaction: {
+    id: string;
+    owner: {
+      address: string;
+    };
+    quantity: {
+      ar: string;
+    };
+    block: {
+      timestamp: number;
+    };
+    tags: {
+      name: string;
+      value: string;
+    }[];
+  };
 }
