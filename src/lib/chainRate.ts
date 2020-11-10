@@ -2,7 +2,6 @@ import Arweave from "arweave";
 import { getTradingPosts } from "./get_trading_posts";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
-import swapQuery from "../queries/swap.gql";
 import { maxInt } from "@utils/constants";
 import moment from "moment";
 
@@ -52,31 +51,82 @@ export const chainRate = async (
 ): Promise<{ rates: number[]; dates: string[] }> => {
   const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
 
-  const swapTxs = (
+  const confirmationTxs = (
     await query<EdgeQueryResponse>({
-      query: swapQuery,
+      query: `
+        query($posts: [String!], $num: Int) {
+          transactions(
+            owners: $posts
+            tags: [
+              { name: "Exchange", values: "Verto" }
+              { name: "Type", values: "Confirmation" }
+            ]
+            first: $num
+          ) {
+            edges {
+              node {
+                id
+                block {
+                  timestamp
+                }
+                tags {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }      
+      `,
       variables: {
         posts,
-        chain,
         num: maxInt,
       },
     })
   ).data.transactions.edges;
 
   const swaps: { id: string; rate: number; timestamp: number }[] = [];
-  swapTxs.map(({ node }) => {
-    const rateTag = node.tags.find((tag) => tag.name === "Rate");
+  for (const confirmation of confirmationTxs) {
+    const node = confirmation.node;
+    const receiveTag = node.tags.find((tag) => tag.name === "Received");
 
-    if (rateTag) {
-      swaps.push({
-        id: node.id,
-        rate: parseFloat(rateTag.value),
-        timestamp: node.block
-          ? node.block.timestamp
-          : parseInt(new Date().getTime().toString().slice(0, -3)),
-      });
+    if (receiveTag) {
+      if (receiveTag.value.split(" ")[1] === chain) {
+        const swapTag = node.tags.find((tag) => tag.name === "Swap");
+
+        if (swapTag) {
+          const swapTx = (
+            await query<EdgeQueryResponse>({
+              query: `
+                query($txID: ID!) {
+                  transaction(id: $txID) {
+                    tags {
+                      name
+                      value
+                    }
+                  }
+                }          
+              `,
+              variables: {
+                txID: swapTag.value,
+              },
+            })
+          ).data.transaction;
+
+          const rateTag = swapTx.tags.find((tag) => tag.name === "Rate");
+          if (rateTag) {
+            swaps.push({
+              id: node.id,
+              rate: parseFloat(rateTag.value),
+              timestamp: node.block
+                ? node.block.timestamp
+                : parseInt(new Date().getTime().toString().slice(0, -3)),
+            });
+          }
+        }
+      }
     }
-  });
+  }
 
   let rates: number[] = [];
   const days: string[] = [];
