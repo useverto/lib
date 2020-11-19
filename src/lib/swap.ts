@@ -40,6 +40,7 @@ export const createTradingPostFeeTx = async (
 export interface Transfer {
   chain: string;
   type?: string;
+  token?: string;
   to: string;
   value: number;
 }
@@ -53,7 +54,8 @@ export const createSwap = async (
   exchangeContract: string,
   arAmnt?: number,
   chainAmnt?: number,
-  rate?: number
+  rate?: number,
+  token?: string
 ): Promise<
   | {
       txs: (Transaction | Transfer)[];
@@ -154,7 +156,7 @@ export const createSwap = async (
             ),
             value: fee,
           },
-          { chain, to: supportedChains[chain], value: chainAmnt },
+          { chain, token, to: supportedChains[chain], value: chainAmnt },
         ],
         ar: 0,
         chain: chainTotal,
