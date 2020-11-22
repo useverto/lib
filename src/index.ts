@@ -103,13 +103,16 @@ export default class Verto {
     post: string,
     arAmnt?: number,
     chainAmnt?: number,
-    rate?: number
+    rate?: number,
+    token?: string
   ): Promise<
     | {
         txs: (
           | Transaction
           | {
               chain: string;
+              type?: string;
+              token?: string;
               to: string;
               value: number;
             }
@@ -129,7 +132,8 @@ export default class Verto {
         this.exchangeContract,
         arAmnt,
         chainAmnt,
-        rate
+        rate,
+        token
       );
     } else {
       return new Promise((resolve) => resolve("keyfile"));
