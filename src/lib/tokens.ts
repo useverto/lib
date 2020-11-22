@@ -167,7 +167,7 @@ export const popularTokens = async (
     const idTag = node.tags.find((tag) => tag.name === "Contract");
     if (idTag) {
       const id = idTag.value;
-      if (!tokens.find((entry) => entry.id === id)) {
+      if (!tokens.find((entry) => entry.id === id) && id !== "") {
         tokens.push({
           id,
           name: "",
