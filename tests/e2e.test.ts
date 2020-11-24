@@ -1,6 +1,7 @@
 import Verto from "../src";
 import { assert } from "chai";
-const stdout = require("test-console").stdout;
+// const stdout = require("test-console").stdout;
+import { stdout } from "test-console";
 
 // Assign a token/address/trading post; Just for testing
 const TOKEN = "usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A";
@@ -136,7 +137,7 @@ describe("E2E Tests", function () {
       .catch(done);
   });
   it("Test console.log is working with multiple parameters", (done) => {
-    let output = stdout.inspectSync(function() {
+    const output = stdout.inspectSync(function() {
       console.log("foo", "bar");
     });
     assert.deepEqual(output, [ "foo bar\n" ]);
