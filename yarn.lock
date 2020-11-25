@@ -180,6 +180,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/test-console@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/test-console/-/test-console-1.1.0.tgz#e8c083cbb30ac8270fc6c0ef389582bc31c970d5"
+  integrity sha512-Y+esQlsRqqfyIkCFwR7TXOT+wpM2z53iE1yNtv75HGODS/81nor5Dna7kdTQ6HZnos0LkRDlseJbF7ZWZn2hxQ==
+
 "@typescript-eslint/eslint-plugin@^4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.1.1.tgz#78d5b18e259b13c2f4ec41dd9105af269a161a75"
@@ -1985,6 +1990,11 @@ terser@^5.0.0:
     commander "^2.20.0"
     source-map "~0.6.1"
     source-map-support "~0.5.12"
+
+test-console@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/test-console/-/test-console-1.1.0.tgz#34466d421f1b049e1be80d1734bdb5a512889c7f"
+  integrity sha512-pntCc+DnxNVZxNIul3NjThWaLvIrp9GNHRMrriyFWFtq10LpbHGsagu7riq7UIZn79f9aXnKI7YgyMvf8dcKsg==
 
 text-table@^0.2.0:
   version "0.2.0"
