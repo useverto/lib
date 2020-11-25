@@ -31,9 +31,9 @@ import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
 
 // eslint-disable-next-line
-console.log = (x: any) => {
+console.log = (...x: any[]) => {
   if (new Error().stack?.includes("smartweave")) return;
-  console.info(x);
+  console.info(...x);
 };
 
 interface VertoLibOptions {
