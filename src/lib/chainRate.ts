@@ -1,8 +1,6 @@
 import Arweave from "arweave";
 import { getTradingPosts } from "./get_trading_posts";
-import { query } from "@utils/gql";
-import { EdgeQueryResponse } from "types";
-import { maxInt } from "@utils/constants";
+import { all, tx } from "ar-gql";
 import moment from "moment";
 
 const fillArray = (arr: number[]): number[] => {
@@ -51,39 +49,40 @@ export const chainRate = async (
 ): Promise<{ rates: number[]; dates: string[] }> => {
   const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
 
-  const confirmationTxs = (
-    await query<EdgeQueryResponse>({
-      query: `
-        query($posts: [String!], $num: Int) {
-          transactions(
-            owners: $posts
-            tags: [
-              { name: "Exchange", values: "Verto" }
-              { name: "Type", values: "Confirmation" }
-            ]
-            first: $num
-          ) {
-            edges {
-              node {
-                id
-                block {
-                  timestamp
-                }
-                tags {
-                  name
-                  value
-                }
-              }
+  const confirmationTxs = await all(
+    `
+    query($posts: [String!], $cursor: String) {
+      transactions(
+        owners: $posts
+        tags: [
+          { name: "Exchange", values: "Verto" }
+          { name: "Type", values: "Confirmation" }
+        ]
+        after: $cursor
+      ) {
+        pageInfo {
+          hasNextPage
+        }
+        edges {
+          cursor
+          node {
+            id
+            block {
+              timestamp
+            }
+            tags {
+              name
+              value
             }
           }
-        }      
+        }
+      }
+    }    
       `,
-      variables: {
-        posts,
-        num: maxInt,
-      },
-    })
-  ).data.transactions.edges;
+    {
+      posts,
+    }
+  );
 
   const swaps: { id: string; rate: number; timestamp: number }[] = [];
   for (const confirmation of confirmationTxs) {
@@ -95,23 +94,7 @@ export const chainRate = async (
         const swapTag = node.tags.find((tag) => tag.name === "Swap");
 
         if (swapTag) {
-          const swapTx = (
-            await query<EdgeQueryResponse>({
-              query: `
-                query($txID: ID!) {
-                  transaction(id: $txID) {
-                    tags {
-                      name
-                      value
-                    }
-                  }
-                }          
-              `,
-              variables: {
-                txID: swapTag.value,
-              },
-            })
-          ).data.transaction;
+          const swapTx = await tx(swapTag.value);
 
           const rateTag = swapTx.tags.find((tag) => tag.name === "Rate");
           if (rateTag) {
