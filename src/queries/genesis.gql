@@ -1,4 +1,4 @@
-query($owners: [String!], $recipients: [String!], $num: Int) {
+query($owners: [String!], $recipients: [String!], $cursor: String) {
   transactions(
     owners: $owners
     recipients: $recipients
@@ -6,9 +6,13 @@ query($owners: [String!], $recipients: [String!], $num: Int) {
       { name: "Exchange", values: "Verto" }
       { name: "Type", values: "Genesis" }
     ]
-    first: $num
+    after: $cursor
   ) {
+    pageInfo {
+      hasNextPage
+    }
     edges {
+      cursor
       node {
         id
         owner {

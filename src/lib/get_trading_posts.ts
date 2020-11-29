@@ -1,8 +1,6 @@
 import Arweave from "arweave";
-import { query } from "@utils/gql";
-import { EdgeQueryResponse } from "types";
+import { all } from "ar-gql";
 import genesisQuery from "../queries/genesis.gql";
-import { maxInt } from "@utils/constants";
 import { getPostStake } from "./reputation";
 
 export const getTradingPosts = async (
@@ -10,19 +8,13 @@ export const getTradingPosts = async (
   exchangeContract: string,
   exchangeWallet: string
 ): Promise<string[]> => {
-  const response = (
-    await query<EdgeQueryResponse>({
-      query: genesisQuery,
-      variables: {
-        recipients: [exchangeWallet],
-        num: maxInt,
-      },
-    })
-  ).data.transactions;
-  const gensisTxs = response.edges;
+  const genesisTxs = await all(genesisQuery, {
+    recipients: [exchangeWallet],
+  });
+
   const posts: string[] = [];
   const encountered: string[] = [];
-  for (const tx of gensisTxs) {
+  for (const tx of genesisTxs) {
     if (!encountered.find((addr) => addr === tx.node.owner.address)) {
       const stake = await getPostStake(
         client,
