@@ -1,6 +1,5 @@
 import Arweave from "arweave";
-import { query } from "@utils/gql";
-import { EdgeQueryResponse } from "types";
+import { run } from "ar-gql";
 import genesisQuery from "../queries/genesis.gql";
 
 export const getConfig = async (
@@ -9,13 +8,9 @@ export const getConfig = async (
   exchangeWallet: string
 ): Promise<JSON | string> => {
   const genesis = (
-    await query<EdgeQueryResponse>({
-      query: genesisQuery,
-      variables: {
-        owners: [post],
-        recipients: [exchangeWallet],
-        num: 1,
-      },
+    await run(genesisQuery, {
+      owners: [post],
+      recipients: [exchangeWallet],
     })
   ).data.transactions.edges[0]?.node.id;
 
