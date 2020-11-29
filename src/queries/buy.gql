@@ -1,10 +1,9 @@
-query($recipients: [String!], $token: [String!]!, $cursor: String) {
+query($recipients: [String!], $cursor: String) {
   transactions(
     recipients: $recipients
     tags: [
       { name: "Exchange", values: "Verto" }
-      { name: "Type", values: "Sell" }
-      { name: "Contract", values: $token }
+      { name: "Type", values: "Buy" }
     ]
     after: $cursor
   ) {
@@ -14,12 +13,11 @@ query($recipients: [String!], $token: [String!]!, $cursor: String) {
     edges {
       cursor
       node {
+        quantity {
+          ar
+        }
         block {
           timestamp
-        }
-        tags {
-          name
-          value
         }
       }
     }

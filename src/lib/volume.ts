@@ -1,9 +1,8 @@
 import Arweave from "arweave";
 import { getTradingPosts } from "./get_trading_posts";
-import { query } from "@utils/gql";
-import { EdgeQueryResponse } from "types";
+import { all } from "ar-gql";
 import sellQuery from "../queries/sell.gql";
-import { maxInt } from "@utils/constants";
+import buyQuery from "../queries/buy.gql";
 import moment from "moment";
 
 export const volume = async (
@@ -14,16 +13,10 @@ export const volume = async (
 ): Promise<{ volume: number[]; dates: string[] }> => {
   const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
 
-  const orderTxs = (
-    await query<EdgeQueryResponse>({
-      query: sellQuery,
-      variables: {
-        recipients: posts,
-        token,
-        num: maxInt,
-      },
-    })
-  ).data.transactions.edges;
+  const orderTxs = await all(sellQuery, {
+    recipients: posts,
+    token,
+  });
 
   const orders: { amnt: number; timestamp: number }[] = [];
   orderTxs.map(({ node }) => {
@@ -71,37 +64,9 @@ export const arVolume = async (
 ): Promise<{ volume: number[]; dates: string[] }> => {
   const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
 
-  const orderTxs = (
-    await query<EdgeQueryResponse>({
-      query: `
-        query($recipients: [String!], $num: Int) {
-          transactions(
-            recipients: $recipients
-            tags: [
-              { name: "Exchange", values: "Verto" }
-              { name: "Type", values: "Buy" }
-            ]
-            first: $num
-          ) {
-            edges {
-              node {
-                quantity {
-                  ar
-                }
-                block {
-                  timestamp
-                }
-              }
-            }
-          }
-        }      
-      `,
-      variables: {
-        recipients: posts,
-        num: maxInt,
-      },
-    })
-  ).data.transactions.edges;
+  const orderTxs = await all(buyQuery, {
+    recipients: posts,
+  });
 
   const orders: { amnt: number; timestamp: number }[] = [];
   orderTxs.map(({ node }) => {
