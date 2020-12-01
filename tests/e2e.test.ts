@@ -1,5 +1,6 @@
 import Verto from "../src";
 import { assert } from "chai";
+import { stdout } from "test-console";
 
 // Assign a token/address/trading post; Just for testing
 const TOKEN = "usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A";
@@ -9,8 +10,11 @@ const POST = "WNeEQzI24ZKWslZkQT573JZ8bhatwDVx6XVDrrGbUyk";
 let vertoInstance: Verto;
 
 describe("E2E Tests", function () {
-  it("Create Verto instance", (done) => {
+  before(() => {
     vertoInstance = new Verto();
+  });
+
+  it("Assert Verto instance", (done) => {
     assert(vertoInstance);
     done();
   });
@@ -130,5 +134,12 @@ describe("E2E Tests", function () {
         done();
       })
       .catch(done);
+  });
+  it("Test console.log is working with multiple parameters", (done) => {
+    const output = stdout.inspectSync(function () {
+      console.log("foo", "bar");
+    });
+    assert.deepEqual(output, ["foo bar\n"]);
+    done();
   });
 });

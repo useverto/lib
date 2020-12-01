@@ -1,6 +1,6 @@
 {
   "name": "@verto/lib",
-  "version": "0.7.1",
+  "version": "0.7.3",
   "author": "The Verto Team",
   "license": "MIT",
   "publishConfig": {
@@ -38,6 +38,7 @@
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.6.2",
     "@types/node-fetch": "^2.5.7",
+    "@types/test-console": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
     "@typescript-eslint/parser": "^4.1.1",
     "chai": "^4.2.0",
@@ -49,6 +50,7 @@
     "rollup-plugin-string": "^3.0.0",
     "rollup-plugin-terser": "^7.0.1",
     "rollup-plugin-typescript2": "^0.27.3",
+    "test-console": "^1.1.0",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.2"
   }
