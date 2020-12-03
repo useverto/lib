@@ -255,6 +255,11 @@
     "@typescript-eslint/types" "4.1.1"
     eslint-visitor-keys "^2.0.0"
 
+"@weavery/clarity@^0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@weavery/clarity/-/clarity-0.1.5.tgz#f06bbb0dac7c63c6e2ccd76cda3e8b32b57f82c2"
+  integrity sha512-0ms2/sBx+uyW3EmXte5otIzNVAXpfJ3lBl6FS8JuLdWmPU6SxiAoGTMUT0N0SL3Ogiz2PZt6NV+mfApbSvYBaQ==
+
 acorn-jsx@^5.2.0:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.1.tgz#fc8661e11b7ac1539c47dbfea2e72b3af34d267b"
@@ -318,6 +323,13 @@ anymatch@~3.1.1:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
+ar-gql@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/ar-gql/-/ar-gql-0.0.3.tgz#3c0734e572a26842ffbdb6bb343182f96e2a711f"
+  integrity sha512-P9xdIVU6InndVBO9n6nbKpu1A1Ad/6Yr02Lf835zZiEq4t60zMkp6epb88gr+YnXbDYdKuCrXTJWMHpHK7ZNTw==
+  dependencies:
+    node-fetch "^2.6.1"
+
 arg@^4.1.0:
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/arg/-/arg-4.1.3.tgz#269fc7ad5b8e42cb63c896d5666017261c144089"
@@ -344,6 +356,16 @@ array.prototype.map@^1.0.1:
     es-abstract "^1.17.0-next.1"
     es-array-method-boxes-properly "^1.0.0"
     is-string "^1.0.4"
+
+arweave@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.10.0.tgz#76df929ff1f75349d49241ffc542c1422a4b235a"
+  integrity sha512-ejgnByZttzcJfNszF+S4gimqR9gC+mgM8mBMjX4fvUYPjTtk7+YD9o/2p5C+dJBpG1drr4bRtlmv9NZfzyTDBg==
+  dependencies:
+    asn1.js "^5.4.1"
+    axios "^0.19.2"
+    base64-js "^1.3.1"
+    bignumber.js "^8.1.1"
 
 arweave@^1.9.1:
   version "1.9.1"
@@ -407,6 +429,11 @@ bignumber.js@^9.0.0:
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.0.tgz#805880f84a329b5eac6e7cb6f8274b6d82bdf075"
   integrity sha512-t/OYhhJ2SD+YGBQcjY8GzzDHEk9f3nerxjtfa6tlMXfe7frs/WozhvCNoGvpM0P3bNf3Gq5ZRMlGr5f3r4/N8A==
 
+bignumber.js@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.1.tgz#8d7ba124c882bfd8e43260c67475518d0689e4e5"
+  integrity sha512-IdZR9mh6ahOBv/hYGiXyVuyCetmGJhtYkqLBpTStdhEGjegpPlUawydyaF3pbIOFynJTpllEs+NP+CS9jKFLjA==
+
 binary-extensions@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.1.0.tgz#30fa40c9e7fe07dbc895678cd287024dea241dd9"
@@ -447,15 +474,16 @@ builtin-modules@^3.1.0:
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-3.1.0.tgz#aad97c15131eb76b65b50ef208e7584cd76a7484"
   integrity sha512-k0KL0aWZuBt2lrxrcASWDfwOLMnodeQjodT/1SxEQAXsHANgo6ZC/VEaSEHCXt7aSTZ4/4H5LKa+tBXmW7Vtvw==
 
-cacheweave@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/cacheweave/-/cacheweave-1.0.0.tgz#bead06f12f621ec70ceabbf75c71083bb04d00c4"
-  integrity sha512-ucak1m7jKARLl24TZx/Owmnb3zgMEfJ6/DyD/iKaOaeopfdHd8SCXyPkuSHnIp4cPgwLcfMXPnA91E2A1VhAUg==
+cacheweave@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/cacheweave/-/cacheweave-2.0.1.tgz#18f997c9d91460d0b073d78b7067ed7caad04e3f"
+  integrity sha512-2hfXkHnDBcjNKTyu4dxITdWHv4N+01vQiERtdkwrcT5pYQsk1p9eNuEJJnu2rOhGqkFCbLoi/nL6IUwt98kTfw==
   dependencies:
-    arweave "^1.9.1"
-    community-js "^1.0.15"
-    node-fetch "^2.6.1"
-    smartweave "^0.3.6"
+    ar-gql "^0.0.3"
+    arweave "^1.10.0"
+    community-js "^1.1.6"
+    localporridge "^1.0.0"
+    smartweave "^0.4.12"
 
 callsites@^3.0.0:
   version "3.1.0"
@@ -534,6 +562,15 @@ cliui@^6.0.0:
     strip-ansi "^6.0.0"
     wrap-ansi "^6.2.0"
 
+cliui@^7.0.2:
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/cliui/-/cliui-7.0.4.tgz#a0265ee655476fc807aea9df3df8df7783808b4f"
+  integrity sha512-OcRE68cOsVMXp1Yvonl/fzkQOyjLSu/8bhPDfQt0e0/Eb283TKP20Fs2MqoPsr9SwA595rRCA+QMzYc9nBP+JQ==
+  dependencies:
+    string-width "^4.2.0"
+    strip-ansi "^6.0.0"
+    wrap-ansi "^7.0.0"
+
 color-convert@^1.9.0:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.3.tgz#bb71850690e1f136567de629d2d5471deda4c1e8"
@@ -575,13 +612,13 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
 
-community-js@^1.0.15:
-  version "1.0.15"
-  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.0.15.tgz#06a0b144735f8215ae78d9de7d3eec540a9aef49"
-  integrity sha512-RzlgUym2HkaPwW9Z0qV3GBAOHL82SqffXf0ZA+3QeXFlIXK4Zst6/8cHfSC97bm7+vFFTOhPNWI2rmR5Iomfyw==
+community-js@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.6.tgz#d165096dcdb47589f99619b9841e416194aa5aef"
+  integrity sha512-heL/FhX2UuTxVP6cmtMIdWH7uLtrzgyjShAXS66voJbP/3zuUpP8rLGnI9KQ2NLs4VSNifK2FVKHJEHvnjN4qg==
   dependencies:
     arweave "^1.9.1"
-    smartweave "^0.3.6"
+    smartweave "^0.4.11"
     tiny-worker "^2.3.0"
 
 concat-map@0.0.1:
@@ -743,6 +780,11 @@ es-to-primitive@^1.2.1:
     is-callable "^1.1.4"
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
+
+escalade@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/escalade/-/escalade-3.1.1.tgz#d8cfdc7000965c5a0174b4a82eaa5c0552742e40"
+  integrity sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==
 
 escape-string-regexp@4.0.0:
   version "4.0.0"
@@ -1031,7 +1073,7 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
-get-caller-file@^2.0.1:
+get-caller-file@^2.0.1, get-caller-file@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-2.0.5.tgz#4f94412a82db32f36e3b0b9741f8a97feb031f7e"
   integrity sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==
@@ -1326,6 +1368,11 @@ levn@^0.4.1:
   dependencies:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
+
+localporridge@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/localporridge/-/localporridge-1.0.0.tgz#718eb86547b075ec78b369a26b7d1b6fddd171d5"
+  integrity sha512-mCaTeK+CMBUElyxQiLOIB0GdEOTZwvYl/VyqynJ+ApQbelItugJnp4+45jBcFbSAvFV9lStnkCK1ZbCNL75iUg==
 
 locate-path@^3.0.0:
   version "3.0.0"
@@ -1855,6 +1902,17 @@ smartweave@^0.3.6:
     loglevel "^1.7.0"
     yargs "^15.3.1"
 
+smartweave@^0.4.11, smartweave@^0.4.12:
+  version "0.4.12"
+  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.12.tgz#e9c770867ab5eb36940637db264620974e2c19b6"
+  integrity sha512-EMaRLV7ZT0kafU+XDlNH7EBKIJO1PfRXe4yOKu1IVN279uMHCRaEywioo7eHQ2WjCryr168X07ndpFA6l1fgkA==
+  dependencies:
+    "@weavery/clarity" "^0.1.5"
+    arweave "^1.9.1"
+    bignumber.js "^9.0.1"
+    loglevel "^1.7.0"
+    yargs "^16.1.0"
+
 source-map-support@^0.5.17, source-map-support@~0.5.12:
   version "0.5.19"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.19.tgz#a98b62f86dcaf4f67399648c085291ab9e8fed61"
@@ -2129,6 +2187,15 @@ wrap-ansi@^6.2.0:
     string-width "^4.1.0"
     strip-ansi "^6.0.0"
 
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
 wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
@@ -2145,6 +2212,11 @@ y18n@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/y18n/-/y18n-4.0.0.tgz#95ef94f85ecc81d007c264e190a120f0a3c8566b"
   integrity sha512-r9S/ZyXu/Xu9q1tYlpsLIsa3EeLXXk0VwlxqTcFRfg9EhMW+17kbt9G0NrgCmhGb5vT2hyhJZLfDGx+7+5Uj/w==
+
+y18n@^5.0.5:
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/y18n/-/y18n-5.0.5.tgz#8769ec08d03b1ea2df2500acef561743bbb9ab18"
+  integrity sha512-hsRUr4FFrvhhRH12wOdfs38Gy7k2FFzB9qgN9v3aLykRq0dRcdcpz5C9FxdS2NuhOrI/628b/KSTJ3rwHysYSg==
 
 yargs-parser@13.1.2, yargs-parser@^13.1.2:
   version "13.1.2"
@@ -2169,6 +2241,11 @@ yargs-parser@^18.1.2:
   dependencies:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
+
+yargs-parser@^20.2.2:
+  version "20.2.4"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.4.tgz#b42890f14566796f85ae8e3a25290d205f154a54"
+  integrity sha512-WOkpgNhPTlE73h4VFAFsOnomJVaovO8VqLDzy5saChRBFQFBoMYirowyW+Q9HB4HFF4Z7VZTiG3iSzJJA29yRA==
 
 yargs-unparser@1.6.1:
   version "1.6.1"
@@ -2230,6 +2307,19 @@ yargs@^15.3.1:
     which-module "^2.0.0"
     y18n "^4.0.0"
     yargs-parser "^18.1.2"
+
+yargs@^16.1.0:
+  version "16.1.1"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-16.1.1.tgz#5a4a095bd1ca806b0a50d0c03611d38034d219a1"
+  integrity sha512-hAD1RcFP/wfgfxgMVswPE+z3tlPFtxG8/yWUrG2i17sTWGCGqWnxKcLTF4cUKDUK8fzokwsmO9H0TDkRbMHy8w==
+  dependencies:
+    cliui "^7.0.2"
+    escalade "^3.1.1"
+    get-caller-file "^2.0.5"
+    require-directory "^2.1.1"
+    string-width "^4.2.0"
+    y18n "^5.0.5"
+    yargs-parser "^20.2.2"
 
 yn@3.1.1:
   version "3.1.1"
