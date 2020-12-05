@@ -21,11 +21,11 @@
   ],
   "types": "dist/index.d.ts",
   "dependencies": {
-    "arweave": "^1.9.1",
+    "arweave": "^1.10.0",
     "cacheweave": "^2.0.1",
     "moment": "^2.28.0",
     "node-fetch": "^2.6.1",
-    "smartweave": "^0.3.6"
+    "smartweave": "^0.4.13"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^3.1.1",
