@@ -469,16 +469,15 @@ builtin-modules@^3.1.0:
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-3.1.0.tgz#aad97c15131eb76b65b50ef208e7584cd76a7484"
   integrity sha512-k0KL0aWZuBt2lrxrcASWDfwOLMnodeQjodT/1SxEQAXsHANgo6ZC/VEaSEHCXt7aSTZ4/4H5LKa+tBXmW7Vtvw==
 
-cacheweave@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/cacheweave/-/cacheweave-2.0.1.tgz#18f997c9d91460d0b073d78b7067ed7caad04e3f"
-  integrity sha512-2hfXkHnDBcjNKTyu4dxITdWHv4N+01vQiERtdkwrcT5pYQsk1p9eNuEJJnu2rOhGqkFCbLoi/nL6IUwt98kTfw==
+cacheweave@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/cacheweave/-/cacheweave-2.1.0.tgz#0aa4878ed831fb164e5a834ecd61baa7624888e0"
+  integrity sha512-OWorhqe3vww5zikp+WxNxtRxRJcmVd5+JazkFzrGfVYyI/dfc/MJ0WhGoHjhGwRG4usBCcdXZ0jBUNumlOt8tA==
   dependencies:
     ar-gql "^0.0.3"
     arweave "^1.10.0"
     community-js "^1.1.6"
-    localporridge "^1.0.0"
-    smartweave "^0.4.12"
+    smartweave "^0.4.13"
 
 callsites@^3.0.0:
   version "3.1.0"
@@ -1355,11 +1354,6 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-localporridge@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/localporridge/-/localporridge-1.0.0.tgz#718eb86547b075ec78b369a26b7d1b6fddd171d5"
-  integrity sha512-mCaTeK+CMBUElyxQiLOIB0GdEOTZwvYl/VyqynJ+ApQbelItugJnp4+45jBcFbSAvFV9lStnkCK1ZbCNL75iUg==
-
 locate-path@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/locate-path/-/locate-path-3.0.0.tgz#dbec3b3ab759758071b58fe59fc41871af21400e"
@@ -1516,10 +1510,10 @@ module-alias@^2.2.2:
   resolved "https://registry.yarnpkg.com/module-alias/-/module-alias-2.2.2.tgz#151cdcecc24e25739ff0aa6e51e1c5716974c0e0"
   integrity sha512-A/78XjoX2EmNvppVWEhM2oGk3x4lLxnkEA4jTbaK97QKSDjkIoOsKQlfylt/d3kKKi596Qy3NP5XrXJ6fZIC9Q==
 
-moment@^2.28.0:
-  version "2.28.0"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.28.0.tgz#cdfe73ce01327cee6537b0fafac2e0f21a237d75"
-  integrity sha512-Z5KOjYmnHyd/ukynmFd/WwyXHd7L4J9vTI/nn5Ap9AVUgaAE15VvQ9MOGmJJygEUklupqIrFnor/tjTwRU+tQw==
+moment@^2.29.1:
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
 ms@2.0.0:
   version "2.0.0"
@@ -1878,7 +1872,7 @@ slice-ansi@^2.1.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
-smartweave@^0.4.11, smartweave@^0.4.12:
+smartweave@^0.4.11:
   version "0.4.12"
   resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.12.tgz#e9c770867ab5eb36940637db264620974e2c19b6"
   integrity sha512-EMaRLV7ZT0kafU+XDlNH7EBKIJO1PfRXe4yOKu1IVN279uMHCRaEywioo7eHQ2WjCryr168X07ndpFA6l1fgkA==
