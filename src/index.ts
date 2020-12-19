@@ -29,6 +29,7 @@ import { VertoToken } from "types";
 import { createGenericClient } from "@utils/arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
+import Web3 from "web3";
 
 // eslint-disable-next-line
 console.log = (...x: any[]) => {
@@ -43,6 +44,7 @@ interface VertoLibOptions {
 
 export default class Verto {
   public arweave!: Arweave;
+  public eth!: Web3;
   public keyfile!: JWKInterface | undefined;
 
   public exchangeContract!: string;
@@ -51,11 +53,13 @@ export default class Verto {
   constructor(
     keyfile?: JWKInterface,
     arweave?: Arweave,
+    eth?: Web3,
     options?: VertoLibOptions
   ) {
     !arweave
       ? (this.arweave = createGenericClient())
       : (this.arweave = arweave);
+    if (eth) this.eth = eth;
     this.keyfile = keyfile;
     this.exchangeContract = options?.exchangeContract || exchangeContractSrc;
     this.exchangeWallet = options?.exchangeWallet || exchangeWallet;
