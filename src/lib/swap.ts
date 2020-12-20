@@ -48,7 +48,7 @@ export interface Transfer {
 
 export const createSwap = async (
   client: Arweave,
-  ethClient: Web3,
+  ethClient: Web3 | undefined,
   keyfile: JWKInterface,
   privateKey: string | undefined,
   chain: string,

@@ -44,7 +44,7 @@ interface VertoLibOptions {
 
 export default class Verto {
   public arweave!: Arweave;
-  public eth!: Web3;
+  public eth!: Web3 | undefined;
   public keyfile!: JWKInterface | undefined;
   public privateKey!: string | undefined;
 
@@ -61,7 +61,7 @@ export default class Verto {
     !arweave
       ? (this.arweave = createGenericClient())
       : (this.arweave = arweave);
-    if (eth) this.eth = eth;
+    this.eth = eth;
     this.keyfile = keyfile;
     this.privateKey = privateKey;
     this.exchangeContract = options?.exchangeContract || exchangeContractSrc;
