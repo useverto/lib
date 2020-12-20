@@ -46,6 +46,7 @@ export default class Verto {
   public arweave!: Arweave;
   public eth!: Web3;
   public keyfile!: JWKInterface | undefined;
+  public privateKey!: string | undefined;
 
   public exchangeContract!: string;
   public exchangeWallet!: string;
@@ -53,6 +54,7 @@ export default class Verto {
   constructor(
     keyfile?: JWKInterface,
     arweave?: Arweave,
+    privateKey?: string,
     eth?: Web3,
     options?: VertoLibOptions
   ) {
@@ -61,6 +63,7 @@ export default class Verto {
       : (this.arweave = arweave);
     if (eth) this.eth = eth;
     this.keyfile = keyfile;
+    this.privateKey = privateKey;
     this.exchangeContract = options?.exchangeContract || exchangeContractSrc;
     this.exchangeWallet = options?.exchangeWallet || exchangeWallet;
   }
@@ -129,7 +132,9 @@ export default class Verto {
     if (this.keyfile) {
       return createSwap(
         this.arweave,
+        this.eth,
         this.keyfile,
+        this.privateKey,
         chain,
         post,
         this.exchangeWallet,

@@ -7,6 +7,7 @@ import { getContract } from "cacheweave";
 import { weightedRandom } from "@utils/weighted_random";
 import { getConfig } from "./get_config";
 import { getArAddr, getChainAddr } from "@utils/arweave";
+import Web3 from "web3";
 
 export const createTradingPostFeeTx = async (
   client: Arweave,
@@ -47,7 +48,9 @@ export interface Transfer {
 
 export const createSwap = async (
   client: Arweave,
+  ethClient: Web3,
   keyfile: JWKInterface,
+  privateKey: string | undefined,
   chain: string,
   post: string,
   exchangeWallet: string,
@@ -134,12 +137,19 @@ export const createSwap = async (
     }
     const chainTotal = chainAmnt + fee;
 
-    // @ts-ignore
-    let balance = await window.ethereum.request({
-      method: "eth_getBalance",
+    let balance;
+    if (ethClient && privateKey) {
+      balance = await ethClient.eth.getBalance(
+        ethClient.eth.accounts.privateKeyToAccount(privateKey).address
+      );
+    } else {
       // @ts-ignore
-      params: [window.ethereum.selectedAddress, "latest"],
-    });
+      balance = await window.ethereum.request({
+        method: "eth_getBalance",
+        // @ts-ignore
+        params: [window.ethereum.selectedAddress, "latest"],
+      });
+    }
     balance = parseInt(balance, 16) / 1e18;
 
     if (balance >= chainTotal) {
