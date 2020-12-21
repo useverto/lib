@@ -181,7 +181,9 @@ export const createSwap = async (
 
 export const sendSwap = async (
   client: Arweave,
+  ethClient: Web3 | undefined,
   keyfile: JWKInterface,
+  privateKey: string | undefined,
   txs: (Transaction | Transfer)[],
   post: string
 ): Promise<void> => {
@@ -193,19 +195,32 @@ export const sendSwap = async (
       await client.transactions.post(tx);
     } else {
       tx.value *= 1e18;
-      // @ts-ignore
-      const hash = await window.ethereum.request({
-        method: "eth_sendTransaction",
-        params: [
-          {
-            to: tx.to,
-            // @ts-ignore
-            from: window.ethereum.selectedAddress,
-            // @ts-ignore
-            value: tx.value.toString(16),
-          },
-        ],
-      });
+      let hash;
+      if (ethClient && privateKey) {
+        const account = ethClient.eth.accounts.privateKeyToAccount(privateKey);
+        hash = await ethClient.eth.sendSignedTransaction(
+          (
+            await account.signTransaction({
+              to: tx.to,
+              value: tx.value.toString(16),
+            })
+          ).rawTransaction!
+        );
+      } else {
+        // @ts-ignore
+        hash = await window.ethereum.request({
+          method: "eth_sendTransaction",
+          params: [
+            {
+              to: tx.to,
+              // @ts-ignore
+              from: window.ethereum.selectedAddress,
+              // @ts-ignore
+              value: tx.value.toString(16),
+            },
+          ],
+        });
+      }
       if (!tx.type) {
         const tags = {
           Exchange: "Verto",
