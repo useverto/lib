@@ -311,7 +311,14 @@ export default class Verto {
     post: string
   ): Promise<void | string> {
     if (this.keyfile) {
-      return sendSwap(this.arweave, this.keyfile, txs, post);
+      return sendSwap(
+        this.arweave,
+        this.eth,
+        this.keyfile,
+        this.privateKey,
+        txs,
+        post
+      );
     } else {
       return new Promise((resolve) => resolve("keyfile"));
     }

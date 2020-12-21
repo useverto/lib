@@ -198,14 +198,14 @@ export const sendSwap = async (
       let hash;
       if (ethClient && privateKey) {
         const account = ethClient.eth.accounts.privateKeyToAccount(privateKey);
-        hash = await ethClient.eth.sendSignedTransaction(
-          (
-            await account.signTransaction({
-              to: tx.to,
-              value: tx.value.toString(16),
-            })
-          ).rawTransaction!
-        );
+        const signedTx = await account.signTransaction({
+          to: tx.to,
+          value: tx.value.toString(16),
+        });
+        if (signedTx.rawTransaction && signedTx.transactionHash) {
+          await ethClient.eth.sendSignedTransaction(signedTx.rawTransaction);
+          hash = signedTx.transactionHash;
+        }
       } else {
         // @ts-ignore
         hash = await window.ethereum.request({
