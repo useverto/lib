@@ -182,42 +182,51 @@ export const createSwap = async (
 export const sendSwap = async (
   client: Arweave,
   keyfile: JWKInterface,
-  txs: (Transaction | Transfer)[]
+  txs: (Transaction | Transfer)[],
+  post: string
 ): Promise<void> => {
   for (const tx of txs) {
     // @ts-ignore
-    if (tx.id) {
+    if (tx.tags) {
       // @ts-ignore
       await client.transactions.sign(tx, keyfile);
       await client.transactions.post(tx);
     } else {
-      if (tx.chain === "ETH") {
-        // @ts-ignore
-        const isBrowser: boolean = typeof window !== "undefined";
-
-        if (isBrowser) {
-          // @ts-ignore
-          if (typeof window.ethereum !== "undefined") {
-            tx.value *= 1e18;
+      tx.value *= 1e18;
+      // @ts-ignore
+      const hash = await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [
+          {
+            to: tx.to,
             // @ts-ignore
-            await window.ethereum.request({
-              method: "eth_requestAccounts",
-            });
+            from: window.ethereum.selectedAddress,
             // @ts-ignore
-            await window.ethereum.request({
-              method: "eth_sendTransaction",
-              params: [
-                {
-                  to: tx.to,
-                  // @ts-ignore
-                  from: window.ethereum.selectedAddress,
-                  // @ts-ignore
-                  value: tx.value.toString(16),
-                },
-              ],
-            });
-          }
+            value: tx.value.toString(16),
+          },
+        ],
+      });
+      if (!tx.type) {
+        const tags = {
+          Exchange: "Verto",
+          Type: "Swap",
+          Chain: tx.chain,
+          Hash: hash,
+          Value: tx.value / 1e18,
+        };
+        const arTx = await client.createTransaction(
+          {
+            target: post,
+            data: Math.random().toString().slice(-4),
+          },
+          keyfile
+        );
+        for (const [key, value] of Object.entries(tags)) {
+          arTx.addTag(key, value.toString());
         }
+        if (tx.token) arTx.addTag("Token", tx.token);
+        await client.transactions.sign(arTx, keyfile);
+        await client.transactions.post(arTx);
       }
     }
   }
