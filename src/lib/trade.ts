@@ -159,8 +159,8 @@ export const sendOrder = async (
     await client.transactions.post(tx);
 
     tx["tags"].forEach((tag) => {
-      let key = tag.get("name", { decode: true, string: true });
-      let value = tag.get("value", { decode: true, string: true });
+      const key = tag.get("name", { decode: true, string: true });
+      const value = tag.get("value", { decode: true, string: true });
 
       if (
         key === "Type" &&
