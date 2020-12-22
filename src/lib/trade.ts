@@ -166,7 +166,7 @@ export const sendOrder = async (
         key === "Type" &&
         (value === "Swap" || value === "Buy" || value === "Sell")
       ) {
-        await fetch(`https://hook.verto.exchange/api/transaction?id=${tx.id}`);
+        fetch(`https://hook.verto.exchange/api/transaction?id=${tx.id}`);
       }
     }
   }
