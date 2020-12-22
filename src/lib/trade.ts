@@ -162,15 +162,17 @@ export const sendOrder = async (
       let key = tag.get("name", { decode: true, string: true });
       let value = tag.get("value", { decode: true, string: true });
 
-      if (key === "Type" && (value === "Swap" || value === "Buy" || value === "Sell")) {
+      if (
+        key === "Type" &&
+        (value === "Swap" || value === "Buy" || value === "Sell")
+      ) {
         const options = {
           hostname: "hook.verto.exchange",
           path: `/api/transaction?id=${tx.id}`,
-          method: "GET"
+          method: "GET",
         };
         https.request(options);
-      } 
+      }
     });
-
   }
 };
