@@ -1,4 +1,4 @@
-import https from "https";
+import fetch from "node-fetch";
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
@@ -158,7 +158,7 @@ export const sendOrder = async (
     await client.transactions.sign(tx, keyfile);
     await client.transactions.post(tx);
 
-    tx["tags"].forEach((tag) => {
+    for (const tag of tx.tags) {
       const key = tag.get("name", { decode: true, string: true });
       const value = tag.get("value", { decode: true, string: true });
 
@@ -166,13 +166,8 @@ export const sendOrder = async (
         key === "Type" &&
         (value === "Swap" || value === "Buy" || value === "Sell")
       ) {
-        const options = {
-          hostname: "hook.verto.exchange",
-          path: `/api/transaction?id=${tx.id}`,
-          method: "GET",
-        };
-        https.request(options);
+        await fetch(`https://hook.verto.exchange/api/transaction?id=${tx.id}`);
       }
-    });
+    }
   }
 };
