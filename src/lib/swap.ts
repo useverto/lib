@@ -8,6 +8,7 @@ import { weightedRandom } from "@utils/weighted_random";
 import { getConfig } from "./get_config";
 import { getArAddr, getChainAddr } from "@utils/arweave";
 import Web3 from "web3";
+import fetch from "node-fetch";
 
 export const createTradingPostFeeTx = async (
   client: Arweave,
@@ -166,7 +167,7 @@ export const createSwap = async (
             ),
             value: fee,
           },
-          { chain, token, to: supportedChains[chain], value: chainAmnt },
+          { chain, token, to: supportedChains[chain].addr, value: chainAmnt },
         ],
         ar: 0,
         chain: chainTotal,
@@ -193,6 +194,20 @@ export const sendSwap = async (
       // @ts-ignore
       await client.transactions.sign(tx, keyfile);
       await client.transactions.post(tx);
+
+      // @ts-ignore
+      for (const tag of tx.tags) {
+        const key = tag.get("name", { decode: true, string: true });
+        const value = tag.get("value", { decode: true, string: true });
+
+        if (
+          key === "Type" &&
+          (value === "Swap" || value === "Buy" || value === "Sell")
+        ) {
+          // @ts-ignore
+          fetch(`https://hook.verto.exchange/api/transaction?id=${tx.id}`);
+        }
+      }
     } else {
       tx.value *= 1e18;
       let hash;
@@ -242,6 +257,8 @@ export const sendSwap = async (
         if (tx.token) arTx.addTag("Token", tx.token);
         await client.transactions.sign(arTx, keyfile);
         await client.transactions.post(arTx);
+
+        fetch(`https://hook.verto.exchange/api/transaction?id=${arTx.id}`);
       }
     }
   }
