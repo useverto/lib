@@ -26,6 +26,7 @@ export const getAssets = async (
     name: string;
     ticker: string;
     balance: number;
+    state: any;
   }[] = [];
 
   for (let i = 0; i < tokens.length; i++) {
@@ -37,6 +38,7 @@ export const getAssets = async (
         name: tokens[i].name,
         ticker: tokens[i].ticker,
         balance: contract.balances[addr],
+        state: contract,
       });
     }
   }
