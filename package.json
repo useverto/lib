@@ -1,6 +1,6 @@
 {
   "name": "@verto/lib",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "author": "The Verto Team",
   "license": "MIT",
   "publishConfig": {
@@ -19,7 +19,7 @@
   "files": [
     "dist"
   ],
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "dependencies": {
     "arweave": "^1.10.0",
     "cacheweave": "^2.1.0",
