@@ -105,9 +105,9 @@ Returns the stake of a specific trading post.
 
 Returns the reputation of a specific trading post.
 
-#### `getTokens(contractID?)`
+#### `getTokens()`
 
-Returns a list of tokens supported by the Verto Exchange Network. You can optionally pass in a specific contract source.
+Returns a list of tokens supported by the Verto Exchange Network.
 
 #### `getTPTokens(tradingPostAddress)`
 
