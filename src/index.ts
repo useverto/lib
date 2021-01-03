@@ -74,6 +74,14 @@ export default class Verto {
     );
   }
 
+  /**
+   * Creates trade order transactions
+   * @param type "buy" or "sell"
+   * @param amnt The amount of currency you are inputting. Note: If you are selling, the amount must be an integer
+   * @param pst The PST contract you are looking to buy, or the PST you are selling
+   * @param post The wallet address of the trading post you are using
+   * @param rate The rate (in units of AR/PST) that you wish to sell at. Note: This field is only necessary if you are selling
+   */
   createOrder(
     type: string,
     amnt: number,
@@ -98,6 +106,15 @@ export default class Verto {
     }
   }
 
+  /**
+   * Creates swap order transactions (utilizes the Ethereum Bridge)
+   * @param chain "ETH"
+   * @param post The wallet address of the trading post you are using
+   * @param arAmnt The amount of AR you are sending (Only required if you're sending AR)
+   * @param chainAmnt The amount of ETH you are sending (Only required if you're sending ETH)
+   * @param rate The rate (in units of AR/ETH) that you wish to swap at. Note: This field is only necessary if you are sending AR
+   * @param token The PST contract id you wish to receive for sending ETH
+   */
   createSwap(
     chain: string,
     post: string,
@@ -140,6 +157,11 @@ export default class Verto {
     }
   }
 
+  /**
+   * Finds the PST assets of a given wallet address
+   * @param addr User wallet address
+   * @returns List of PST ids, names, balances, & tickers
+   */
   getAssets(
     addr: string
   ): Promise<{ id: string; name: string; ticker: string; balance: number }[]> {
@@ -151,10 +173,20 @@ export default class Verto {
     );
   }
 
+  /**
+   * Trading post configuration
+   * @param post Trading post address
+   * @returns Trading post configuration from latest genesis transaction
+   */
   getConfig(post: string): Promise<JSON | string> {
     return getConfig(this.arweave, post, this.exchangeWallet);
   }
 
+  /**
+   * Finds the latest trades made on Verto
+   * @param addr Wallet address of user
+   * @returns List of five latest exchanges
+   */
   getExchanges(
     addr: string
   ): Promise<
@@ -176,18 +208,37 @@ export default class Verto {
     );
   }
 
+  /**
+   * Find a trading post's stake
+   * @param post Address of trading post
+   * @returns Trading post stake
+   */
   getPostStake(post: string): Promise<number> {
     return getPostStake(this.arweave, post, this.exchangeContract);
   }
 
+  /**
+   * Find the reputation of a trading post
+   * @param post Address of trading post
+   * @returns Trading post reputation
+   */
   getReputation(post: string): Promise<number> {
     return getReputation(this.arweave, post, this.exchangeContract);
   }
 
+  /**
+   * Find the tokens added and/or traded on Verto
+   * @returns List of token ids, names, and tickers
+   */
   getTokens(): Promise<VertoToken[]> {
     return getTokens(this.arweave, this.exchangeContract, this.exchangeWallet);
   }
 
+  /**
+   * Find the tokens supported by a trading post
+   * @param post Address of trading post
+   * @returns List of token ids, names, and tickers
+   */
   getTPTokens(post: string): Promise<VertoToken[]> {
     return getTPTokens(
       this.arweave,
@@ -197,6 +248,10 @@ export default class Verto {
     );
   }
 
+  /**
+   * Find all trading posts on the Verto Protocol
+   * @returns List of trading post wallet addresses
+   */
   getTradingPosts(): Promise<string[]> {
     return getTradingPosts(
       this.arweave,
@@ -205,6 +260,11 @@ export default class Verto {
     );
   }
 
+  /**
+   * Find the latest transactions for a given user
+   * @param addr Address of user
+   * @returns List of five latest transactions
+   */
   getTransactions(
     addr: string
   ): Promise<
@@ -219,6 +279,11 @@ export default class Verto {
     return getTransactions(this.arweave, addr);
   }
 
+  /**
+   * Find the latest rate at which a given chain has been swapping for
+   * @param chain "ETH"
+   * @returns Latest rate
+   */
   latestChainRate(chain: string): Promise<number> {
     return latestChainRate(
       this.arweave,
@@ -228,6 +293,11 @@ export default class Verto {
     );
   }
 
+  /**
+   * Find the latest price a given token has been trading at
+   * @param token PST contract id
+   * @returns Latest price
+   */
   latestPrice(token: string): Promise<number | undefined> {
     return latestPrice(
       this.arweave,
@@ -237,6 +307,11 @@ export default class Verto {
     );
   }
 
+  /**
+   * Finds the latest 24hr volume of a given token
+   * @param token PST contract id
+   * @returns Latest 24hr volume
+   */
   latestVolume(token: string): Promise<number> {
     return latestVolume(
       this.arweave,
@@ -246,10 +321,18 @@ export default class Verto {
     );
   }
 
+  /**
+   * Popular tokens -- Deprecating soon!
+   */
   popularTokens(): Promise<VertoToken[]> {
     return popularTokens(this.arweave, this.exchangeWallet);
   }
 
+  /**
+   * Find the price history of a given token
+   * @param token PST contract id
+   * @returns List of prices and dates
+   */
   price(
     token: string
   ): Promise<{ prices: number[]; dates: string[] } | undefined> {
@@ -261,6 +344,9 @@ export default class Verto {
     );
   }
 
+  /**
+   * Recommend a trading post to make a trade or swap with
+   */
   recommendPost(): Promise<string | undefined> {
     return recommendPost(
       this.arweave,
@@ -269,6 +355,10 @@ export default class Verto {
     );
   }
 
+  /**
+   * Save a token to the Verto Protocol - This means it will be visible on the exchange and user dashboards
+   * @param contract PST contract id
+   */
   saveToken(contract: string): Promise<string | void> {
     if (this.keyfile) {
       return saveToken(
@@ -282,6 +372,10 @@ export default class Verto {
     return new Promise((resolve) => resolve());
   }
 
+  /**
+   * Sign and post trade transactions
+   * @param txs Transactions created with createOrder()
+   */
   sendOrder(txs: Transaction[]): Promise<void | string> {
     if (this.keyfile) {
       return sendOrder(this.arweave, this.keyfile, txs);
@@ -290,6 +384,10 @@ export default class Verto {
     }
   }
 
+  /**
+   * Sign and post swap transactions
+   * @param txs Transactions created with createSwap()
+   */
   sendSwap(
     txs: (
       | Transaction
@@ -307,6 +405,11 @@ export default class Verto {
     }
   }
 
+  /**
+   * Find the volume history of a given token
+   * @param token PST contract id
+   * @returns List of volumes and dates
+   */
   volume(token: string): Promise<{ volume: number[]; dates: string[] }> {
     return volume(
       this.arweave,
