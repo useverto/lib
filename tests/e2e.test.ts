@@ -54,6 +54,15 @@ describe("E2E Tests", function () {
       })
       .catch(done);
   });
+  it("Test getExchangesPaginated(<ADDR>)", (done) => {
+    vertoInstance
+      .getExchangesPaginated(ADDR)
+      .then((res) => {
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
   it("Test getPostStake(<POST>)", (done) => {
     vertoInstance
       .getPostStake(POST)

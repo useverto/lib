@@ -1,4 +1,4 @@
-query($owners: [String!], $num: Int) {
+query($owners: [String!], $num: Int, $cursor: String) {
   transactions(
     owners: $owners
     tags: [
@@ -6,7 +6,11 @@ query($owners: [String!], $num: Int) {
       { name: "Type", values: ["Buy", "Sell"] }
     ]
     first: $num
+    after: $cursor
   ) {
+    pageInfo {
+      hasNextPage
+    }
     edges {
       node {
         id

@@ -155,7 +155,7 @@ export default class Verto {
     return getConfig(this.arweave, post, this.exchangeWallet);
   }
 
-  getExchanges(
+  async getExchanges(
     addr: string
   ): Promise<
     {
@@ -168,11 +168,43 @@ export default class Verto {
       duration: string;
     }[]
   > {
+    try {
+      const exchanges = await getExchanges(
+        this.arweave,
+        addr,
+        this.exchangeContract,
+        this.exchangeWallet,
+        5
+      );
+
+      return exchanges.exchanges;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  getExchangesPaginated(
+    addr: string,
+    cursor?: string
+  ): Promise<{
+    exchanges: {
+      id: string;
+      timestamp: string;
+      type: string;
+      sent: string;
+      received: string;
+      status: string;
+      duration: string;
+    }[];
+    cursor: string;
+  }> {
     return getExchanges(
       this.arweave,
       addr,
       this.exchangeContract,
-      this.exchangeWallet
+      this.exchangeWallet,
+      30,
+      cursor
     );
   }
 

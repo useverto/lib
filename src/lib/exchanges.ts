@@ -13,9 +13,11 @@ export const getExchanges = async (
   client: Arweave,
   addr: string,
   exchangeContract: string,
-  exchangeWallet: string
-): Promise<
-  {
+  exchangeWallet: string,
+  num: number,
+  cursor?: string
+): Promise<{
+  exchanges: {
     id: string;
     timestamp: string;
     type: string;
@@ -23,8 +25,9 @@ export const getExchanges = async (
     received: string;
     status: string;
     duration: string;
-  }[]
-> => {
+  }[];
+  cursor: string;
+}> => {
   const exchanges: {
     id: string;
     timestamp: string;
@@ -35,15 +38,16 @@ export const getExchanges = async (
     duration: string;
   }[] = [];
 
-  const txs = (
-    await query<EdgeQueryResponse>({
-      query: exchangesQuery,
-      variables: {
-        owners: [addr],
-        num: 5,
-      },
-    })
-  ).data.transactions.edges;
+  const variables = {
+      owners: [addr],
+      num,
+    },
+    txs = (
+      await query<EdgeQueryResponse>({
+        query: exchangesQuery,
+        variables: cursor ? { ...variables, cursor } : variables,
+      })
+    ).data.transactions.edges;
 
   const psts = await getTokens(client, exchangeContract, exchangeWallet);
 
@@ -89,7 +93,7 @@ export const getExchanges = async (
       query: swapsQuery,
       variables: {
         owners: [addr],
-        num: 5,
+        num,
       },
     })
   ).data.transactions.edges;
@@ -191,9 +195,12 @@ export const getExchanges = async (
     }
   }
 
-  return exchanges
-    .sort((a, b) => {
-      return moment(b.timestamp).unix() - moment(a.timestamp).unix();
-    })
-    .slice(0, 5);
+  return {
+    exchanges: exchanges
+      .sort((a, b) => {
+        return moment(b.timestamp).unix() - moment(a.timestamp).unix();
+      })
+      .slice(0, num),
+    cursor: "",
+  };
 };
