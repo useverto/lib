@@ -25,7 +25,7 @@
     "cacheweave": "^2.1.0",
     "moment": "^2.29.1",
     "node-fetch": "^2.6.1",
-    "smartweave": "^0.4.13"
+    "smartweave": "^0.4.21"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^3.1.1",

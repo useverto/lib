@@ -7,6 +7,7 @@ import { getContract } from "cacheweave";
 import { weightedRandom } from "@utils/weighted_random";
 import { getConfig } from "./get_config";
 import { getArAddr, getChainAddr } from "@utils/arweave";
+import fetch from "node-fetch";
 
 export const createTradingPostFeeTx = async (
   client: Arweave,
@@ -172,7 +173,8 @@ export const createSwap = async (
 export const sendSwap = async (
   client: Arweave,
   keyfile: JWKInterface,
-  txs: (Transaction | Transfer)[]
+  txs: (Transaction | Transfer)[],
+  post: string,
 ): Promise<void> => {
   for (const tx of txs) {
     // @ts-ignore
@@ -180,6 +182,20 @@ export const sendSwap = async (
       // @ts-ignore
       await client.transactions.sign(tx, keyfile);
       await client.transactions.post(tx);
+
+      // @ts-ignore
+      for (const tag of tx.tags) {
+        const key = tag.get("name", { decode: true, string: true });
+        const value = tag.get("value", { decode: true, string: true });
+
+        if (
+          key === "Type" &&
+          (value === "Swap" || value === "Buy" || value === "Sell")
+        ) {
+          // @ts-ignore
+          fetch(`https://hook.verto.exchange/api/transaction?id=${tx.id}`);
+        }
+      }
     } else {
       if (tx.chain === "ETH") {
         // @ts-ignore
@@ -194,7 +210,7 @@ export const sendSwap = async (
               method: "eth_requestAccounts",
             });
             // @ts-ignore
-            await window.ethereum.request({
+            const hash = await window.ethereum.request({
               method: "eth_sendTransaction",
               params: [
                 {
@@ -206,6 +222,31 @@ export const sendSwap = async (
                 },
               ],
             });
+
+            if (!tx.type) {
+              const tags = {
+                Exchange: "Verto",
+                Type: "Swap",
+                Chain: tx.chain,
+                Hash: hash,
+                Value: tx.value / 1e18,
+              };
+              const arTx = await client.createTransaction(
+                {
+                  target: post,
+                  data: Math.random().toString().slice(-4),
+                },
+                keyfile
+              );
+              for (const [key, value] of Object.entries(tags)) {
+                arTx.addTag(key, value.toString());
+              }
+               if (tx.token) arTx.addTag("Token", tx.token);
+               await client.transactions.sign(arTx, keyfile);
+               await client.transactions.post(arTx);
+      
+               fetch(`https://hook.verto.exchange/api/transaction?id=${arTx.id}`);
+             }
           }
         }
       }

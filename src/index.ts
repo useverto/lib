@@ -387,6 +387,7 @@ export default class Verto {
   /**
    * Sign and post swap transactions
    * @param txs Transactions created with createSwap()
+   * @param post Address of trading post
    */
   sendSwap(
     txs: (
@@ -396,10 +397,11 @@ export default class Verto {
           to: string;
           value: number;
         }
-    )[]
+    )[],
+    post: string
   ): Promise<void | string> {
     if (this.keyfile) {
-      return sendSwap(this.arweave, this.keyfile, txs);
+      return sendSwap(this.arweave, this.keyfile, txs, post);
     } else {
       return new Promise((resolve) => resolve("keyfile"));
     }
