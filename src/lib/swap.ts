@@ -156,7 +156,7 @@ export const createSwap = async (
             ),
             value: fee,
           },
-          { chain, token, to: supportedChains[chain], value: chainAmnt },
+          { chain, token, to: supportedChains[chain].addr, value: chainAmnt },
         ],
         ar: 0,
         chain: chainTotal,
