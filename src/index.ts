@@ -29,7 +29,6 @@ import { VertoToken } from "types";
 import { createGenericClient } from "@utils/arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
-import Web3 from "web3";
 
 // eslint-disable-next-line
 console.log = (...x: any[]) => {
@@ -44,9 +43,7 @@ interface VertoLibOptions {
 
 export default class Verto {
   public arweave!: Arweave;
-  public eth!: Web3 | undefined;
   public keyfile!: JWKInterface | undefined;
-  public privateKey!: string | undefined;
 
   public exchangeContract!: string;
   public exchangeWallet!: string;
@@ -54,16 +51,12 @@ export default class Verto {
   constructor(
     keyfile?: JWKInterface,
     arweave?: Arweave,
-    privateKey?: string,
-    eth?: Web3,
     options?: VertoLibOptions
   ) {
     !arweave
       ? (this.arweave = createGenericClient())
       : (this.arweave = arweave);
-    this.eth = eth;
     this.keyfile = keyfile;
-    this.privateKey = privateKey;
     this.exchangeContract = options?.exchangeContract || exchangeContractSrc;
     this.exchangeWallet = options?.exchangeWallet || exchangeWallet;
   }
@@ -149,9 +142,7 @@ export default class Verto {
     if (this.keyfile) {
       return createSwap(
         this.arweave,
-        this.eth,
         this.keyfile,
-        this.privateKey,
         chain,
         post,
         this.exchangeWallet,
@@ -405,18 +396,10 @@ export default class Verto {
           to: string;
           value: number;
         }
-    )[],
-    post: string
+    )[]
   ): Promise<void | string> {
     if (this.keyfile) {
-      return sendSwap(
-        this.arweave,
-        this.eth,
-        this.keyfile,
-        this.privateKey,
-        txs,
-        post
-      );
+      return sendSwap(this.arweave, this.keyfile, txs);
     } else {
       return new Promise((resolve) => resolve("keyfile"));
     }
