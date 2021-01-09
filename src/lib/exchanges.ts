@@ -70,7 +70,7 @@ export const getExchanges = async (
             timestamp: tx.node.block
               ? moment
                   .unix(tx.node.block.timestamp)
-                  .format("YYYY-MM-DD hh:mm:ss")
+                  .format("YYYY-MM-DD HH:mm:ss")
               : "not mined yet",
             type,
             sent: `${amount} AR`,
@@ -96,7 +96,7 @@ export const getExchanges = async (
               timestamp: tx.node.block
                 ? moment
                     .unix(tx.node.block.timestamp)
-                    .format("YYYY-MM-DD hh:mm:ss")
+                    .format("YYYY-MM-DD HH:mm:ss")
                 : "not mined yet",
               type,
               sent: `${JSON.parse(input).qty} ${token.ticker}`,
@@ -126,7 +126,7 @@ export const getExchanges = async (
               timestamp: tx.node.block
                 ? moment
                     .unix(tx.node.block.timestamp)
-                    .format("YYYY-MM-DD hh:mm:ss")
+                    .format("YYYY-MM-DD HH:mm:ss")
                 : "not mined yet",
               type,
               sent: `${value} ${chain}`,
@@ -142,7 +142,7 @@ export const getExchanges = async (
             timestamp: tx.node.block
               ? moment
                   .unix(tx.node.block.timestamp)
-                  .format("YYYY-MM-DD hh:mm:ss")
+                  .format("YYYY-MM-DD HH:mm:ss")
               : "not mined yet",
             type,
             sent: `${amount} AR`,
@@ -195,7 +195,7 @@ export const getExchanges = async (
         if (res.node.block) {
           const start = moment(exchanges[i].timestamp);
           const end = moment(
-            moment.unix(res.node.block.timestamp).format("YYYY-MM-DD hh:mm:ss")
+            moment.unix(res.node.block.timestamp).format("YYYY-MM-DD HH:mm:ss")
           );
           const duration = moment.duration(end.diff(start));
 
