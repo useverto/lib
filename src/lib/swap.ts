@@ -7,7 +7,6 @@ import { getContract } from "cacheweave";
 import { weightedRandom } from "@utils/weighted_random";
 import { getConfig } from "./get_config";
 import { getArAddr, getChainAddr } from "@utils/arweave";
-import Web3 from "web3";
 import fetch from "node-fetch";
 
 export const createTradingPostFeeTx = async (
@@ -49,9 +48,7 @@ export interface Transfer {
 
 export const createSwap = async (
   client: Arweave,
-  ethClient: Web3 | undefined,
   keyfile: JWKInterface,
-  privateKey: string | undefined,
   chain: string,
   post: string,
   exchangeWallet: string,
@@ -138,19 +135,12 @@ export const createSwap = async (
     }
     const chainTotal = chainAmnt + fee;
 
-    let balance;
-    if (ethClient && privateKey) {
-      balance = await ethClient.eth.getBalance(
-        ethClient.eth.accounts.privateKeyToAccount(privateKey).address
-      );
-    } else {
+    // @ts-ignore
+    let balance = await window.ethereum.request({
+      method: "eth_getBalance",
       // @ts-ignore
-      balance = await window.ethereum.request({
-        method: "eth_getBalance",
-        // @ts-ignore
-        params: [window.ethereum.selectedAddress, "latest"],
-      });
-    }
+      params: [window.ethereum.selectedAddress, "latest"],
+    });
     balance = parseInt(balance, 16) / 1e18;
 
     if (balance >= chainTotal) {
@@ -182,15 +172,13 @@ export const createSwap = async (
 
 export const sendSwap = async (
   client: Arweave,
-  ethClient: Web3 | undefined,
   keyfile: JWKInterface,
-  privateKey: string | undefined,
   txs: (Transaction | Transfer)[],
   post: string
 ): Promise<void> => {
   for (const tx of txs) {
     // @ts-ignore
-    if (tx.tags) {
+    if (tx.id) {
       // @ts-ignore
       await client.transactions.sign(tx, keyfile);
       await client.transactions.post(tx);
@@ -209,56 +197,60 @@ export const sendSwap = async (
         }
       }
     } else {
-      tx.value *= 1e18;
-      let hash;
-      if (ethClient && privateKey) {
-        const account = ethClient.eth.accounts.privateKeyToAccount(privateKey);
-        const signedTx = await account.signTransaction({
-          to: tx.to,
-          value: tx.value.toString(16),
-        });
-        if (signedTx.rawTransaction && signedTx.transactionHash) {
-          await ethClient.eth.sendSignedTransaction(signedTx.rawTransaction);
-          hash = signedTx.transactionHash;
-        }
-      } else {
+      if (tx.chain === "ETH") {
         // @ts-ignore
-        hash = await window.ethereum.request({
-          method: "eth_sendTransaction",
-          params: [
-            {
-              to: tx.to,
-              // @ts-ignore
-              from: window.ethereum.selectedAddress,
-              // @ts-ignore
-              value: tx.value.toString(16),
-            },
-          ],
-        });
-      }
-      if (!tx.type) {
-        const tags = {
-          Exchange: "Verto",
-          Type: "Swap",
-          Chain: tx.chain,
-          Hash: hash,
-          Value: tx.value / 1e18,
-        };
-        const arTx = await client.createTransaction(
-          {
-            target: post,
-            data: Math.random().toString().slice(-4),
-          },
-          keyfile
-        );
-        for (const [key, value] of Object.entries(tags)) {
-          arTx.addTag(key, value.toString());
-        }
-        if (tx.token) arTx.addTag("Token", tx.token);
-        await client.transactions.sign(arTx, keyfile);
-        await client.transactions.post(arTx);
+        const isBrowser: boolean = typeof window !== "undefined";
 
-        fetch(`https://hook.verto.exchange/api/transaction?id=${arTx.id}`);
+        if (isBrowser) {
+          // @ts-ignore
+          if (typeof window.ethereum !== "undefined") {
+            tx.value *= 1e18;
+            // @ts-ignore
+            await window.ethereum.request({
+              method: "eth_requestAccounts",
+            });
+            // @ts-ignore
+            const hash = await window.ethereum.request({
+              method: "eth_sendTransaction",
+              params: [
+                {
+                  to: tx.to,
+                  // @ts-ignore
+                  from: window.ethereum.selectedAddress,
+                  // @ts-ignore
+                  value: tx.value.toString(16),
+                },
+              ],
+            });
+
+            if (!tx.type) {
+              const tags = {
+                Exchange: "Verto",
+                Type: "Swap",
+                Chain: tx.chain,
+                Hash: hash,
+                Value: tx.value / 1e18,
+              };
+              const arTx = await client.createTransaction(
+                {
+                  target: post,
+                  data: Math.random().toString().slice(-4),
+                },
+                keyfile
+              );
+              for (const [key, value] of Object.entries(tags)) {
+                arTx.addTag(key, value.toString());
+              }
+              if (tx.token) arTx.addTag("Token", tx.token);
+              await client.transactions.sign(arTx, keyfile);
+              await client.transactions.post(arTx);
+
+              fetch(
+                `https://hook.verto.exchange/api/transaction?id=${arTx.id}`
+              );
+            }
+          }
+        }
       }
     }
   }
