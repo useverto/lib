@@ -174,7 +174,7 @@ export const sendSwap = async (
   client: Arweave,
   keyfile: JWKInterface,
   txs: (Transaction | Transfer)[],
-  post: string,
+  post: string
 ): Promise<void> => {
   for (const tx of txs) {
     // @ts-ignore
@@ -241,12 +241,14 @@ export const sendSwap = async (
               for (const [key, value] of Object.entries(tags)) {
                 arTx.addTag(key, value.toString());
               }
-               if (tx.token) arTx.addTag("Token", tx.token);
-               await client.transactions.sign(arTx, keyfile);
-               await client.transactions.post(arTx);
-      
-               fetch(`https://hook.verto.exchange/api/transaction?id=${arTx.id}`);
-             }
+              if (tx.token) arTx.addTag("Token", tx.token);
+              await client.transactions.sign(arTx, keyfile);
+              await client.transactions.post(arTx);
+
+              fetch(
+                `https://hook.verto.exchange/api/transaction?id=${arTx.id}`
+              );
+            }
           }
         }
       }
