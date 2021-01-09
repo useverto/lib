@@ -47,13 +47,13 @@ openbits install @verto/lib@0.1.0-alpha
 #### Arweave:
 
 ```
-npm install https://arweave.net/JdmLsxYww--NsgQ8LEOefRdGI-w3n860jnZcYYmAly8
+npm install https://arweave.net/y3pJVzscUuhDJWbYIFYeX9kGpKTuogw8bkgs-wTjWwg
 ```
 
 or
 
 ```
-yarn add https://arweave.net/JdmLsxYww--NsgQ8LEOefRdGI-w3n860jnZcYYmAly8
+yarn add https://arweave.net/y3pJVzscUuhDJWbYIFYeX9kGpKTuogw8bkgs-wTjWwg
 ```
 
 ### Initialization
