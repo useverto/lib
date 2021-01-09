@@ -32,7 +32,7 @@ export const getAssets = async (
   for (let i = 0; i < tokens.length; i++) {
     const contract = await getContract(client, tokens[i].id);
 
-    if (contract.balances[addr] > 0) {
+    if (contract.balances && contract.balances[addr] > 0) {
       balances.push({
         id: tokens[i].id,
         name: tokens[i].name,
