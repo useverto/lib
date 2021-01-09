@@ -12,6 +12,7 @@ query($owners: [String!], $num: Int, $cursor: String) {
       hasNextPage
     }
     edges {
+      cursor
       node {
         id
         block {

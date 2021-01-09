@@ -6,7 +6,11 @@ export interface VertoToken {
 
 export interface EdgeQueryResponse {
   transactions: {
+    pageInfo: {
+      hasNextPage: boolean;
+    };
     edges: {
+      cursor: string;
       node: {
         id: string;
         owner: {

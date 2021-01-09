@@ -15,7 +15,10 @@ export const getExchanges = async (
   exchangeContract: string,
   exchangeWallet: string,
   num: number,
-  cursor?: string
+  cursor?: {
+    swaps?: string,
+    exchanges?: string
+  }
 ): Promise<{
   exchanges: {
     id: string;
@@ -26,7 +29,10 @@ export const getExchanges = async (
     status: string;
     duration: string;
   }[];
-  cursor: string;
+  cursor: {
+    swaps?: string;
+    exchanges?: string;
+  };
 }> => {
   const exchanges: {
     id: string;
@@ -38,20 +44,25 @@ export const getExchanges = async (
     duration: string;
   }[] = [];
 
+  let cursors: { swaps?: string, exchanges?: string } = {};
+
   const variables = {
       owners: [addr],
       num,
     },
-    txs = (
+    txsData = (
       await query<EdgeQueryResponse>({
         query: exchangesQuery,
-        variables: cursor ? { ...variables, cursor } : variables,
+        variables: cursor && cursor.exchanges ? { ...variables, cursor: cursor.exchanges } : variables,
       })
-    ).data.transactions.edges;
+    ).data.transactions,
+    txs = txsData.edges,
+    txsHasNext = txsData.pageInfo.hasNextPage;
 
   const psts = await getTokens(client, exchangeContract, exchangeWallet);
 
-  txs.map(({ node }) => {
+  txs.map(({ node, cursor }) => {
+    if(txsHasNext) cursors = { ...cursors, exchanges: cursor };
     const type = node.tags.find((tag) => tag.name === "Type")?.value;
     if (type) {
       const tokenTag = type === "Buy" ? "Token" : "Contract";
@@ -88,17 +99,21 @@ export const getExchanges = async (
 
   //
 
-  const swapTxs = (
+  const swapVariables = {
+    owners: [addr],
+    num,
+  },
+  swapTxsData = (
     await query<EdgeQueryResponse>({
       query: swapsQuery,
-      variables: {
-        owners: [addr],
-        num,
-      },
+      variables: cursor && cursor.swaps ? {...swapVariables, cursor: cursor.swaps } : swapVariables,
     })
-  ).data.transactions.edges;
+  ).data.transactions,
+  swapTxs = swapTxsData.edges,
+  swapHasNext = swapTxsData.pageInfo.hasNextPage;  
 
-  swapTxs.map(({ node }) => {
+  swapTxs.map(({ node, cursor }) => {
+    if(swapHasNext) cursors = { ...cursors, swaps: cursor };    
     const chain = node.tags.find((tag) => tag.name === "Chain")?.value;
     const hash = node.tags.find((tag) => tag.name === "Hash")?.value;
     if (chain) {
@@ -201,6 +216,6 @@ export const getExchanges = async (
         return moment(b.timestamp).unix() - moment(a.timestamp).unix();
       })
       .slice(0, num),
-    cursor: "",
+    cursor: cursors,
   };
 };

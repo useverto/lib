@@ -185,7 +185,10 @@ export default class Verto {
 
   getExchangesPaginated(
     addr: string,
-    cursor?: string
+    cursor?: {
+      swaps?: string;
+      exchanges?: string;
+    }
   ): Promise<{
     exchanges: {
       id: string;
@@ -196,14 +199,17 @@ export default class Verto {
       status: string;
       duration: string;
     }[];
-    cursor: string;
+    cursor: {
+      swaps?: string;
+      exchanges?: string;
+    };
   }> {
     return getExchanges(
       this.arweave,
       addr,
       this.exchangeContract,
       this.exchangeWallet,
-      30,
+      10,
       cursor
     );
   }
