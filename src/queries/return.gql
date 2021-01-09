@@ -1,20 +1,16 @@
-query($addr: String!, $num: Int) {
+query($return: [String!]!, $order: [String!]!) {
   transactions(
-    owners: [$addr]
     tags: [
       { name: "Exchange", values: "Verto" }
-      { name: "Type", values: ["Buy", "Sell", "Swap"] }
+      { name: "Type", values: $return }
+      { name: "Order", values: $order }
     ]
-    first: $num
+    first: 1
   ) {
     edges {
       node {
-        id
         block {
           timestamp
-        }
-        quantity {
-          ar
         }
         tags {
           name

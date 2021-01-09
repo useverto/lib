@@ -5,6 +5,7 @@ query($txID: [String!]!) {
       { name: "Type", values: "Cancel" }
       { name: "Order", values: $txID }
     ]
+    first: 1
   ) {
     edges {
       node {

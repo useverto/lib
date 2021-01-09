@@ -21,6 +21,7 @@
   ],
   "types": "dist/src/index.d.ts",
   "dependencies": {
+    "ar-gql": "^0.0.3",
     "arweave": "^1.10.0",
     "cacheweave": "^2.1.0",
     "moment": "^2.29.1",
