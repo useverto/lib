@@ -178,7 +178,7 @@ export const sendSwap = async (
 ): Promise<void> => {
   for (const tx of txs) {
     // @ts-ignore
-    if (tx.id) {
+    if (tx.tags) {
       // @ts-ignore
       await client.transactions.sign(tx, keyfile);
       await client.transactions.post(tx);
