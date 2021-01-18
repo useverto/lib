@@ -6,6 +6,8 @@ import {
   createSwap,
   getAssets,
   getConfig,
+  Exchange,
+  parseExchange,
   getExchanges,
   getPostStake,
   getReputation,
@@ -29,6 +31,7 @@ import { VertoToken } from "types";
 import { createGenericClient } from "@utils/arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
+import { GQLEdgeInterface } from "ar-gql/dist/types";
 
 // eslint-disable-next-line
 console.log = (...x: any[]) => {
@@ -182,24 +185,21 @@ export default class Verto {
     return getConfig(this.arweave, post, this.exchangeWallet);
   }
 
+  parseExchange(edge: GQLEdgeInterface): Promise<Exchange | undefined> {
+    return parseExchange(
+      this.arweave,
+      edge,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
+  }
+
   /**
    * Finds the latest trades made on Verto
    * @param addr Wallet address of user
    * @returns List of five latest exchanges
    */
-  getExchanges(
-    addr: string
-  ): Promise<
-    {
-      id: string;
-      timestamp: string;
-      type: string;
-      sent: string;
-      received: string;
-      status: string;
-      duration: string;
-    }[]
-  > {
+  getExchanges(addr: string): Promise<Exchange[]> {
     return getExchanges(
       this.arweave,
       addr,

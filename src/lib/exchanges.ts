@@ -1,13 +1,14 @@
 import { VertoToken } from "types";
 import Arweave from "arweave";
-import { run, tx } from "ar-gql";
-import exchangesQuery from "../queries/exchanges.gql";
+import { GQLEdgeInterface } from "ar-gql/dist/types";
 import { popularTokens, getTokens } from "./tokens";
 import moment from "moment";
-import swapConfirmationQuery from "../queries/swapConfirmation.gql";
-import confirmationQuery from "../queries/confirmation.gql";
+import { run, tx } from "ar-gql";
+import confirmationSwapQuery from "../queries/swapConfirmation.gql";
+import confirmationTradeQuery from "../queries/confirmation.gql";
 import cancelQuery from "../queries/cancel.gql";
 import returnQuery from "../queries/return.gql";
+import exchangesQuery from "../queries/exchanges.gql";
 
 const unique = (arr: VertoToken[]): VertoToken[] => {
   const seen: Record<string, boolean> = {};
@@ -16,31 +17,216 @@ const unique = (arr: VertoToken[]): VertoToken[] => {
   });
 };
 
+export interface Exchange {
+  id: string;
+  timestamp: string;
+  type: string;
+  sent: string;
+  received: string;
+  status: string;
+  duration: string;
+}
+
+export const parseExchange = async (
+  client: Arweave,
+  edge: GQLEdgeInterface,
+  exchangeContract: string,
+  exchangeWallet: string
+): Promise<Exchange | undefined> => {
+  const tokens = unique([
+    ...(await popularTokens(client, exchangeWallet)),
+    ...(await getTokens(client, exchangeContract, exchangeWallet)),
+  ]);
+
+  let res: Exchange | undefined;
+
+  const type = edge.node.tags.find((tag) => tag.name === "Type")?.value;
+  const amount = parseFloat(edge.node.quantity.ar);
+
+  if (type) {
+    if (type === "Buy") {
+      // AR -> TOKEN
+      const tokenID = edge.node.tags.find((tag) => tag.name === "Token")?.value;
+      const token = tokens.find((token) => token.id === tokenID);
+
+      if (token) {
+        res = {
+          id: edge.node.id,
+          timestamp: edge.node.block
+            ? moment
+                .unix(edge.node.block.timestamp)
+                .format("YYYY-MM-DD HH:mm:ss")
+            : "not mined yet",
+          type,
+          sent: `${amount} AR`,
+          received: `??? ${token.ticker}`,
+          status: "pending",
+          duration: "not completed",
+        };
+      }
+    }
+
+    if (type === "Sell") {
+      // TOKEN -> AR
+      const tokenID = edge.node.tags.find((tag) => tag.name === "Contract")
+        ?.value;
+      const token = tokens.find((token) => token.id === tokenID);
+
+      if (token) {
+        const input = edge.node.tags.find((tag) => tag.name === "Input")?.value;
+
+        if (input) {
+          res = {
+            id: edge.node.id,
+            timestamp: edge.node.block
+              ? moment
+                  .unix(edge.node.block.timestamp)
+                  .format("YYYY-MM-DD HH:mm:ss")
+              : "not mined yet",
+            type,
+            sent: `${JSON.parse(input).qty} ${token.ticker}`,
+            received: `??? AR`,
+            status: "pending",
+            duration: "not completed",
+          };
+        }
+      }
+    }
+
+    if (type === "Swap") {
+      const chain = edge.node.tags.find((tag) => tag.name === "Chain")?.value;
+      const hash = edge.node.tags.find((tag) => tag.name === "Hash")?.value;
+
+      if (hash) {
+        // CHAIN -> AR/TOKEN
+        const value = edge.node.tags.find((tag) => tag.name === "Value")?.value;
+
+        if (value) {
+          const tokenID = edge.node.tags.find((tag) => tag.name === "Token")
+            ?.value;
+          const token = tokens.find((token) => token.id === tokenID);
+
+          res = {
+            id: edge.node.id,
+            timestamp: edge.node.block
+              ? moment
+                  .unix(edge.node.block.timestamp)
+                  .format("YYYY-MM-DD HH:mm:ss")
+              : "not mined yet",
+            type,
+            sent: `${value} ${chain}`,
+            received: `??? ${token ? token.ticker : "AR"}`,
+            status: "pending",
+            duration: "not completed",
+          };
+        }
+      } else {
+        // AR -> CHAIN
+        res = {
+          id: edge.node.id,
+          timestamp: edge.node.block
+            ? moment
+                .unix(edge.node.block.timestamp)
+                .format("YYYY-MM-DD HH:mm:ss")
+            : "not mined yet",
+          type,
+          sent: `${amount} AR`,
+          received: `??? ${chain}`,
+          status: "pending",
+          duration: "not completed",
+        };
+      }
+    }
+  }
+
+  if (res) {
+    // Check for confirmations
+    let confirmationRes;
+    if (res.type === "Swap") {
+      if (res.sent.split(" ")[1] === "AR") {
+        // AR -> CHAIN
+        confirmationRes = (await run(confirmationSwapQuery, { txID: res.id }))
+          .data.transactions.edges[0];
+      } else {
+        // CHAIN -> AR/TOKEN
+        confirmationRes = (
+          await run(
+            res.received.split(" ")[1] === "AR"
+              ? confirmationSwapQuery
+              : confirmationTradeQuery,
+            {
+              txID: (await tx(res.id)).tags.find((tag) => tag.name === "Hash")
+                ?.value,
+            }
+          )
+        ).data.transactions.edges[0];
+      }
+    } else {
+      confirmationRes = (await run(confirmationTradeQuery, { txID: res.id }))
+        .data.transactions.edges[0];
+    }
+
+    if (confirmationRes) {
+      const received = confirmationRes.node.tags.find(
+        (tag) => tag.name === "Received"
+      )?.value;
+
+      if (received) {
+        res.status = "success";
+        res.received = received;
+
+        if (confirmationRes.node.block) {
+          const start = moment(res.timestamp);
+          const end = moment(
+            moment
+              .unix(confirmationRes.node.block.timestamp)
+              .format("YYYY-MM-DD HH:mm:ss")
+          );
+          const duration = moment.duration(end.diff(start));
+
+          res.duration = duration.humanize();
+        } else {
+          res.duration = "not mined yet";
+        }
+      }
+    }
+
+    // Check for cancels
+    const cancelRes = (
+      await run(cancelQuery, {
+        txID: res.id,
+      })
+    ).data.transactions.edges[0];
+
+    if (cancelRes) {
+      res.status = "failed";
+      res.duration = "cancelled";
+    }
+
+    // Check for returns
+    const returnRes = (
+      await run(returnQuery, {
+        return: `${res.type}-Return`,
+        order: res.id,
+      })
+    ).data.transactions.edges[0];
+
+    if (returnRes) {
+      res.status = "failed";
+      res.duration = "returned";
+    }
+  }
+
+  return res;
+};
+
 export const getExchanges = async (
   client: Arweave,
   addr: string,
   exchangeContract: string,
   exchangeWallet: string
-): Promise<
-  {
-    id: string;
-    timestamp: string;
-    type: string;
-    sent: string;
-    received: string;
-    status: string;
-    duration: string;
-  }[]
-> => {
-  const exchanges: {
-    id: string;
-    timestamp: string;
-    type: string;
-    sent: string;
-    received: string;
-    status: string;
-    duration: string;
-  }[] = [];
+): Promise<Exchange[]> => {
+  const exchanges: Exchange[] = [];
 
   const res = (
     await run(exchangesQuery, {
@@ -49,192 +235,16 @@ export const getExchanges = async (
     })
   ).data.transactions.edges;
 
-  const tokens = unique([
-    ...(await popularTokens(client, exchangeWallet)),
-    ...(await getTokens(client, exchangeContract, exchangeWallet)),
-  ]);
+  for (const edge of res) {
+    const exchange = await parseExchange(
+      client,
+      edge,
+      exchangeContract,
+      exchangeWallet
+    );
 
-  for (const tx of res) {
-    const type = tx.node.tags.find((tag) => tag.name === "Type")?.value;
-    const amount = parseFloat(tx.node.quantity.ar);
-
-    if (type) {
-      if (type === "Buy") {
-        // AR -> TOKEN
-        const tokenID = tx.node.tags.find((tag) => tag.name === "Token")?.value;
-        const token = tokens.find((token) => token.id === tokenID);
-
-        if (token) {
-          exchanges.push({
-            id: tx.node.id,
-            timestamp: tx.node.block
-              ? moment
-                  .unix(tx.node.block.timestamp)
-                  .format("YYYY-MM-DD HH:mm:ss")
-              : "not mined yet",
-            type,
-            sent: `${amount} AR`,
-            received: `??? ${token.ticker}`,
-            status: "pending",
-            duration: "not completed",
-          });
-        }
-      }
-
-      if (type === "Sell") {
-        // TOKEN -> AR
-        const tokenID = tx.node.tags.find((tag) => tag.name === "Contract")
-          ?.value;
-        const token = tokens.find((token) => token.id === tokenID);
-
-        if (token) {
-          const input = tx.node.tags.find((tag) => tag.name === "Input")?.value;
-
-          if (input) {
-            exchanges.push({
-              id: tx.node.id,
-              timestamp: tx.node.block
-                ? moment
-                    .unix(tx.node.block.timestamp)
-                    .format("YYYY-MM-DD HH:mm:ss")
-                : "not mined yet",
-              type,
-              sent: `${JSON.parse(input).qty} ${token.ticker}`,
-              received: `??? AR`,
-              status: "pending",
-              duration: "not completed",
-            });
-          }
-        }
-      }
-
-      if (type === "Swap") {
-        const chain = tx.node.tags.find((tag) => tag.name === "Chain")?.value;
-        const hash = tx.node.tags.find((tag) => tag.name === "Hash")?.value;
-
-        if (hash) {
-          // CHAIN -> AR/TOKEN
-          const value = tx.node.tags.find((tag) => tag.name === "Value")?.value;
-
-          if (value) {
-            const tokenID = tx.node.tags.find((tag) => tag.name === "Token")
-              ?.value;
-            const token = tokens.find((token) => token.id === tokenID);
-
-            exchanges.push({
-              id: tx.node.id,
-              timestamp: tx.node.block
-                ? moment
-                    .unix(tx.node.block.timestamp)
-                    .format("YYYY-MM-DD HH:mm:ss")
-                : "not mined yet",
-              type,
-              sent: `${value} ${chain}`,
-              received: `??? ${token ? token.ticker : "AR"}`,
-              status: "pending",
-              duration: "not completed",
-            });
-          }
-        } else {
-          // AR -> CHAIN
-          exchanges.push({
-            id: tx.node.id,
-            timestamp: tx.node.block
-              ? moment
-                  .unix(tx.node.block.timestamp)
-                  .format("YYYY-MM-DD HH:mm:ss")
-              : "not mined yet",
-            type,
-            sent: `${amount} AR`,
-            received: `??? ${chain}`,
-            status: "pending",
-            duration: "not completed",
-          });
-        }
-      }
-    }
-  }
-
-  // Check for confirmations
-  for (let i = 0; i < exchanges.length; i++) {
-    const entry = exchanges[i];
-    let res;
-
-    if (entry.type === "Swap") {
-      if (entry.sent.split(" ")[1] === "AR") {
-        // AR -> CHAIN
-        res = (await run(swapConfirmationQuery, { txID: entry.id })).data
-          .transactions.edges[0];
-      } else {
-        // CHAIN -> AR/TOKEN
-        res = (
-          await run(
-            entry.received.split(" ")[1] === "AR"
-              ? swapConfirmationQuery
-              : confirmationQuery,
-            {
-              txID: (await tx(entry.id)).tags.find((tag) => tag.name === "Hash")
-                ?.value,
-            }
-          )
-        ).data.transactions.edges[0];
-      }
-    } else {
-      res = (await run(confirmationQuery, { txID: entry.id })).data.transactions
-        .edges[0];
-    }
-
-    if (res) {
-      const received = res.node.tags.find((tag) => tag.name === "Received")
-        ?.value;
-
-      if (received) {
-        exchanges[i].status = "success";
-        exchanges[i].received = received;
-
-        if (res.node.block) {
-          const start = moment(exchanges[i].timestamp);
-          const end = moment(
-            moment.unix(res.node.block.timestamp).format("YYYY-MM-DD HH:mm:ss")
-          );
-          const duration = moment.duration(end.diff(start));
-
-          exchanges[i].duration = duration.humanize();
-        } else {
-          exchanges[i].duration = "not mined yet";
-        }
-      }
-    }
-  }
-
-  // Check for cancels
-  for (let i = 0; i < exchanges.length; i++) {
-    const entry = exchanges[i];
-    const res = (
-      await run(cancelQuery, {
-        txID: entry.id,
-      })
-    ).data.transactions.edges[0];
-
-    if (res) {
-      exchanges[i].status = "failed";
-      exchanges[i].duration = "cancelled";
-    }
-  }
-
-  // Check for returns
-  for (let i = 0; i < exchanges.length; i++) {
-    const entry = exchanges[i];
-    const res = (
-      await run(returnQuery, {
-        return: `${entry.type}-Return`,
-        order: entry.id,
-      })
-    ).data.transactions.edges[0];
-
-    if (res) {
-      exchanges[i].status = "failed";
-      exchanges[i].duration = "returned";
+    if (exchange) {
+      exchanges.push(exchange);
     }
   }
 
