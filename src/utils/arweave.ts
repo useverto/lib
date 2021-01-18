@@ -3,6 +3,7 @@ import { getContract } from "cacheweave";
 import { weightedRandom } from "./weighted_random";
 import { query } from "./gql";
 import { EdgeQueryResponse } from "types";
+import { StateInterface } from "community-js/lib/faces";
 
 /**
  * Utility to create a general Arweave client instance
@@ -21,7 +22,8 @@ export const selectWeightedHolder = async (
   client: Arweave,
   contract: string
 ): Promise<string | undefined> => {
-  const state = await getContract(client, contract);
+  const res = await getContract(client, contract);
+  const state = isStateInterfaceWithValidity(res) ? res.state : res;
   const balances = state.balances;
   const vault = state.vault;
 
@@ -138,3 +140,14 @@ export const getChainAddr = async (
 
   return "invalid";
 };
+
+interface StateInterfaceWithValidity {
+  state: StateInterface;
+  validity: {
+    [id: string]: boolean;
+  };
+}
+
+export function isStateInterfaceWithValidity(val: StateInterface | StateInterfaceWithValidity): val is StateInterfaceWithValidity {
+  return (val as StateInterfaceWithValidity).validity !== undefined;
+}

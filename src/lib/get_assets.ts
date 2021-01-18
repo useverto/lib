@@ -2,6 +2,7 @@ import Arweave from "arweave";
 import { VertoToken } from "types";
 import { popularTokens, getTokens } from "./tokens";
 import { getContract } from "cacheweave";
+import { isStateInterfaceWithValidity } from "../utils/arweave";
 
 const unique = (arr: VertoToken[]): VertoToken[] => {
   const seen: Record<string, boolean> = {};
@@ -30,7 +31,8 @@ export const getAssets = async (
   }[] = [];
 
   for (let i = 0; i < tokens.length; i++) {
-    const contract = await getContract(client, tokens[i].id);
+    const res = await getContract(client, tokens[i].id);
+    const contract = isStateInterfaceWithValidity(res) ? res.state : res;
 
     if (contract.balances && contract.balances[addr] > 0) {
       balances.push({

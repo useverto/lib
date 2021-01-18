@@ -25,6 +25,7 @@ import {
   sendOrder,
   sendSwap,
   volume,
+  paginateExchanges,
 } from "@lib/index";
 import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
 import { VertoToken } from "types";
@@ -205,6 +206,22 @@ export default class Verto {
       addr,
       this.exchangeContract,
       this.exchangeWallet
+    );
+  }
+
+  /**
+   * Paginate all trades of the user
+   * @param addr Wallet address of user
+   * @param cursor Optional cursor to paginate
+   * @return List of exchanges for the cursor
+   */
+  paginateExchanges(addr: string, cursor?: string): Promise<{ exchanges: Exchange[]; cursor?: string; }> {
+    return paginateExchanges(
+      this.arweave,
+      addr,
+      this.exchangeContract,
+      this.exchangeWallet,
+      cursor
     );
   }
 

@@ -9,6 +9,7 @@ import confirmationTradeQuery from "../queries/confirmation.gql";
 import cancelQuery from "../queries/cancel.gql";
 import returnQuery from "../queries/return.gql";
 import exchangesQuery from "../queries/exchanges.gql";
+import exchangesCursorQuery from "../queries/exchanges_cursor.gql";
 
 const unique = (arr: VertoToken[]): VertoToken[] => {
   const seen: Record<string, boolean> = {};
@@ -249,4 +250,38 @@ export const getExchanges = async (
   }
 
   return exchanges;
+};
+
+export const paginateExchanges = async (
+  client: Arweave,
+  addr: string,
+  exchangeContract: string,
+  exchangeWallet: string,
+  cursor?: string
+): Promise<{ exchanges: Exchange[]; cursor?: string; }> => {
+  const exchanges: Exchange[] = [];
+
+  const { edges, pageInfo: { hasNextPage } } = (
+    await run(exchangesCursorQuery, {
+      addr,
+      cursor
+    })
+  ).data.transactions;
+
+  if(edges.length < 1) return { exchanges: [], cursor: undefined };
+
+  for (const edge of edges) {
+    const exchange = await parseExchange(
+      client,
+      edge,
+      exchangeContract,
+      exchangeWallet
+    );
+
+    if (exchange) {
+      exchanges.push(exchange);
+    }
+  }
+
+  return { exchanges, cursor: hasNextPage ? undefined : edges[edges.length - 1].cursor };
 };
