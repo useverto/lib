@@ -1,4 +1,4 @@
-import { isStateInterfaceWithValidity } from "@utils/arweave"
+import { isStateInterfaceWithValidity } from "@utils/arweave";
 import Arweave from "arweave";
 import { getContract } from "cacheweave";
 
@@ -14,7 +14,7 @@ export const getPostStake = async (
   exchangeContract: string
 ): Promise<number> => {
   const res = await getContract(client, exchangeContract);
-  if(isStateInterfaceWithValidity(res)) return 0;
+  if (isStateInterfaceWithValidity(res)) return 0;
   const vault = res.vault;
 
   let stake = 0;
@@ -34,7 +34,7 @@ const getTimeStaked = async (
   exchangeContract: string
 ): Promise<number> => {
   const res = await getContract(client, exchangeContract);
-  if(isStateInterfaceWithValidity(res)) return 0;
+  if (isStateInterfaceWithValidity(res)) return 0;
   const vault = res.vault;
 
   if (post in vault) {

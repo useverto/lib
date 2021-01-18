@@ -12,7 +12,7 @@ import {
   getTxFee,
 } from "./fees";
 import { exchangeFee } from "@utils/constants";
-import { isStateInterfaceWithValidity } from "@utils/arweave"
+import { isStateInterfaceWithValidity } from "@utils/arweave";
 
 export const createOrder = async (
   client: Arweave,
@@ -35,8 +35,11 @@ export const createOrder = async (
   const arBalance = parseFloat(
     client.ar.winstonToAr(await client.wallets.getBalance(addr))
   );
-  const contractRes = await getContract(client, pst)
-  const pstBalance = (isStateInterfaceWithValidity(contractRes) ? contractRes.state : contractRes).balances[addr];
+  const contractRes = await getContract(client, pst);
+  const pstBalance = (isStateInterfaceWithValidity(contractRes)
+    ? contractRes.state
+    : contractRes
+  ).balances[addr];
 
   if (type.toLowerCase() === "buy") {
     const tags = {

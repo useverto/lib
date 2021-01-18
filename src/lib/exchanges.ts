@@ -258,17 +258,20 @@ export const paginateExchanges = async (
   exchangeContract: string,
   exchangeWallet: string,
   cursor?: string
-): Promise<{ exchanges: Exchange[]; cursor?: string; }> => {
+): Promise<{ exchanges: Exchange[]; cursor?: string }> => {
   const exchanges: Exchange[] = [];
 
-  const { edges, pageInfo: { hasNextPage } } = (
+  const {
+    edges,
+    pageInfo: { hasNextPage },
+  } = (
     await run(exchangesCursorQuery, {
       addr,
-      cursor
+      cursor,
     })
   ).data.transactions;
 
-  if(edges.length < 1) return { exchanges: [], cursor: undefined };
+  if (edges.length < 1) return { exchanges: [], cursor: undefined };
 
   for (const edge of edges) {
     const exchange = await parseExchange(
@@ -283,5 +286,8 @@ export const paginateExchanges = async (
     }
   }
 
-  return { exchanges, cursor: hasNextPage ? undefined : edges[edges.length - 1].cursor };
+  return {
+    exchanges,
+    cursor: hasNextPage ? undefined : edges[edges.length - 1].cursor,
+  };
 };

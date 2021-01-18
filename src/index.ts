@@ -215,7 +215,10 @@ export default class Verto {
    * @param cursor Optional cursor to paginate
    * @return List of exchanges for the cursor
    */
-  paginateExchanges(addr: string, cursor?: string): Promise<{ exchanges: Exchange[]; cursor?: string; }> {
+  paginateExchanges(
+    addr: string,
+    cursor?: string
+  ): Promise<{ exchanges: Exchange[]; cursor?: string }> {
     return paginateExchanges(
       this.arweave,
       addr,

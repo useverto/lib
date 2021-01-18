@@ -6,7 +6,7 @@ import { volume } from "./volume";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
 import tokensQuery from "../queries/tokens.gql";
-import { isStateInterfaceWithValidity } from "@utils/arweave"
+import { isStateInterfaceWithValidity } from "@utils/arweave";
 
 export const getTokens = async (
   client: Arweave,

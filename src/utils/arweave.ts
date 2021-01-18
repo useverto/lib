@@ -148,6 +148,8 @@ interface StateInterfaceWithValidity {
   };
 }
 
-export function isStateInterfaceWithValidity(val: StateInterface | StateInterfaceWithValidity): val is StateInterfaceWithValidity {
+export function isStateInterfaceWithValidity(
+  val: StateInterface | StateInterfaceWithValidity
+): val is StateInterfaceWithValidity {
   return (val as StateInterfaceWithValidity).validity !== undefined;
 }

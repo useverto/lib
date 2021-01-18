@@ -6,7 +6,11 @@ import { exchangeFee } from "@utils/constants";
 import { getContract } from "cacheweave";
 import { weightedRandom } from "@utils/weighted_random";
 import { getConfig } from "./get_config";
-import { getArAddr, getChainAddr, isStateInterfaceWithValidity } from "@utils/arweave";
+import {
+  getArAddr,
+  getChainAddr,
+  isStateInterfaceWithValidity,
+} from "@utils/arweave";
 import fetch from "node-fetch";
 
 export const createTradingPostFeeTx = async (
@@ -263,7 +267,7 @@ export const selectWeightedHolder = async (
   exchangeWallet: string
 ): Promise<string> => {
   const res = await getContract(client, contract);
-  const state = isStateInterfaceWithValidity(res) ? res.state : res
+  const state = isStateInterfaceWithValidity(res) ? res.state : res;
   const balances = state.balances;
   const vault = state.vault;
 
