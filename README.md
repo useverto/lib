@@ -97,6 +97,14 @@ Returns the configuration, from the latest genesis transaction, for a specific t
 
 Returns a list of the latest five exchanges sent through the Verto Exchange Network, for a given wallet address.
 
+#### `paginateExchanges(address, cursor?)`
+
+Returns a list of exchanges (and the last cursor) sent through the Verto Exchange Network, for a given wallet address and optional cursor.
+
+#### `getOrderBook(tradingPostAddress)`
+
+Returns the order book of a trading post.
+
 #### `getPostStake(tradingPostAddress)`
 
 Returns the stake of a specific trading post.

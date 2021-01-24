@@ -63,6 +63,17 @@ describe("E2E Tests", function () {
       })
       .catch(done);
   });
+  it("Test getOrderBook(<POST>)", (done) => {
+    vertoInstance
+      .getOrderBook(POST)
+      .then((res) => {
+        console.log(res);
+
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
   it("Test getPostStake(<POST>)", (done) => {
     vertoInstance
       .getPostStake(POST)

@@ -26,6 +26,8 @@ import {
   sendSwap,
   volume,
   paginateExchanges,
+  getOrderBook,
+  OrderBookItem,
 } from "@lib/index";
 import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
 import { VertoToken } from "types";
@@ -226,6 +228,15 @@ export default class Verto {
       this.exchangeWallet,
       cursor
     );
+  }
+
+  /**
+   * Get order book for post
+   * @param post
+   * @return Order book for post
+   */
+  getOrderBook(post: string): Promise<OrderBookItem[]> {
+    return getOrderBook(this.arweave, post, this.exchangeWallet);
   }
 
   /**

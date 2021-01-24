@@ -7,7 +7,7 @@ export const getConfig = async (
   client: Arweave,
   post: string,
   exchangeWallet: string
-): Promise<JSON | string> => {
+): Promise<JSON | "invalid"> => {
   const genesis = (
     await query<EdgeQueryResponse>({
       query: genesisQuery,

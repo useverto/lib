@@ -10,6 +10,8 @@ import cancelQuery from "../queries/cancel.gql";
 import returnQuery from "../queries/return.gql";
 import exchangesQuery from "../queries/exchanges.gql";
 import exchangesCursorQuery from "../queries/exchanges_cursor.gql";
+import { getConfig } from "./get_config";
+import fetch from "node-fetch";
 
 const unique = (arr: VertoToken[]): VertoToken[] => {
   const seen: Record<string, boolean> = {};
@@ -26,6 +28,20 @@ export interface Exchange {
   received: string;
   status: string;
   duration: string;
+}
+
+export interface OrderBookItem {
+  token: string;
+  orders: {
+    txID: string;
+    amnt: number;
+    rate?: number;
+    addr: string;
+    type: "Buy" | "Sell";
+    createdAt: Date;
+    received: number;
+    token?: string;
+  }[];
 }
 
 export const parseExchange = async (
@@ -290,4 +306,29 @@ export const paginateExchanges = async (
     exchanges,
     cursor: hasNextPage ? undefined : edges[edges.length - 1].cursor,
   };
+};
+
+export const getOrderBook = async (
+  client: Arweave,
+  post: string,
+  exchangeWallet: string
+): Promise<OrderBookItem[]> => {
+  const config = await getConfig(client, post, exchangeWallet);
+
+  if (config === "invalid") throw new Error("Invalid genesis");
+
+  // @ts-ignore
+  const url = config["publicURL"].startsWith("https://")
+      ? config["publicURL"]
+      : "https://" + config["publicURL"],
+    endpoint = url.endsWith("/") ? "orders" : "/orders";
+
+  try {
+    const res: OrderBookItem[] = await (await fetch(url + endpoint))
+      .clone()
+      .json();
+    return res;
+  } catch {
+    throw new Error("Could not get orderbook");
+  }
 };
