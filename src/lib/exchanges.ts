@@ -319,8 +319,10 @@ export const getOrderBook = async (
 
   // @ts-ignore
   const url = config["publicURL"].startsWith("https://")
-      ? config["publicURL"]
-      : "https://" + config["publicURL"],
+      ? // @ts-ignore
+        config["publicURL"]
+      : // @ts-ignore
+        "https://" + config["publicURL"],
     endpoint = url.endsWith("/") ? "orders" : "/orders";
 
   try {
