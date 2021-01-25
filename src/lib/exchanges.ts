@@ -329,7 +329,8 @@ export const getOrderBook = async (
     const res: OrderBookItem[] = await (await fetch(url + endpoint))
       .clone()
       .json();
-    return res;
+    // skip tx store for the lib
+    return res.filter((val) => val.token !== "TX_STORE");
   } catch {
     throw new Error("Could not get orderbook");
   }
