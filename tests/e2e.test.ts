@@ -67,8 +67,6 @@ describe("E2E Tests", function () {
     vertoInstance
       .getOrderBook(POST)
       .then((res) => {
-        console.log(res);
-
         assert(res);
         done();
       })
