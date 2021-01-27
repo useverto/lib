@@ -50,7 +50,6 @@ describe("E2E Tests", function () {
     vertoInstance
       .getExchangeDetails(EXCHANGE)
       .then((res) => {
-        console.log(res);
         assert(res);
         done();
       })
