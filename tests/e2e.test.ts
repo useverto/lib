@@ -19,7 +19,7 @@ describe("E2E Tests", function () {
     assert(vertoInstance);
     done();
   });
-  it("Test arVolume()", (done) => {
+  /*it("Test arVolume()", (done) => {
     vertoInstance
       .arVolume()
       .then((res) => {
@@ -45,7 +45,7 @@ describe("E2E Tests", function () {
         done();
       })
       .catch(done);
-  });
+  });*/
   it("Test getExchangeDetails(<ID>)", (done) => {
     vertoInstance
       .getExchangeDetails(EXCHANGE)

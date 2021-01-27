@@ -53,7 +53,7 @@ export interface ExchangeDetails {
   type?: string;
   hash?: string;
   value: string;
-  status: "success" | "warning" | "error";
+  status: "success" | "warning" | "error" | "secondary";
   messages: string[];
   orders: {
     id: string;
@@ -368,7 +368,7 @@ export const getExchangeDetails = async (
       orders: { id: string; description: string; match?: string }[] = [],
       messages: string[] = [];
     let value = "",
-      status: "success" | "warning" | "error" = "success";
+      status: "success" | "warning" | "error" | "secondary" = "success";
 
     if (type === "Buy") value = `${parseFloat(transaction.quantity.ar)} AR`;
     else if (type === "Sell") {
@@ -400,6 +400,11 @@ export const getExchangeDetails = async (
         else value = `${parseFloat(transaction.quantity.ar)} AR`;
       }
     }
+
+    orders.push({
+      id,
+      description: `${type} - ${value}`,
+    });
 
     // for purchases
     if (type === "Buy") {
@@ -554,8 +559,171 @@ export const getExchangeDetails = async (
       }
     }
 
-    // TODO: @martonlederer
-    // https://github.com/useverto/orbit/blob/main/pages/order.tsx#L337
+    // is the exchange cancelled
+    const calcelRes = await run(
+      `
+        query($post: String!, $order: [String!]!) {
+          transactions(
+            recipients: [$post]
+            tags: [
+              { name: "Exchange", values: "Verto" }
+              { name: "Type", values: "Cancel" }
+              { name: "Order", values: $order }
+            ]
+            first: 1
+          ) {
+            edges {
+              node {
+                id
+              }
+            }
+          }
+        }
+      `,
+      { post, order: id }
+    );
+
+    if (calcelRes.data.transactions.edges[0]) {
+      status = "secondary";
+      orders.push({
+        id: calcelRes.data.transactions.edges[0].node.id,
+        description: "Cancel",
+      });
+    }
+
+    // is the transaction refunded
+    const refundRes = await run(
+      `
+        query($post: String!, $order: [String!]!) {
+          transactions(
+            owners: [$post]
+            tags: [
+              { name: "Exchange", values: "Verto" }
+              { name: "Type", values: "Refund" }
+              { name: "Order", values: $order }
+            ]
+            first: 1
+          ) {
+            edges {
+              node {
+                id
+                quantity {
+                  ar
+                }
+                tags {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }
+      `,
+      { post, order: id }
+    );
+
+    if (refundRes.data.transactions.edges[0]) {
+      const tx = refundRes.data.transactions.edges[0].node;
+      let amnt = "";
+      if (type === "Buy") amnt = `${parseFloat(tx.quantity.ar)} AR`;
+      if (type === "Sell") amnt = await getPSTAmount(tx, client);
+
+      status = "secondary";
+      orders.push({
+        id: tx.id,
+        description: `Refund - ${amnt}`,
+      });
+    }
+
+    // is the transaction returned
+    const returnRes = await run(
+      `
+        query($post: String!, $order: [String!]!) {
+          transactions(
+            owners: [$post]
+            tags: [
+              { name: "Exchange", values: "Verto" }
+              { name: "Type", values: "${type}-Return" }
+              { name: "Order", values: $order }
+            ]
+            first: 1
+          ) {
+            edges {
+              node {
+                id
+                quantity {
+                  ar
+                }
+                tags {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }
+      `,
+      { post, order: id }
+    );
+
+    if (returnRes.data.transactions.edges[0]) {
+      const tx = returnRes.data.transactions.edges[0].node;
+      let amnt = "";
+      if (type === "Buy") amnt = `${parseFloat(tx.quantity.ar)} AR`;
+      if (type === "Sell") amnt = await getPSTAmount(tx, client);
+
+      status = "secondary";
+      orders.push({
+        id: tx.id,
+        description: `Return - ${amnt}`,
+      });
+    }
+
+    // order confirmation
+    if (type === "Buy" || type === "Sell") {
+      const confirmRes = await run(
+        `
+          query($post: String!, $order: [String!]!) {
+            transactions(
+              owners: [$post]
+              tags: [
+                { name: "Exchange", values: "Verto" }
+                { name: "Type", values: "Confirmation" }
+                { name: "Match", values: $order }
+              ]
+              first: 1
+            ) {
+              edges {
+                node {
+                  id
+                  tags {
+                    name
+                    value
+                  }
+                }
+              }
+            }
+          }
+        `,
+        { post, order: id }
+      );
+
+      if (confirmRes.data.transactions.edges[0]) {
+        const received = confirmRes.data.transactions.edges[0].node.tags.find(
+          (tag) => tag.name === "Received"
+        )?.value;
+        status = "success";
+
+        orders.push({
+          id: confirmRes.data.transactions.edges[0].node.id,
+          description: `Confirmation - ${received}`,
+        });
+      }
+    }
+
+    if (type === "Swap") {
+      // TODO(@johnletey): Query for a swap confirmation
+    }
 
     return {
       id,
