@@ -1,6 +1,6 @@
 import { VertoToken } from "types";
 import Arweave from "arweave";
-import { GQLEdgeInterface } from "ar-gql/dist/types";
+import { GQLEdgeInterface, GQLNodeInterface } from "ar-gql/dist/types";
 import { popularTokens, getTokens } from "./tokens";
 import moment from "moment";
 import { run, tx } from "ar-gql";
@@ -12,6 +12,8 @@ import exchangesQuery from "../queries/exchanges.gql";
 import exchangesCursorQuery from "../queries/exchanges_cursor.gql";
 import { getConfig } from "./get_config";
 import fetch from "node-fetch";
+import { getContract } from "cacheweave";
+import { isStateInterfaceWithValidity } from "../utils/arweave";
 
 const unique = (arr: VertoToken[]): VertoToken[] => {
   const seen: Record<string, boolean> = {};
@@ -41,6 +43,22 @@ export interface OrderBookItem {
     createdAt: Date;
     received: number;
     token?: string;
+  }[];
+}
+
+export interface ExchangeDetails {
+  id: string;
+  owner: string;
+  post: string;
+  type?: string;
+  hash?: string;
+  value: string;
+  status: "success" | "warning" | "error" | "secondary";
+  messages: string[];
+  orders: {
+    id: string;
+    description: string;
+    match?: string;
   }[];
 }
 
@@ -334,4 +352,408 @@ export const getOrderBook = async (
   } catch {
     throw new Error("Could not get orderbook");
   }
+};
+
+export const getExchangeDetails = async (
+  client: Arweave,
+  id: string,
+  exchangeWallet: string
+): Promise<ExchangeDetails> => {
+  try {
+    const transaction = await tx(id),
+      owner = transaction.owner.address,
+      post = transaction.recipient,
+      type = transaction.tags.find(({ name }) => name === "Type")?.value,
+      hash = transaction.tags.find(({ name }) => name === "Hash")?.value,
+      orders: { id: string; description: string; match?: string }[] = [],
+      messages: string[] = [];
+    let value = "",
+      status: "success" | "warning" | "error" | "secondary" = "success";
+
+    if (type === "Buy") value = `${parseFloat(transaction.quantity.ar)} AR`;
+    else if (type === "Sell") {
+      const contract = transaction.tags.find((tag) => tag.name === "Contract");
+
+      if (contract) {
+        const state = await getContract(client, contract.value, true);
+        value = await getPSTAmount(transaction, client);
+
+        if (!isStateInterfaceWithValidity(state)) {
+          status = "error";
+          messages.push("Wrong data format for contract");
+        } else if (state.validity[transaction.id]) {
+          status = "warning";
+          messages.push(
+            "This order was created before tags for AR transfers were added."
+          );
+        } else {
+          status = "error";
+          messages.push("Invalid SmartWeave interaction.");
+        }
+      }
+    } else if (type === "Swap") {
+      const chain = transaction.tags.find((tag) => tag.name === "Chain")?.value,
+        val = transaction.tags.find((tag) => tag.name === "Value")?.value;
+
+      if (chain) {
+        if (val) value = `${val} ${chain}`;
+        else value = `${parseFloat(transaction.quantity.ar)} AR`;
+      }
+    }
+
+    orders.push({
+      id,
+      description: `${type} - ${value}`,
+    });
+
+    // for purchases
+    if (type === "Buy") {
+      const res = await run(
+        `
+          query($post: String!, $order: [String!]!) {
+            transactions(
+              owners: [$post]
+              tags: [
+                { name: "Exchange", values: "Verto" }
+                { name: "Type", values: "PST-Transfer" }
+                { name: "Order", values: $order }
+              ]
+            ) {
+              edges {
+                node {
+                  id
+                  tags {
+                    name
+                    value
+                  }
+                }
+              }
+            }
+        }
+        `,
+        { post, order: id }
+      );
+
+      for (const tx of res.data.transactions.edges) {
+        const amnt = await getPSTAmount(tx.node, client),
+          match = tx.node.tags.find((tag) => tag.name === "Match");
+
+        orders.push({
+          id: tx.node.id,
+          description: `PST Transfer - ${amnt}`,
+          match: match?.value,
+        });
+      }
+    }
+
+    // for sells
+    if (type === "Sell") {
+      const res = await run(
+        `
+          query($post: String!, $order: [String!]!) {
+            transactions(
+              owners: [$post]
+              tags: [
+                { name: "Exchange", values: "Verto" }
+                { name: "Type", values: "AR-Transfer" }
+                { name: "Order", values: $order }
+              ]
+            ) {
+              edges {
+                node {
+                  id
+                  quantity {
+                    ar
+                  }
+                  tags {
+                    name
+                    value
+                  }
+                }
+              }
+            }
+          }
+        `,
+        { post, order: id }
+      );
+
+      // AR transfer
+      for (const tx of res.data.transactions.edges) {
+        const amnt = await getPSTAmount(tx.node, client),
+          match = tx.node.tags.find((tag) => tag.name === "Match");
+
+        orders.push({
+          id: tx.node.id,
+          description: `AR Transfer - ${amnt}`,
+          match: match?.value,
+        });
+      }
+    }
+
+    // for swaps
+    if (type === "Swap") {
+      if (hash) {
+        const res = await run(
+          `
+            query($post: String!, $order: [String!]!) {
+              transactions(
+                owners: [$post]
+                tags: [
+                  { name: "Exchange", values: "Verto" }
+                  { name: "Type", values: "AR-Transfer" }
+                  { name: "Order", values: $order }
+                ]
+              ) {
+                edges {
+                  node {
+                    id
+                    quantity {
+                      ar
+                    }
+                  }
+                }
+              }
+            }
+          `,
+          { post, order: hash }
+        );
+
+        // AR transfer
+        for (const tx of res.data.transactions.edges)
+          orders.push({
+            id: tx.node.id,
+            description: `AR Transfer - ${parseFloat(tx.node.quantity.ar)} AR`,
+          });
+
+        // ETH
+        if (res.data.transactions.edges.length === 0) {
+          const config = await getConfig(client, post, exchangeWallet),
+            // @ts-ignore
+            url = config.publicURL.startsWith("https://")
+              ? // @ts-ignore
+                config.publicURL
+              : // @ts-ignore
+                "https://" + config.publicURL,
+            endpoint = url.endsWith("/") ? "orders" : "/orders",
+            tradingPostRes = await fetch(url + endpoint),
+            orders = await tradingPostRes.clone().json(),
+            table = orders.find((table: any) => table.token === "TX_STORE")
+              .orders,
+            entry = table.find((elem: any) => elem.txHash === hash);
+
+          if (entry) {
+            if (entry.parsed === 1) {
+              status = "error";
+              messages.push(
+                "An error occured. Most likely the Ethereum hash submitted is invalid."
+              );
+            } else {
+              //
+            }
+          } else {
+            //
+          }
+        }
+      } else {
+        // AR -> ETH
+      }
+    }
+
+    // is the exchange cancelled
+    const calcelRes = await run(
+      `
+        query($post: String!, $order: [String!]!) {
+          transactions(
+            recipients: [$post]
+            tags: [
+              { name: "Exchange", values: "Verto" }
+              { name: "Type", values: "Cancel" }
+              { name: "Order", values: $order }
+            ]
+            first: 1
+          ) {
+            edges {
+              node {
+                id
+              }
+            }
+          }
+        }
+      `,
+      { post, order: id }
+    );
+
+    if (calcelRes.data.transactions.edges[0]) {
+      status = "secondary";
+      orders.push({
+        id: calcelRes.data.transactions.edges[0].node.id,
+        description: "Cancel",
+      });
+    }
+
+    // is the transaction refunded
+    const refundRes = await run(
+      `
+        query($post: String!, $order: [String!]!) {
+          transactions(
+            owners: [$post]
+            tags: [
+              { name: "Exchange", values: "Verto" }
+              { name: "Type", values: "Refund" }
+              { name: "Order", values: $order }
+            ]
+            first: 1
+          ) {
+            edges {
+              node {
+                id
+                quantity {
+                  ar
+                }
+                tags {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }
+      `,
+      { post, order: id }
+    );
+
+    if (refundRes.data.transactions.edges[0]) {
+      const tx = refundRes.data.transactions.edges[0].node;
+      let amnt = "";
+      if (type === "Buy") amnt = `${parseFloat(tx.quantity.ar)} AR`;
+      if (type === "Sell") amnt = await getPSTAmount(tx, client);
+
+      status = "secondary";
+      orders.push({
+        id: tx.id,
+        description: `Refund - ${amnt}`,
+      });
+    }
+
+    // is the transaction returned
+    const returnRes = await run(
+      `
+        query($post: String!, $order: [String!]!) {
+          transactions(
+            owners: [$post]
+            tags: [
+              { name: "Exchange", values: "Verto" }
+              { name: "Type", values: "${type}-Return" }
+              { name: "Order", values: $order }
+            ]
+            first: 1
+          ) {
+            edges {
+              node {
+                id
+                quantity {
+                  ar
+                }
+                tags {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }
+      `,
+      { post, order: id }
+    );
+
+    if (returnRes.data.transactions.edges[0]) {
+      const tx = returnRes.data.transactions.edges[0].node;
+      let amnt = "";
+      if (type === "Buy") amnt = `${parseFloat(tx.quantity.ar)} AR`;
+      if (type === "Sell") amnt = await getPSTAmount(tx, client);
+
+      status = "secondary";
+      orders.push({
+        id: tx.id,
+        description: `Return - ${amnt}`,
+      });
+    }
+
+    // order confirmation
+    if (type === "Buy" || type === "Sell") {
+      const confirmRes = await run(
+        `
+          query($post: String!, $order: [String!]!) {
+            transactions(
+              owners: [$post]
+              tags: [
+                { name: "Exchange", values: "Verto" }
+                { name: "Type", values: "Confirmation" }
+                { name: "Match", values: $order }
+              ]
+              first: 1
+            ) {
+              edges {
+                node {
+                  id
+                  tags {
+                    name
+                    value
+                  }
+                }
+              }
+            }
+          }
+        `,
+        { post, order: id }
+      );
+
+      if (confirmRes.data.transactions.edges[0]) {
+        const received = confirmRes.data.transactions.edges[0].node.tags.find(
+          (tag) => tag.name === "Received"
+        )?.value;
+        status = "success";
+
+        orders.push({
+          id: confirmRes.data.transactions.edges[0].node.id,
+          description: `Confirmation - ${received}`,
+        });
+      }
+    }
+
+    if (type === "Swap") {
+      // TODO(@johnletey): Query for a swap confirmation
+    }
+
+    return {
+      id,
+      owner,
+      post,
+      type,
+      hash,
+      value,
+      status,
+      messages,
+      orders,
+    };
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
+const getPSTAmount = async (tx: GQLNodeInterface, client: Arweave) => {
+  const contract = tx.tags.find((tag) => tag.name === "Contract"),
+    input = tx.tags.find((tag) => tag.name === "Input");
+
+  if (contract && input) {
+    const qty = JSON.parse(input.value).qty,
+      res = await client.transactions.getData(contract.value, {
+        decode: true,
+        string: true,
+      }),
+      ticker = JSON.parse(res.toString()).ticker;
+
+    return `${qty} ${ticker}`;
+  }
+  return "";
 };

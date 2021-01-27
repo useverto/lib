@@ -28,6 +28,8 @@ import {
   paginateExchanges,
   getOrderBook,
   OrderBookItem,
+  ExchangeDetails,
+  getExchangeDetails,
 } from "@lib/index";
 import { exchangeContractSrc, exchangeWallet } from "@utils/constants";
 import { VertoToken } from "types";
@@ -195,6 +197,15 @@ export default class Verto {
       this.exchangeContract,
       this.exchangeWallet
     );
+  }
+
+  /**
+   * Get details about an exchange
+   * @param id Exchange ID
+   * @returns Exchange details
+   */
+  getExchangeDetails(id: string): Promise<ExchangeDetails> {
+    return getExchangeDetails(this.arweave, id, this.exchangeWallet);
   }
 
   /**

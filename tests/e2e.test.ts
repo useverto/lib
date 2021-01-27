@@ -2,10 +2,11 @@ import Verto from "../src";
 import { assert } from "chai";
 import { stdout } from "test-console";
 
-// Assign a token/address/trading post; Just for testing
+// Assign a token/address/trading post/exchange; Just for testing
 const TOKEN = "usjm4PCxUd5mtaon7zc97-dt-3qf67yPyqgzLnLqk5A";
 const ADDR = "aLemOhg9OGovn-0o4cOCbueiHT9VgdYnpJpq7NgMA1A";
 const POST = "WNeEQzI24ZKWslZkQT573JZ8bhatwDVx6XVDrrGbUyk";
+const EXCHANGE = "igNOxqGVvBWh2wDoMSNYdY_GAbxvSqJp4Ryxc62O-1E";
 
 let vertoInstance: Verto;
 
@@ -40,6 +41,16 @@ describe("E2E Tests", function () {
     vertoInstance
       .getConfig(POST)
       .then((res) => {
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
+  it("Test getExchangeDetails(<ID>)", (done) => {
+    vertoInstance
+      .getExchangeDetails(EXCHANGE)
+      .then((res) => {
+        console.log(res);
         assert(res);
         done();
       })
