@@ -12,6 +12,8 @@ import exchangesQuery from "../queries/exchanges.gql";
 import exchangesCursorQuery from "../queries/exchanges_cursor.gql";
 import { getConfig } from "./get_config";
 import fetch from "node-fetch";
+import { getContract } from "cacheweave";
+import { isStateInterfaceWithValidity } from "../utils/arweave";
 
 const unique = (arr: VertoToken[]): VertoToken[] => {
   const seen: Record<string, boolean> = {};
@@ -42,6 +44,17 @@ export interface OrderBookItem {
     received: number;
     token?: string;
   }[];
+}
+
+export interface ExchangeDetails {
+  id: string;
+  owner: string;
+  post: string;
+  type?: string;
+  hash?: string;
+  value: string;
+  status: string;
+  message: string;
 }
 
 export const parseExchange = async (
@@ -333,5 +346,74 @@ export const getOrderBook = async (
     return res.filter((val) => val.token !== "TX_STORE");
   } catch {
     throw new Error("Could not get orderbook");
+  }
+};
+
+export const getExchangeDetails = async (
+  client: Arweave,
+  id: string
+): Promise<ExchangeDetails> => {
+  try {
+    const transaction = await tx(id),
+      owner = transaction.owner.address,
+      post = transaction.recipient,
+      type = transaction.tags.find(({ name }) => name === "Type")?.value,
+      hash = transaction.tags.find(({ name }) => name === "Hash")?.value;
+    let value = "",
+      message = "",
+      status = "success";
+
+    if (type === "Buy") value = `${parseFloat(transaction.quantity.ar)} AR`;
+    else if (type === "Sell") {
+      const contract = transaction.tags.find((tag) => tag.name === "Contract");
+
+      if (contract) {
+        const state = await getContract(client, contract.value, true),
+          input = transaction.tags.find((tag) => tag.name === "Input");
+
+        if (input) {
+          const qty = JSON.parse(input.value).qty,
+            res = await client.transactions.getData(contract.value, {
+              decode: true,
+              string: true,
+            }),
+            ticker = JSON.parse(res.toString()).ticker;
+
+          value = `${qty} ${ticker}`;
+        }
+        if (!isStateInterfaceWithValidity(state)) {
+          status = "error";
+          message = "Wrong data format for contract";
+        } else if (state.validity[transaction.id]) {
+          status = "warning";
+          message =
+            "This order was created before tags for AR transfers were added.";
+        } else {
+          status = "error";
+          message = "Invalid SmartWeave interaction.";
+        }
+      }
+    } else if (type === "Swap") {
+      const chain = transaction.tags.find((tag) => tag.name === "Chain")?.value,
+        val = transaction.tags.find((tag) => tag.name === "Value")?.value;
+
+      if (chain) {
+        if (val) value = `${val} ${chain}`;
+        else value = `${parseFloat(transaction.quantity.ar)} AR`;
+      }
+    }
+
+    return {
+      id,
+      owner,
+      post,
+      type,
+      hash,
+      value,
+      status,
+      message,
+    };
+  } catch (e) {
+    throw new Error(e);
   }
 };
