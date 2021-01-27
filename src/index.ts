@@ -205,7 +205,7 @@ export default class Verto {
    * @returns Exchange details
    */
   getExchangeDetails(id: string): Promise<ExchangeDetails> {
-    return getExchangeDetails(this.arweave, id);
+    return getExchangeDetails(this.arweave, id, this.exchangeWallet);
   }
 
   /**
