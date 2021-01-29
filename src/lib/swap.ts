@@ -12,6 +12,7 @@ import {
   isStateInterfaceWithValidity,
 } from "@utils/arweave";
 import fetch from "node-fetch";
+import { ethers } from "ethers";
 
 export const createTradingPostFeeTx = async (
   client: Arweave,
@@ -129,14 +130,6 @@ export const createSwap = async (
       (await getConfig(client, post, exchangeWallet)).chain;
 
     let fee = chainAmnt * exchangeFee;
-    if (chainAmnt < 0.000001) {
-      chainAmnt = 0.000001;
-      fee = 0.000001;
-    } else {
-      if (fee < 0.000001) {
-        fee = 0.000001;
-      }
-    }
     const chainTotal = chainAmnt + fee;
 
     // @ts-ignore
@@ -208,7 +201,15 @@ export const sendSwap = async (
         if (isBrowser) {
           // @ts-ignore
           if (typeof window.ethereum !== "undefined") {
-            tx.value *= 1e18;
+            const amountBeforeDecimal = tx.value.toString().split(".")[0]
+              .length;
+            tx.value = parseFloat(
+              ethers.utils
+                .parseEther(
+                  tx.value.toFixed(18 - amountBeforeDecimal).toString()
+                )
+                .toString()
+            );
             // @ts-ignore
             await window.ethereum.request({
               method: "eth_requestAccounts",

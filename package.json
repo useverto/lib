@@ -1,6 +1,6 @@
 {
   "name": "@verto/lib",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "author": "The Verto Team",
   "license": "MIT",
   "publishConfig": {
@@ -24,6 +24,7 @@
     "ar-gql": "^0.0.3",
     "arweave": "^1.10.0",
     "cacheweave": "^2.5.0",
+    "ethers": "^5.0.26",
     "moment": "^2.29.1",
     "node-fetch": "^2.6.1",
     "smartweave": "^0.4.21"
