@@ -129,7 +129,7 @@ export const createSwap = async (
       // @ts-ignore
       (await getConfig(client, post, exchangeWallet)).chain;
 
-    let fee = chainAmnt * exchangeFee;
+    const fee = chainAmnt * exchangeFee;
     const chainTotal = chainAmnt + fee;
 
     // @ts-ignore
