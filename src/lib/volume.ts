@@ -1,5 +1,3 @@
-import Arweave from "arweave";
-import { getTradingPosts } from "./get_trading_posts";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
 import sellQuery from "../queries/sell.gql";
@@ -7,18 +5,12 @@ import { maxInt } from "@utils/constants";
 import moment from "moment";
 
 export const volume = async (
-  client: Arweave,
-  token: string,
-  exchangeContract: string,
-  exchangeWallet: string
+  token: string
 ): Promise<{ volume: number[]; dates: string[] }> => {
-  const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
-
   const orderTxs = (
     await query<EdgeQueryResponse>({
       query: sellQuery,
       variables: {
-        recipients: posts,
         token,
         num: maxInt,
       },
@@ -64,19 +56,15 @@ export const volume = async (
   return { volume: volume.reverse(), dates: days.reverse() };
 };
 
-export const arVolume = async (
-  client: Arweave,
-  exchangeContract: string,
-  exchangeWallet: string
-): Promise<{ volume: number[]; dates: string[] }> => {
-  const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
-
+export const arVolume = async (): Promise<{
+  volume: number[];
+  dates: string[];
+}> => {
   const orderTxs = (
     await query<EdgeQueryResponse>({
       query: `
-        query($recipients: [String!], $num: Int) {
+        query($num: Int) {
           transactions(
-            recipients: $recipients
             tags: [
               { name: "Exchange", values: "Verto" }
               { name: "Type", values: "Buy" }
@@ -97,7 +85,6 @@ export const arVolume = async (
         }      
       `,
       variables: {
-        recipients: posts,
         num: maxInt,
       },
     })

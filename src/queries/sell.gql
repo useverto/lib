@@ -1,6 +1,5 @@
-query($recipients: [String!], $token: [String!]!, $num: Int) {
+query($token: [String!]!, $num: Int) {
   transactions(
-    recipients: $recipients
     tags: [
       { name: "Exchange", values: "Verto" }
       { name: "Type", values: "Sell" }

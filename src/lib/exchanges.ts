@@ -70,7 +70,7 @@ export const parseExchange = async (
 ): Promise<Exchange | undefined> => {
   const tokens = unique([
     ...(await popularTokens(client, exchangeWallet)),
-    ...(await getTokens(client, exchangeContract, exchangeWallet)),
+    ...(await getTokens(client, exchangeContract)),
   ]);
 
   let res: Exchange | undefined;

@@ -20,7 +20,7 @@ export const getTPTokens = async (
 
   const tokens: VertoToken[] = [
     ...(await popularTokens(client, exchangeWallet)),
-    ...(await getTokens(client, exchangeContract, exchangeWallet)),
+    ...(await getTokens(client, exchangeContract)),
   ];
   // @ts-ignore
   config.blockedTokens.map((token: string) => {

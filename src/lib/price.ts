@@ -1,5 +1,3 @@
-import Arweave from "arweave";
-import { getTradingPosts } from "./get_trading_posts";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
 import { maxInt } from "@utils/constants";
@@ -33,19 +31,13 @@ const fillArray = (arr: number[]): number[] => {
 };
 
 export const price = async (
-  client: Arweave,
-  token: string,
-  exchangeContract: string,
-  exchangeWallet: string
+  token: string
 ): Promise<{ prices: number[]; dates: string[] } | undefined> => {
-  const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
-
   const confirmationTxs = (
     await query<EdgeQueryResponse>({
       query: `
-        query($posts: [String!], $num: Int) {
+        query($num: Int) {
           transactions(
-            owners: $posts
             tags: [
               { name: "Exchange", values: "Verto" }
               { name: "Type", values: "Confirmation" }
@@ -68,7 +60,6 @@ export const price = async (
         }      
       `,
       variables: {
-        posts,
         num: maxInt,
       },
     })

@@ -19,7 +19,7 @@ export const getAssets = async (
 ): Promise<{ id: string; name: string; ticker: string; balance: number }[]> => {
   const tokens = unique([
     ...(await popularTokens(client, exchangeWallet)),
-    ...(await getTokens(client, exchangeContract, exchangeWallet)),
+    ...(await getTokens(client, exchangeContract)),
   ]);
 
   const balances: {

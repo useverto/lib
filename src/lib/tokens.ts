@@ -10,8 +10,7 @@ import { isStateInterfaceWithValidity } from "@utils/arweave";
 
 export const getTokens = async (
   client: Arweave,
-  exchangeContract: string,
-  exchangeWallet: string
+  exchangeContract: string
 ): Promise<VertoToken[]> => {
   const contractIDs: string[] = [exchangeContract];
 
@@ -35,12 +34,7 @@ export const getTokens = async (
       const res = await getContract(client, contractID);
       const contract = isStateInterfaceWithValidity(res) ? res.state : res;
 
-      const volumeData = await volume(
-        client,
-        contractID,
-        exchangeContract,
-        exchangeWallet
-      );
+      const volumeData = await volume(contractID);
 
       tokens.push({
         id: contractID,
@@ -77,7 +71,7 @@ export const saveToken = async (
   // TODO(@johnletey): Use `localPorridge` as well.
   // @ts-ignore
   if (typeof window !== "undefined") {
-    const tokens = await getTokens(client, exchangeContract, exchangeWallet);
+    const tokens = await getTokens(client, exchangeContract);
 
     if (!tokens.find((token) => token.id === contract)) {
       const userTokenTxs = (

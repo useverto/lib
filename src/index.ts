@@ -70,7 +70,7 @@ export default class Verto {
   }
 
   arVolume(): Promise<{ volume: number[]; dates: string[] }> {
-    return arVolume(this.arweave, this.exchangeContract, this.exchangeWallet);
+    return arVolume();
   }
 
   chainRate(chain: string): Promise<{ rates: number[]; dates: string[] }> {
@@ -273,7 +273,7 @@ export default class Verto {
    * @returns List of token ids, names, and tickers
    */
   getTokens(): Promise<VertoToken[]> {
-    return getTokens(this.arweave, this.exchangeContract, this.exchangeWallet);
+    return getTokens(this.arweave, this.exchangeContract);
   }
 
   /**
@@ -341,12 +341,7 @@ export default class Verto {
    * @returns Latest price
    */
   latestPrice(token: string): Promise<number | undefined> {
-    return latestPrice(
-      this.arweave,
-      token,
-      this.exchangeContract,
-      this.exchangeWallet
-    );
+    return latestPrice(token);
   }
 
   /**
@@ -355,12 +350,7 @@ export default class Verto {
    * @returns Latest 24hr volume
    */
   latestVolume(token: string): Promise<number> {
-    return latestVolume(
-      this.arweave,
-      token,
-      this.exchangeContract,
-      this.exchangeWallet
-    );
+    return latestVolume(token);
   }
 
   /**
@@ -378,12 +368,7 @@ export default class Verto {
   price(
     token: string
   ): Promise<{ prices: number[]; dates: string[] } | undefined> {
-    return price(
-      this.arweave,
-      token,
-      this.exchangeContract,
-      this.exchangeWallet
-    );
+    return price(token);
   }
 
   /**
@@ -455,11 +440,6 @@ export default class Verto {
    * @returns List of volumes and dates
    */
   volume(token: string): Promise<{ volume: number[]; dates: string[] }> {
-    return volume(
-      this.arweave,
-      token,
-      this.exchangeContract,
-      this.exchangeWallet
-    );
+    return volume(token);
   }
 }
