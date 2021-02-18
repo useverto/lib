@@ -4,6 +4,7 @@ import { weightedRandom } from "./weighted_random";
 import { query } from "./gql";
 import { EdgeQueryResponse } from "types";
 import { StateInterface } from "community-js/lib/faces";
+import { ethers } from "ethers";
 
 /**
  * Utility to create a general Arweave client instance
@@ -56,8 +57,11 @@ export const selectWeightedHolder = async (
 
 export const getArAddr = async (
   addr: string,
-  chain: string
-): Promise<string> => {
+  chain: string,
+  checksum: boolean = false
+): Promise<string | undefined> => {
+  let wallet;
+
   const txs = (
     await query<EdgeQueryResponse>({
       query: `
@@ -88,16 +92,24 @@ export const getArAddr = async (
   ).data.transactions.edges;
 
   if (txs.length === 1) {
-    return txs[0].node.owner.address;
+    wallet = txs[0].node.owner.address;
   }
 
-  return "invalid";
+  if (checksum) {
+    return wallet;
+  } else {
+    return (
+      wallet || (await getArAddr(ethers.utils.getAddress(addr), chain, true))
+    );
+  }
 };
 
 export const getChainAddr = async (
   addr: string,
   chain: string
-): Promise<string> => {
+): Promise<string | undefined> => {
+  let wallet;
+
   const txs = (
     await query<EdgeQueryResponse>({
       query: `
@@ -134,11 +146,11 @@ export const getChainAddr = async (
     );
 
     if (tag) {
-      return tag.value;
+      wallet = tag.value;
     }
   }
 
-  return "invalid";
+  return wallet;
 };
 
 interface StateInterfaceWithValidity {
