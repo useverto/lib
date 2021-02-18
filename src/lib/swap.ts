@@ -76,7 +76,7 @@ export const createSwap = async (
   );
 
   if (arAmnt) {
-    if (!(await getChainAddr(addr, chain))) return "arLink";
+    if ((await getChainAddr(addr, chain)) === "invalid") return "arLink";
 
     if (!rate) return "invalid";
     const tags = {
@@ -122,7 +122,7 @@ export const createSwap = async (
     }
   } else if (chainAmnt) {
     // @ts-ignore
-    if (!(await getArAddr(window.ethereum.selectedAddress, chain)))
+    if ((await getArAddr(window.ethereum.selectedAddress, chain)) === "invalid")
       return "arLink";
 
     const supportedChains =
