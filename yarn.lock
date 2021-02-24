@@ -744,35 +744,15 @@ articles@~0.2.1:
   resolved "https://registry.yarnpkg.com/articles/-/articles-0.2.2.tgz#cc6b429f8cfa811f41e7a08505abbb4e45503197"
   integrity sha512-S3Y4MPp+LD/l0HHm/4yrr6MoXhUkKT98ZdsV2tkTuBNywqUXEtvJT+NBO3KTSQEttc5EOwEJe2Xw8cZ9TI5Hrw==
 
-arweave@^1.10.0:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.10.0.tgz#76df929ff1f75349d49241ffc542c1422a4b235a"
-  integrity sha512-ejgnByZttzcJfNszF+S4gimqR9gC+mgM8mBMjX4fvUYPjTtk7+YD9o/2p5C+dJBpG1drr4bRtlmv9NZfzyTDBg==
-  dependencies:
-    asn1.js "^5.4.1"
-    axios "^0.19.2"
-    base64-js "^1.3.1"
-    bignumber.js "^8.1.1"
-
-arweave@^1.10.2:
-  version "1.10.3"
-  resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.10.3.tgz#70bb21ba14ba564aaea7d4c2f9e220beca4d5032"
-  integrity sha512-fHIIeMNCO7uhLUmyybI8Xl5c19RAoznjKiK0vUmW3rnzo3Wmy06NZs0M7njN0bKPH+RCaHRDuIhyhETWwKj1sw==
+arweave@^1.10.11, arweave@^1.10.6:
+  version "1.10.11"
+  resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.10.11.tgz#59dff46319e258d68f9b921a1f709be457fb7162"
+  integrity sha512-rh3Yhc7Zjf476Lvg4zjvURg1HvdrRej/2528QqQrlej/EocEfHt1/TEM35r3ghDzRBvHLUcMkqIDUwLotS5sUA==
   dependencies:
     asn1.js "^5.4.1"
     axios "^0.21.1"
     base64-js "^1.3.1"
-    bignumber.js "^8.1.1"
-
-arweave@^1.9.1:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.9.1.tgz#9b3754eeb38a244ed9abf1024ab0df6bfb76a990"
-  integrity sha512-S0oLpxTKV0r6TPQ3l7ZZu8c6tE4F2xtnw+vQKR2+232k/rHbXqeuOijZZMEgHLoTi7c/MasXgyj4QLALh7hrXA==
-  dependencies:
-    asn1.js "^5.4.1"
-    axios "^0.19.2"
-    base64-js "^1.3.1"
-    bignumber.js "^8.1.1"
+    bignumber.js "^9.0.1"
 
 asn1.js@^5.4.1:
   version "5.4.1"
@@ -799,14 +779,7 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-axios@^0.19.2:
-  version "0.19.2"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.19.2.tgz#3ea36c5d8818d0d5f8a8a97a6d36b86cdc00cb27"
-  integrity sha512-fjgm5MvRHLhx+osE2xoekY70AhARk3a6hkN+3Io1jc00jtquGvxYlKlsFUhmUET0V5te6CcZI7lcv2Ym61mjHA==
-  dependencies:
-    follow-redirects "1.5.10"
-
-axios@^0.21.0, axios@^0.21.1:
+axios@^0.21.1:
   version "0.21.1"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
   integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
@@ -827,11 +800,6 @@ bech32@1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.4.tgz#e38c9f37bf179b8eb16ae3a772b40c356d4832e9"
   integrity sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==
-
-bignumber.js@^8.1.1:
-  version "8.1.1"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.1.1.tgz#4b072ae5aea9c20f6730e4e5d529df1271c4d885"
-  integrity sha512-QD46ppGintwPGuL1KqmwhR0O+N2cZUg8JG/VzwI2e28sM9TqHjQB10lI4QAaMHVbLzwVLLAwEglpKPViWX+5NQ==
 
 bignumber.js@^9.0.1:
   version "9.0.1"
@@ -883,15 +851,15 @@ builtin-modules@^3.1.0:
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-3.1.0.tgz#aad97c15131eb76b65b50ef208e7584cd76a7484"
   integrity sha512-k0KL0aWZuBt2lrxrcASWDfwOLMnodeQjodT/1SxEQAXsHANgo6ZC/VEaSEHCXt7aSTZ4/4H5LKa+tBXmW7Vtvw==
 
-cacheweave@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/cacheweave/-/cacheweave-2.5.0.tgz#0c49845bf8a148439ba582c2fc45af0982659d29"
-  integrity sha512-4stiUaetJjfSSGvfcypJw5d8PYuffcx0juzZEuC0Xsa9Zq69Qvq6KgAyBwty6Z/tLg2anL3WSPQhjVlQ2pXSnQ==
+cacheweave@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/cacheweave/-/cacheweave-4.0.0.tgz#ca5d1a06b178c192b1ba3781f1ddac537b32c4e1"
+  integrity sha512-It82anUgWy7fJsBR8vSoekmkNY+PlIJ2YCJ4QooSI1/GrQpjSnnE4yMriDCTF7f1xvorIWLV8bAdL0c/74G+eA==
   dependencies:
     ar-gql "^0.0.3"
-    arweave "^1.10.0"
-    community-js "^1.1.15"
-    smartweave "^0.4.23"
+    arweave "^1.10.11"
+    community-js "^1.1.27"
+    smartweave "^0.4.27"
 
 callsites@^3.0.0:
   version "3.1.0"
@@ -1045,14 +1013,14 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
 
-community-js@^1.1.15:
-  version "1.1.15"
-  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.15.tgz#d61ef0d672faf4e29131f1a061c715f03049be9b"
-  integrity sha512-Ynp5lwokeSKUL948pDEtAa2oj9gyUmEi86IU3Bw0mLYHenPZOdPnsLkBJs8iY5hO9YX4Nc4R2Z01q4D9ys1Zrg==
+community-js@^1.1.27:
+  version "1.1.27"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.27.tgz#6f0a2a8396e08a2ff2b909cec565cf94895b50ab"
+  integrity sha512-fwldXyzL/KTMER8C5jCr3kOcKaklJDqUpKzyz7bZcxnkazqZ2jrlRaB6R29NRsdQ4MlU4FaZu3UiFjfpeJbIpA==
   dependencies:
-    arweave "^1.9.1"
-    axios "^0.21.0"
-    smartweave "^0.4.23"
+    arweave "^1.10.6"
+    axios "^0.21.1"
+    smartweave "^0.4.25"
     tiny-worker "^2.3.0"
 
 concat-map@0.0.1:
@@ -1090,13 +1058,6 @@ debug@4.1.1, debug@^4.0.1, debug@^4.1.1:
   integrity sha512-pYAIzeRo8J6KPEaJ0VWOh5Pzkbw/RetuzehGM7QRRX5he4fPHx2rdKMB256ehJCkX+XRQm16eZLqLNS8RSZXZw==
   dependencies:
     ms "^2.1.1"
-
-debug@=3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
-  integrity sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==
-  dependencies:
-    ms "2.0.0"
 
 decamelize@^1.2.0:
   version "1.2.0"
@@ -1614,13 +1575,6 @@ flatted@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.2.tgz#4575b21e2bcee7434aa9be662f4b7b5f9c2b5138"
   integrity sha512-r5wGx7YeOwNWNlCA0wQ86zKyDLMQr+/RB8xy74M4hTphfmjlijTSSXGuH8rnvKZnfT9i+75zmd8jcKdMR4O6jA==
-
-follow-redirects@1.5.10:
-  version "1.5.10"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.5.10.tgz#7b7a9f9aea2fdff36786a94ff643ed07f4ff5e2a"
-  integrity sha512-0V5l4Cizzvqt5D44aTXbFZz+FtyXV1vrDN6qrelxtfYQKW0KO0W2T/hkE8xvGa/540LkZlkaUjO4ailYTFtHVQ==
-  dependencies:
-    debug "=3.1.0"
 
 follow-redirects@^1.10.0:
   version "1.13.1"
@@ -2213,11 +2167,6 @@ moment@^2.29.1:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
-ms@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
-  integrity sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=
-
 ms@2.1.2, ms@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
@@ -2663,15 +2612,15 @@ slice-ansi@^2.1.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
-smartweave@^0.4.21:
-  version "0.4.25"
-  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.25.tgz#71ba8843117589fa73b3cdbc8a0415476fdc6afa"
-  integrity sha512-tJaqgAEA7Vky7w4lKYnoaNDXO5vZsQiOIolsjwjXFDQStg96A+9ZKH647qUoHiaDKcg/1/p/5wA4XOov5MM8IQ==
+smartweave@^0.4.25, smartweave@^0.4.27:
+  version "0.4.27"
+  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.27.tgz#8bfd723eafc854520cfbc96522ef874d7c5853e6"
+  integrity sha512-uxUOAAhLwugSmWtdLniRL5XSXWzUqV/dve/P4NcCn4zjY3Wj2xpSvEihw1WQqae4JbYABFzwchFDl8c2PrkMLQ==
   dependencies:
     "@types/clui" "^0.3.0"
     "@types/inquirer" "^7.3.1"
     "@weavery/clarity" "^0.1.5"
-    arweave "^1.10.2"
+    arweave "^1.10.11"
     bignumber.js "^9.0.1"
     chalk "^4.1.0"
     clui "^0.3.6"
@@ -2681,17 +2630,6 @@ smartweave@^0.4.21:
     loglevel "^1.7.0"
     sentencer "^0.2.1"
     yargs "^16.2.0"
-
-smartweave@^0.4.23:
-  version "0.4.23"
-  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.23.tgz#8037102b839f4e324fe2aaa605d02e8a14bd0a50"
-  integrity sha512-vU9iAPKZRnjVaRFmRdvkAKy1e+oWYo4mj/7s36VOumYX7jceBYQPb2cwEILgghaimWpIvdHi1kcfs0zcqcNlHg==
-  dependencies:
-    "@weavery/clarity" "^0.1.5"
-    arweave "^1.9.1"
-    bignumber.js "^9.0.1"
-    loglevel "^1.7.0"
-    yargs "^16.1.0"
 
 source-map-support@^0.5.17, source-map-support@~0.5.12:
   version "0.5.19"
@@ -3108,19 +3046,6 @@ yargs@^14.2.3:
     which-module "^2.0.0"
     y18n "^4.0.0"
     yargs-parser "^15.0.1"
-
-yargs@^16.1.0:
-  version "16.1.1"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-16.1.1.tgz#5a4a095bd1ca806b0a50d0c03611d38034d219a1"
-  integrity sha512-hAD1RcFP/wfgfxgMVswPE+z3tlPFtxG8/yWUrG2i17sTWGCGqWnxKcLTF4cUKDUK8fzokwsmO9H0TDkRbMHy8w==
-  dependencies:
-    cliui "^7.0.2"
-    escalade "^3.1.1"
-    get-caller-file "^2.0.5"
-    require-directory "^2.1.1"
-    string-width "^4.2.0"
-    y18n "^5.0.5"
-    yargs-parser "^20.2.2"
 
 yargs@^16.2.0:
   version "16.2.0"
