@@ -42,8 +42,8 @@ export const createTradingPostFeeTx = async (
   post: string,
   exchangeWallet: string
 ): Promise<Transaction> => {
-  const tradingPostFee = Math.ceil(
-    Math.ceil(amnt) * (await getTradingPostFee(client, post, exchangeWallet))
+  const tradingPostFee = Math.floor(
+    Math.floor(amnt) * (await getTradingPostFee(client, post, exchangeWallet))
   );
 
   const tags = {
@@ -82,7 +82,7 @@ export const createVRTHolderFeeTx = async (
 ): Promise<Transaction> => {
   const tipReceiver = await selectWeightedHolder(client, exchangeContract);
 
-  const fee = Math.ceil(Math.ceil(amnt) * exchangeFee);
+  const fee = Math.floor(Math.floor(amnt) * exchangeFee);
 
   const tags = {
     Exchange: "Verto",
