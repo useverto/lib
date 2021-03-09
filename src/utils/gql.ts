@@ -1,5 +1,5 @@
 // Client for the Arweave GraphQL endpoint
-import fetch from "node-fetch";
+import axios from "axios";
 
 interface StringMap {
   [key: string]: string | string[] | Record<string, unknown> | number;
@@ -28,15 +28,16 @@ export interface GraphQLResponse<T> {
  * @param graphql The response body as string
  */
 async function request(graphql: string) {
-  const requestOptions = {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: graphql,
-  };
-  const res = await fetch("https://arweave.net/graphql", requestOptions);
-  return await res.clone().json();
+  const { data: res } = await axios.post(
+    "https://arweave.net/graphql",
+    graphql,
+    {
+      headers: {
+        "content-type": "application/json",
+      },
+    }
+  );
+  return res;
 }
 
 /**

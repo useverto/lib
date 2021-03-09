@@ -1,6 +1,6 @@
 import { VertoToken } from "types";
 import Arweave from "arweave";
-import { GQLEdgeInterface, GQLNodeInterface } from "ar-gql/dist/types";
+import { GQLEdgeInterface, GQLNodeInterface } from "ar-gql/dist/faces";
 import { popularTokens, getTokens } from "./tokens";
 import moment from "moment";
 import { run, tx } from "ar-gql";
@@ -11,7 +11,7 @@ import returnQuery from "../queries/return.gql";
 import exchangesQuery from "../queries/exchanges.gql";
 import exchangesCursorQuery from "../queries/exchanges_cursor.gql";
 import { getConfig } from "./get_config";
-import fetch from "node-fetch";
+import axios from "axios";
 import { getContract } from "cacheweave";
 import { isStateInterfaceWithValidity } from "../utils/arweave";
 
@@ -344,9 +344,7 @@ export const getOrderBook = async (
     endpoint = url.endsWith("/") ? "orders" : "/orders";
 
   try {
-    const res: OrderBookItem[] = await (await fetch(url + endpoint))
-      .clone()
-      .json();
+    const res: OrderBookItem[] = (await axios.get(url + endpoint)).data;
     // skip tx store for the lib
     return res.filter((val) => val.token !== "TX_STORE");
   } catch {
@@ -535,8 +533,7 @@ export const getExchangeDetails = async (
               : // @ts-ignore
                 "https://" + config.publicURL,
             endpoint = url.endsWith("/") ? "orders" : "/orders",
-            tradingPostRes = await fetch(url + endpoint),
-            orders = await tradingPostRes.clone().json(),
+            orders = (await axios.get(url + endpoint)).data,
             table = orders.find((table: any) => table.token === "TX_STORE")
               .orders,
             entry = table.find((elem: any) => elem.txHash === hash);

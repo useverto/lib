@@ -11,7 +11,7 @@ import {
   getChainAddr,
   isStateInterfaceWithValidity,
 } from "@utils/arweave";
-import fetch from "node-fetch";
+import axios from "axios";
 import { ethers } from "ethers";
 
 export const createTradingPostFeeTx = async (
@@ -250,7 +250,7 @@ export const sendSwap = async (
               await client.transactions.sign(arTx, keyfile);
               await client.transactions.post(arTx);
 
-              fetch(
+              axios.get(
                 `https://hook.verto.exchange/api/transaction?id=${arTx.id}`
               );
             }

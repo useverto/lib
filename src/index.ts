@@ -36,7 +36,7 @@ import { VertoToken } from "types";
 import { createGenericClient } from "@utils/arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
-import { GQLEdgeInterface } from "ar-gql/dist/types";
+import { GQLEdgeInterface } from "ar-gql/dist/faces";
 
 // eslint-disable-next-line
 console.log = (...x: any[]) => {

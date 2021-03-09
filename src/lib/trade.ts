@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+import axios from "axios";
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import Transaction from "arweave/node/lib/transaction";
@@ -171,7 +171,7 @@ export const sendOrder = async (
         key === "Type" &&
         (value === "Swap" || value === "Buy" || value === "Sell")
       ) {
-        fetch(`https://hook.verto.exchange/api/transaction?id=${tx.id}`);
+        axios.get(`https://hook.verto.exchange/api/transaction?id=${tx.id}`);
       }
     }
   }
