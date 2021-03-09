@@ -712,6 +712,13 @@ ar-gql@^0.0.3:
   dependencies:
     node-fetch "^2.6.1"
 
+ar-gql@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/ar-gql/-/ar-gql-0.0.5.tgz#d4be1e49df4c3505987dce7d5026606c94058427"
+  integrity sha512-/yL5GBcWcGHdyPemp8IZq4gFRcSG1yylDYuPQOKGzUcmHMUiRecHE5NUeAVjn7nM5dVfe5NzYiSv5A20RA8Aig==
+  dependencies:
+    axios "^0.21.1"
+
 arg@^4.1.0:
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/arg/-/arg-4.1.3.tgz#269fc7ad5b8e42cb63c896d5666017261c144089"
