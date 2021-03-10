@@ -16,7 +16,7 @@ import { ethers } from "ethers";
 
 export const createTradingPostFeeTx = async (
   client: Arweave,
-  keyfile: JWKInterface,
+  keyfile: JWKInterface | "use_wallet" | undefined,
   amnt: number,
   post: string,
   exchangeWallet: string
@@ -53,7 +53,7 @@ export interface Transfer {
 
 export const createSwap = async (
   client: Arweave,
-  keyfile: JWKInterface,
+  keyfile: JWKInterface | "use_wallet" | undefined,
   chain: string,
   post: string,
   exchangeWallet: string,
@@ -169,7 +169,7 @@ export const createSwap = async (
 
 export const sendSwap = async (
   client: Arweave,
-  keyfile: JWKInterface,
+  keyfile: JWKInterface | "use_wallet" | undefined,
   txs: (Transaction | Transfer)[],
   post: string
 ): Promise<void> => {
@@ -190,7 +190,7 @@ export const sendSwap = async (
           (value === "Swap" || value === "Buy" || value === "Sell")
         ) {
           // @ts-ignore
-          fetch(`https://hook.verto.exchange/api/transaction?id=${tx.id}`);
+          axios.post(`https://hook.verto.exchange/api/transaction?id=${tx.id}`);
         }
       }
     } else {
@@ -250,7 +250,7 @@ export const sendSwap = async (
               await client.transactions.sign(arTx, keyfile);
               await client.transactions.post(arTx);
 
-              axios.get(
+              axios.post(
                 `https://hook.verto.exchange/api/transaction?id=${arTx.id}`
               );
             }

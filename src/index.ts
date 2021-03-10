@@ -97,21 +97,17 @@ export default class Verto {
     post: string,
     rate?: number
   ): Promise<{ txs: Transaction[]; ar: number; pst: number } | string> {
-    if (this.keyfile) {
-      return createOrder(
-        this.arweave,
-        this.keyfile,
-        type,
-        amnt,
-        pst,
-        post,
-        this.exchangeContract,
-        this.exchangeWallet,
-        rate
-      );
-    } else {
-      return new Promise((resolve) => resolve("keyfile"));
-    }
+    return createOrder(
+      this.arweave,
+      this.keyfile,
+      type,
+      amnt,
+      pst,
+      post,
+      this.exchangeContract,
+      this.exchangeWallet,
+      rate
+    );
   }
 
   /**
@@ -147,22 +143,18 @@ export default class Verto {
       }
     | string
   > {
-    if (this.keyfile) {
-      return createSwap(
-        this.arweave,
-        this.keyfile,
-        chain,
-        post,
-        this.exchangeWallet,
-        this.exchangeContract,
-        arAmnt,
-        chainAmnt,
-        rate,
-        token
-      );
-    } else {
-      return new Promise((resolve) => resolve("keyfile"));
-    }
+    return createSwap(
+      this.arweave,
+      this.keyfile,
+      chain,
+      post,
+      this.exchangeWallet,
+      this.exchangeContract,
+      arAmnt,
+      chainAmnt,
+      rate,
+      token
+    );
   }
 
   /**
@@ -387,28 +379,21 @@ export default class Verto {
    * @param contract PST contract id
    */
   saveToken(contract: string): Promise<string | void> {
-    if (this.keyfile) {
-      return saveToken(
-        this.arweave,
-        contract,
-        this.keyfile,
-        this.exchangeContract,
-        this.exchangeWallet
-      );
-    }
-    return new Promise((resolve) => resolve());
+    return saveToken(
+      this.arweave,
+      contract,
+      this.keyfile,
+      this.exchangeContract,
+      this.exchangeWallet
+    );
   }
 
   /**
    * Sign and post trade transactions
    * @param txs Transactions created with createOrder()
    */
-  sendOrder(txs: Transaction[]): Promise<void | string> {
-    if (this.keyfile) {
-      return sendOrder(this.arweave, this.keyfile, txs);
-    } else {
-      return new Promise((resolve) => resolve("keyfile"));
-    }
+  sendOrder(txs: Transaction[]): Promise<void> {
+    return sendOrder(this.arweave, this.keyfile, txs);
   }
 
   /**
@@ -426,12 +411,8 @@ export default class Verto {
         }
     )[],
     post: string
-  ): Promise<void | string> {
-    if (this.keyfile) {
-      return sendSwap(this.arweave, this.keyfile, txs, post);
-    } else {
-      return new Promise((resolve) => resolve("keyfile"));
-    }
+  ): Promise<void> {
+    return sendSwap(this.arweave, this.keyfile, txs, post);
   }
 
   /**

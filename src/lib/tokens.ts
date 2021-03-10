@@ -64,7 +64,7 @@ export const getTokens = async (
 export const saveToken = async (
   client: Arweave,
   contract: string,
-  keyfile: JWKInterface,
+  keyfile: JWKInterface | "use_wallet" | undefined,
   exchangeContract: string,
   exchangeWallet: string
 ): Promise<string | void> => {

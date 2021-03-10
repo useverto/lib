@@ -9,7 +9,7 @@ import genesisQuery from "../queries/genesis.gql";
 
 export const createExchangeFeeTx = async (
   client: Arweave,
-  keyfile: JWKInterface,
+  keyfile: JWKInterface | "use_wallet" | undefined,
   amnt: number,
   exchangeWallet: string
 ): Promise<Transaction> => {
@@ -36,7 +36,7 @@ export const createExchangeFeeTx = async (
 
 export const createTradingPostFeeTx = async (
   client: Arweave,
-  keyfile: JWKInterface,
+  keyfile: JWKInterface | "use_wallet" | undefined,
   amnt: number,
   pst: string,
   post: string,
@@ -75,7 +75,7 @@ export const createTradingPostFeeTx = async (
 
 export const createVRTHolderFeeTx = async (
   client: Arweave,
-  keyfile: JWKInterface,
+  keyfile: JWKInterface | "use_wallet" | undefined,
   amnt: number,
   pst: string,
   exchangeContract: string

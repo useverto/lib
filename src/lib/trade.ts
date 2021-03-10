@@ -16,7 +16,7 @@ import { isStateInterfaceWithValidity } from "@utils/arweave";
 
 export const createOrder = async (
   client: Arweave,
-  keyfile: JWKInterface,
+  keyfile: JWKInterface | "use_wallet" | undefined,
   type: string,
   amnt: number,
   pst: string,
@@ -156,7 +156,7 @@ export const createOrder = async (
 
 export const sendOrder = async (
   client: Arweave,
-  keyfile: JWKInterface,
+  keyfile: JWKInterface | "use_wallet" | undefined,
   txs: Transaction[]
 ): Promise<void> => {
   for (const tx of txs) {
@@ -171,7 +171,7 @@ export const sendOrder = async (
         key === "Type" &&
         (value === "Swap" || value === "Buy" || value === "Sell")
       ) {
-        axios.get(`https://hook.verto.exchange/api/transaction?id=${tx.id}`);
+        axios.post(`https://hook.verto.exchange/api/transaction?id=${tx.id}`);
       }
     }
   }

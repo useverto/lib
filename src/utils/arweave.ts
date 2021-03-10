@@ -58,7 +58,7 @@ export const selectWeightedHolder = async (
 export const getArAddr = async (
   addr: string,
   chain: string,
-  checksum: boolean = false
+  checksum = false
 ): Promise<string | undefined> => {
   let wallet;
 
