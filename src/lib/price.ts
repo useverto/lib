@@ -1,6 +1,4 @@
-import { query } from "@utils/gql";
-import { EdgeQueryResponse } from "types";
-import { maxInt } from "@utils/constants";
+import { all, run } from "ar-gql";
 import moment from "moment";
 
 const fillArray = (arr: number[]): number[] => {
@@ -33,82 +31,80 @@ const fillArray = (arr: number[]): number[] => {
 export const price = async (
   token: string
 ): Promise<{ prices: number[]; dates: string[] } | undefined> => {
-  const confirmationTxs = (
-    await query<EdgeQueryResponse>({
-      query: `
-        query($num: Int) {
-          transactions(
-            tags: [
-              { name: "Exchange", values: "Verto" }
-              { name: "Type", values: "Confirmation" }
-            ]
-            first: $num
-          ) {
-            edges {
-              node {
-                id
-                block {
-                  timestamp
-                }
-                tags {
-                  name
-                  value
-                }
+  const buys = await all(
+    `
+      query($token: String!, $cursor: String) {
+        transactions(
+          tags: [
+            { name: "Exchange", values: "Verto" }
+            { name: "Type", values: "Buy" }
+            { name: "Token", values: [$token] }
+          ]
+          after: $cursor
+        ) {
+          edges {
+            node {
+              id
+              quantity {
+                ar
               }
             }
           }
-        }      
-      `,
-      variables: {
-        num: maxInt,
-      },
-    })
-  ).data.transactions.edges;
+        }
+      }
+    `,
+    { token }
+  );
 
   const orders: {
     rate: number;
     timestamp: number;
   }[] = [];
-  for (const confirmation of confirmationTxs) {
-    const node = confirmation.node;
-    const receiveTag = node.tags.find((tag) => tag.name === "Received");
 
-    if (receiveTag) {
-      if (receiveTag.value.split(" ")[1] === "AR") {
-        const matchTag = node.tags.find((tag) => tag.name === "Match");
-
-        if (matchTag) {
-          const tx = (
-            await query<EdgeQueryResponse>({
-              query: `
-                query($txID: ID!) {
-                  transaction(id: $txID) {
-                    tags {
-                      name
-                      value
-                    }
+  for (const order of buys) {
+    const confirmation = (
+      await run(
+        `
+          query($order: String!) {
+            transactions(
+              tags: [
+                { name: "Exchange", values: "Verto" }
+                { name: "Type", values: "Confirmation" }
+                { name: "Match", values: [$order] }
+              ]
+              first: 1
+            ) {
+              edges {
+                node {
+                  block {
+                    timestamp
                   }
-                }          
-              `,
-              variables: {
-                txID: matchTag.value,
-              },
-            })
-          ).data.transaction;
-
-          const contractTag = tx.tags.find((tag) => tag.name === "Contract");
-          if (contractTag && contractTag.value === token) {
-            const rateTag = tx.tags.find((tag) => tag.name === "Rate");
-            if (rateTag) {
-              orders.push({
-                rate: 1 / parseFloat(rateTag.value),
-                timestamp: node.block
-                  ? node.block.timestamp
-                  : parseInt(new Date().getTime().toString().slice(0, -3)),
-              });
+                  tags {
+                    name
+                    value
+                  }
+                }
+              }
             }
           }
-        }
+        `,
+        { order: order.node.id }
+      )
+    ).data.transactions.edges[0];
+
+    if (confirmation) {
+      const node = confirmation.node;
+      const receivedTag = node.tags.find((tag) => tag.name === "Received");
+
+      if (receivedTag) {
+        orders.push({
+          rate:
+            parseFloat(receivedTag.value.split(" ")[0]) /
+            parseFloat(order.node.quantity.ar),
+          timestamp: node.block
+            ? node.block.timestamp
+            : parseInt(new Date().getTime().toString().slice(0, -3)),
+        });
       }
     }
   }
