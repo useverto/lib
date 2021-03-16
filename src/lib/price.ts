@@ -42,7 +42,11 @@ export const price = async (
           ]
           after: $cursor
         ) {
+          pageInfo {
+            hasNextPage
+          }
           edges {
+            cursor
             node {
               id
               quantity {
@@ -99,8 +103,8 @@ export const price = async (
       if (receivedTag) {
         orders.push({
           rate:
-            parseFloat(receivedTag.value.split(" ")[0]) /
-            parseFloat(order.node.quantity.ar),
+            parseFloat(order.node.quantity.ar) /
+            parseFloat(receivedTag.value.split(" ")[0]),
           timestamp: node.block
             ? node.block.timestamp
             : parseInt(new Date().getTime().toString().slice(0, -3)),
