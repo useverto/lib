@@ -7,6 +7,7 @@ import { getPostStake } from "./reputation";
 
 export const getTradingPosts = async (
   client: Arweave,
+  useCache: boolean,
   exchangeContract: string,
   exchangeWallet: string
 ): Promise<string[]> => {
@@ -27,6 +28,7 @@ export const getTradingPosts = async (
       const stake = await getPostStake(
         client,
         tx.node.owner.address,
+        useCache,
         exchangeContract
       );
 
