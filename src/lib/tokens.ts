@@ -1,15 +1,16 @@
 import Arweave from "arweave";
 import { VertoToken } from "types";
+import axios from "axios";
 import { getContract, getData } from "cacheweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { volume } from "./volume";
 import { query } from "@utils/gql";
 import { EdgeQueryResponse } from "types";
 import tokensQuery from "../queries/tokens.gql";
-import { isStateInterfaceWithValidity } from "@utils/arweave";
 
 export const getTokens = async (
   client: Arweave,
+  useCache: boolean,
   exchangeContract: string
 ): Promise<VertoToken[]> => {
   const contractIDs: string[] = [exchangeContract];
@@ -31,8 +32,15 @@ export const getTokens = async (
   }[] = [];
   for (const contractID of contractIDs) {
     try {
-      const res = await getContract(client, contractID);
-      const contract = isStateInterfaceWithValidity(res) ? res.state : res;
+      let contract: any;
+      if (useCache) {
+        const { data } = await axios.get(
+          `https://cache.verto.exchange/${contractID}`
+        );
+        contract = data.state;
+      } else {
+        contract = await getContract(client, contractID);
+      }
 
       const volumeData = await volume(contractID);
 
@@ -65,13 +73,14 @@ export const saveToken = async (
   client: Arweave,
   contract: string,
   keyfile: JWKInterface | "use_wallet" | undefined,
+  useCache: boolean,
   exchangeContract: string,
   exchangeWallet: string
 ): Promise<string | void> => {
   // TODO(@johnletey): Use `localPorridge` as well.
   // @ts-ignore
   if (typeof window !== "undefined") {
-    const tokens = await getTokens(client, exchangeContract);
+    const tokens = await getTokens(client, useCache, exchangeContract);
 
     if (!tokens.find((token) => token.id === contract)) {
       const userTokenTxs = (

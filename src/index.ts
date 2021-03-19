@@ -108,6 +108,7 @@ export default class Verto {
       amnt,
       pst,
       post,
+      this.useCache,
       this.exchangeContract,
       this.exchangeWallet,
       rate
@@ -152,6 +153,7 @@ export default class Verto {
       this.keyfile,
       chain,
       post,
+      this.useCache,
       this.exchangeWallet,
       this.exchangeContract,
       arAmnt,
@@ -172,6 +174,7 @@ export default class Verto {
     return getAssets(
       this.arweave,
       addr,
+      this.useCache,
       this.exchangeContract,
       this.exchangeWallet
     );
@@ -190,6 +193,7 @@ export default class Verto {
     return parseExchange(
       this.arweave,
       edge,
+      this.useCache,
       this.exchangeContract,
       this.exchangeWallet
     );
@@ -201,7 +205,12 @@ export default class Verto {
    * @returns Exchange details
    */
   getExchangeDetails(id: string): Promise<ExchangeDetails> {
-    return getExchangeDetails(this.arweave, id, this.exchangeWallet);
+    return getExchangeDetails(
+      this.arweave,
+      id,
+      this.useCache,
+      this.exchangeWallet
+    );
   }
 
   /**
@@ -213,6 +222,7 @@ export default class Verto {
     return getExchanges(
       this.arweave,
       addr,
+      this.useCache,
       this.exchangeContract,
       this.exchangeWallet
     );
@@ -231,6 +241,7 @@ export default class Verto {
     return paginateExchanges(
       this.arweave,
       addr,
+      this.useCache,
       this.exchangeContract,
       this.exchangeWallet,
       cursor
@@ -279,7 +290,7 @@ export default class Verto {
    * @returns List of token ids, names, and tickers
    */
   getTokens(): Promise<VertoToken[]> {
-    return getTokens(this.arweave, this.exchangeContract);
+    return getTokens(this.arweave, this.useCache, this.exchangeContract);
   }
 
   /**
@@ -400,6 +411,7 @@ export default class Verto {
       this.arweave,
       contract,
       this.keyfile,
+      this.useCache,
       this.exchangeContract,
       this.exchangeWallet
     );

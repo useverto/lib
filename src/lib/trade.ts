@@ -12,7 +12,6 @@ import {
   getTxFee,
 } from "./fees";
 import { exchangeFee } from "@utils/constants";
-import { isStateInterfaceWithValidity } from "@utils/arweave";
 
 export const createOrder = async (
   client: Arweave,
@@ -21,6 +20,7 @@ export const createOrder = async (
   amnt: number,
   pst: string,
   post: string,
+  useCache: boolean,
   exchangeContract: string,
   exchangeWallet: string,
   rate?: number
@@ -35,11 +35,14 @@ export const createOrder = async (
   const arBalance = parseFloat(
     client.ar.winstonToAr(await client.wallets.getBalance(addr))
   );
-  const contractRes = await getContract(client, pst);
-  const pstBalance = (isStateInterfaceWithValidity(contractRes)
-    ? contractRes.state
-    : contractRes
-  ).balances[addr];
+  let contractRes: any;
+  if (useCache) {
+    const { data } = await axios.get(`https://cache.verto.exchange/${pst}`);
+    contractRes = data.state;
+  } else {
+    contractRes = await getContract(client, pst);
+  }
+  const pstBalance = contractRes.balances[addr];
 
   if (type.toLowerCase() === "buy") {
     const tags = {
