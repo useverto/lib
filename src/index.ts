@@ -80,6 +80,7 @@ export default class Verto {
     return chainRate(
       this.arweave,
       chain,
+      this.useCache,
       this.exchangeContract,
       this.exchangeWallet
     );
@@ -336,6 +337,7 @@ export default class Verto {
     return latestChainRate(
       this.arweave,
       chain,
+      this.useCache,
       this.exchangeContract,
       this.exchangeWallet
     );
