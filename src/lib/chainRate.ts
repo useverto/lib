@@ -35,10 +35,17 @@ const fillArray = (arr: number[]): number[] => {
 export const latestChainRate = async (
   client: Arweave,
   chain: string,
+  useCache: boolean,
   exchangeContract: string,
   exchangeWallet: string
 ): Promise<number> => {
-  const res = await chainRate(client, chain, exchangeContract, exchangeWallet);
+  const res = await chainRate(
+    client,
+    chain,
+    useCache,
+    exchangeContract,
+    exchangeWallet
+  );
 
   return res.rates[res.rates.length - 1];
 };
@@ -46,10 +53,16 @@ export const latestChainRate = async (
 export const chainRate = async (
   client: Arweave,
   chain: string,
+  useCache: boolean,
   exchangeContract: string,
   exchangeWallet: string
 ): Promise<{ rates: number[]; dates: string[] }> => {
-  const posts = await getTradingPosts(client, exchangeContract, exchangeWallet);
+  const posts = await getTradingPosts(
+    client,
+    useCache,
+    exchangeContract,
+    exchangeWallet
+  );
 
   const confirmationTxs = (
     await query<EdgeQueryResponse>({

@@ -6,11 +6,7 @@ import { exchangeFee } from "@utils/constants";
 import { getContract } from "cacheweave";
 import { weightedRandom } from "@utils/weighted_random";
 import { getConfig } from "./get_config";
-import {
-  getArAddr,
-  getChainAddr,
-  isStateInterfaceWithValidity,
-} from "@utils/arweave";
+import { getArAddr, getChainAddr } from "@utils/arweave";
 import axios from "axios";
 import { ethers } from "ethers";
 
@@ -56,6 +52,7 @@ export const createSwap = async (
   keyfile: JWKInterface | "use_wallet" | undefined,
   chain: string,
   post: string,
+  useCache: boolean,
   exchangeWallet: string,
   exchangeContract: string,
   arAmnt?: number,
@@ -150,6 +147,7 @@ export const createSwap = async (
               client,
               exchangeContract,
               chain,
+              useCache,
               exchangeWallet
             ),
             value: fee,
@@ -265,12 +263,26 @@ export const selectWeightedHolder = async (
   client: Arweave,
   contract: string,
   chain: string,
+  useCache: boolean,
   exchangeWallet: string
 ): Promise<string> => {
-  const res = await getContract(client, contract);
-  const state = isStateInterfaceWithValidity(res) ? res.state : res;
+  let state: any;
+  if (useCache) {
+    const { data } = await axios.get(
+      `https://cache.verto.exchange/${contract}`
+    );
+    state = data.state;
+  } else {
+    state = await getContract(client, contract);
+  }
   const balances = state.balances;
-  const vault = state.vault;
+  const vault: {
+    [key: string]: {
+      balance: number;
+      start: number;
+      end: number;
+    }[];
+  } = state.vault;
 
   for (const addr of Object.keys(balances)) {
     const chainAddr = await getChainAddr(addr, chain);

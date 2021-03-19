@@ -1,5 +1,5 @@
-import { isStateInterfaceWithValidity } from "@utils/arweave";
 import Arweave from "arweave";
+import axios from "axios";
 import { getContract } from "cacheweave";
 
 const getBalance = async (client: Arweave, post: string): Promise<number> => {
@@ -11,11 +11,25 @@ const getBalance = async (client: Arweave, post: string): Promise<number> => {
 export const getPostStake = async (
   client: Arweave,
   post: string,
+  useCache: boolean,
   exchangeContract: string
 ): Promise<number> => {
-  const res = await getContract(client, exchangeContract);
-  if (isStateInterfaceWithValidity(res)) return 0;
-  const vault = res.vault;
+  let res;
+  if (useCache) {
+    const { data } = await axios.get(
+      `https://cache.verto.exchange/${exchangeContract}`
+    );
+    res = data.state;
+  } else {
+    res = await getContract(client, exchangeContract);
+  }
+  const vault: {
+    [key: string]: {
+      balance: number;
+      start: number;
+      end: number;
+    }[];
+  } = res.vault;
 
   let stake = 0;
   if (post in vault) {
@@ -31,11 +45,25 @@ export const getPostStake = async (
 const getTimeStaked = async (
   client: Arweave,
   post: string,
+  useCache: boolean,
   exchangeContract: string
 ): Promise<number> => {
-  const res = await getContract(client, exchangeContract);
-  if (isStateInterfaceWithValidity(res)) return 0;
-  const vault = res.vault;
+  let res;
+  if (useCache) {
+    const { data } = await axios.get(
+      `https://cache.verto.exchange/${exchangeContract}`
+    );
+    res = data.state;
+  } else {
+    res = await getContract(client, exchangeContract);
+  }
+  const vault: {
+    [key: string]: {
+      balance: number;
+      start: number;
+      end: number;
+    }[];
+  } = res.vault;
 
   if (post in vault) {
     const height = (await client.network.getInfo()).height;
@@ -53,12 +81,13 @@ const getTimeStaked = async (
 export const getReputation = async (
   client: Arweave,
   post: string,
+  useCache: boolean,
   exchangeContract: string
 ): Promise<number> => {
   const stakeWeighted =
-      ((await getPostStake(client, post, exchangeContract)) * 1) / 2,
+      ((await getPostStake(client, post, useCache, exchangeContract)) * 1) / 2,
     timeStakedWeighted =
-      ((await getTimeStaked(client, post, exchangeContract)) * 1) / 3,
+      ((await getTimeStaked(client, post, useCache, exchangeContract)) * 1) / 3,
     balanceWeighted = ((await getBalance(client, post)) * 1) / 6;
 
   return parseFloat(

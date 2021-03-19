@@ -65,12 +65,13 @@ export interface ExchangeDetails {
 export const parseExchange = async (
   client: Arweave,
   edge: GQLEdgeInterface,
+  useCache: boolean,
   exchangeContract: string,
   exchangeWallet: string
 ): Promise<Exchange | undefined> => {
   const tokens = unique([
     ...(await popularTokens(client, exchangeWallet)),
-    ...(await getTokens(client, exchangeContract)),
+    ...(await getTokens(client, useCache, exchangeContract)),
   ]);
 
   let res: Exchange | undefined;
@@ -258,6 +259,7 @@ export const parseExchange = async (
 export const getExchanges = async (
   client: Arweave,
   addr: string,
+  useCache: boolean,
   exchangeContract: string,
   exchangeWallet: string
 ): Promise<Exchange[]> => {
@@ -274,6 +276,7 @@ export const getExchanges = async (
     const exchange = await parseExchange(
       client,
       edge,
+      useCache,
       exchangeContract,
       exchangeWallet
     );
@@ -289,6 +292,7 @@ export const getExchanges = async (
 export const paginateExchanges = async (
   client: Arweave,
   addr: string,
+  useCache: boolean,
   exchangeContract: string,
   exchangeWallet: string,
   cursor?: string
@@ -311,6 +315,7 @@ export const paginateExchanges = async (
     const exchange = await parseExchange(
       client,
       edge,
+      useCache,
       exchangeContract,
       exchangeWallet
     );
@@ -355,6 +360,7 @@ export const getOrderBook = async (
 export const getExchangeDetails = async (
   client: Arweave,
   id: string,
+  useCache: boolean,
   exchangeWallet: string
 ): Promise<ExchangeDetails> => {
   try {
@@ -373,7 +379,15 @@ export const getExchangeDetails = async (
       const contract = transaction.tags.find((tag) => tag.name === "Contract");
 
       if (contract) {
-        const state = await getContract(client, contract.value, true);
+        let state: any;
+        if (useCache) {
+          const { data } = await axios.get(
+            `https://cache.verto.exchange/${contract.value}`
+          );
+          state = data;
+        } else {
+          state = await getContract(client, contract.value, true);
+        }
         value = await getPSTAmount(transaction, client);
 
         if (!isStateInterfaceWithValidity(state)) {
