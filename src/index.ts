@@ -99,7 +99,8 @@ export default class Verto {
     amnt: number,
     pst: string,
     post: string,
-    rate?: number
+    rate?: number,
+    tags?: { [key: string]: string }
   ): Promise<{ txs: Transaction[]; ar: number; pst: number } | string> {
     return createOrder(
       this.arweave,
@@ -111,7 +112,8 @@ export default class Verto {
       this.useCache,
       this.exchangeContract,
       this.exchangeWallet,
-      rate
+      rate,
+      tags
     );
   }
 
@@ -130,7 +132,8 @@ export default class Verto {
     arAmnt?: number,
     chainAmnt?: number,
     rate?: number,
-    token?: string
+    token?: string,
+    tags?: { [key: string]: string }
   ): Promise<
     | {
         txs: (
@@ -159,7 +162,8 @@ export default class Verto {
       arAmnt,
       chainAmnt,
       rate,
-      token
+      token,
+      tags
     );
   }
 
@@ -439,9 +443,10 @@ export default class Verto {
           value: number;
         }
     )[],
-    post: string
+    post: string,
+    tags?: { [key: string]: string }
   ): Promise<void> {
-    return sendSwap(this.arweave, this.keyfile, txs, post);
+    return sendSwap(this.arweave, this.keyfile, txs, post, tags);
   }
 
   /**

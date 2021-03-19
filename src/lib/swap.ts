@@ -58,7 +58,8 @@ export const createSwap = async (
   arAmnt?: number,
   chainAmnt?: number,
   rate?: number,
-  token?: string
+  token?: string,
+  tags?: { [key: string]: string }
 ): Promise<
   | {
       txs: (Transaction | Transfer)[];
@@ -76,11 +77,12 @@ export const createSwap = async (
     if (!(await getChainAddr(addr, chain))) return "arLink";
 
     if (!rate) return "invalid";
-    const tags = {
+    const obj = {
       Exchange: "Verto",
       Type: "Swap",
       Chain: chain,
       Rate: rate,
+      ...tags,
     };
 
     const tx = await client.createTransaction(
@@ -91,7 +93,7 @@ export const createSwap = async (
       keyfile
     );
 
-    for (const [key, value] of Object.entries(tags)) {
+    for (const [key, value] of Object.entries(obj)) {
       tx.addTag(key, value.toString());
     }
 
@@ -169,7 +171,8 @@ export const sendSwap = async (
   client: Arweave,
   keyfile: JWKInterface | "use_wallet" | undefined,
   txs: (Transaction | Transfer)[],
-  post: string
+  post: string,
+  tags?: { [key: string]: string }
 ): Promise<void> => {
   for (const tx of txs) {
     // @ts-ignore
@@ -227,12 +230,13 @@ export const sendSwap = async (
             });
 
             if (!tx.type) {
-              const tags = {
+              const obj = {
                 Exchange: "Verto",
                 Type: "Swap",
                 Chain: tx.chain,
                 Hash: hash,
                 Value: tx.value / 1e18,
+                ...tags,
               };
               const arTx = await client.createTransaction(
                 {
@@ -241,7 +245,7 @@ export const sendSwap = async (
                 },
                 keyfile
               );
-              for (const [key, value] of Object.entries(tags)) {
+              for (const [key, value] of Object.entries(obj)) {
                 arTx.addTag(key, value.toString());
               }
               if (tx.token) arTx.addTag("Token", tx.token);

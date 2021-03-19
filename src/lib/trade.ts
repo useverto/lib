@@ -23,7 +23,8 @@ export const createOrder = async (
   useCache: boolean,
   exchangeContract: string,
   exchangeWallet: string,
-  rate?: number
+  rate?: number,
+  tags?: { [key: string]: string }
 ): Promise<{ txs: Transaction[]; ar: number; pst: number } | string> => {
   const config = await getConfig(client, post, exchangeWallet);
   // @ts-ignore
@@ -45,10 +46,11 @@ export const createOrder = async (
   const pstBalance = contractRes.balances[addr];
 
   if (type.toLowerCase() === "buy") {
-    const tags = {
+    const obj = {
       Exchange: "Verto",
       Type: "Buy",
       Token: pst,
+      ...tags,
     };
 
     const tx = await client.createTransaction(
@@ -59,7 +61,7 @@ export const createOrder = async (
       keyfile
     );
 
-    for (const [key, value] of Object.entries(tags)) {
+    for (const [key, value] of Object.entries(obj)) {
       tx.addTag(key, value);
     }
 
@@ -85,7 +87,7 @@ export const createOrder = async (
   }
 
   if (type.toLowerCase() === "sell" && rate) {
-    const tags = {
+    const obj = {
       Exchange: "Verto",
       Type: "Sell",
       "App-Name": "SmartWeaveAction",
@@ -97,6 +99,7 @@ export const createOrder = async (
         target: post,
         qty: Math.ceil(amnt),
       }),
+      ...tags,
     };
 
     const tx = await client.createTransaction(
@@ -107,7 +110,7 @@ export const createOrder = async (
       keyfile
     );
 
-    for (const [key, value] of Object.entries(tags)) {
+    for (const [key, value] of Object.entries(obj)) {
       tx.addTag(key, value.toString());
     }
 
