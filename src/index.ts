@@ -39,10 +39,10 @@ import Transaction from "arweave/node/lib/transaction";
 import { GQLEdgeInterface } from "ar-gql/dist/faces";
 
 // eslint-disable-next-line
-console.log = (...x: any[]) => {
-  if (new Error().stack?.includes("smartweave")) return;
-  console.info(...x);
-};
+// console.log = (...x: any[]) => {
+// if (new Error().stack?.includes("smartweave")) return;
+// console.info(...x);
+// };
 
 interface VertoLibOptions {
   useCache?: boolean;
@@ -306,6 +306,7 @@ export default class Verto {
     return getTPTokens(
       this.arweave,
       post,
+      this.useCache,
       this.exchangeContract,
       this.exchangeWallet
     );

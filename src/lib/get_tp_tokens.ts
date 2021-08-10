@@ -13,6 +13,7 @@ const unique = (arr: VertoToken[]): VertoToken[] => {
 export const getTPTokens = async (
   client: Arweave,
   post: string,
+  useCache: boolean,
   exchangeContract: string,
   exchangeWallet: string
 ): Promise<VertoToken[]> => {
@@ -20,7 +21,7 @@ export const getTPTokens = async (
 
   const tokens: VertoToken[] = [
     ...(await popularTokens(client, exchangeWallet)),
-    ...(await getTokens(client, exchangeContract)),
+    ...(await getTokens(client, useCache, exchangeContract)),
   ];
   // @ts-ignore
   config.blockedTokens.map((token: string) => {
