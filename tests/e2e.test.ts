@@ -12,7 +12,7 @@ let vertoInstance: Verto;
 
 describe("E2E Tests", function () {
   before(() => {
-    vertoInstance = new Verto();
+    vertoInstance = new Verto(undefined, undefined, { useCache: true });
   });
 
   it("Assert Verto instance", (done) => {
